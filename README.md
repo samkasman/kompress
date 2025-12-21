@@ -13,25 +13,27 @@ A dead simple native media compressor app
 
 ## Features
 
-- 🖼️ **Image Compression**: Convert PNG/JPG to compressed JPG (configurable quality 1-8)
-- 📹 **Video Compression**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
-- 🎵 **Audio Compression**: Convert WAV/MP3/AAC/FLAC/M4A/OGG/WMA to MP3 (configurable bitrate 128-320 kbps)
-- ⚙️ **Configurable Settings**: Adjustable quality, CRF, and bitrate via settings drawer
-- 📦 **Bundled FFmpeg**: FFmpeg is bundled with the app - no external dependencies
+- 🖱️ **Drag & Drop**: Drag files directly onto the window or click to browse
+- ⚙️ **Configurable Settings**: Adjustable quality, CRF, and bitrate via settings drawer with persistent storage
+- 📝 **Console Logs**: Built-in console for monitoring/debugging
+- 📦 **Bundled FFmpeg**: FFmpeg is bundled with the app - no external dependencies/requirements
+- 🗜️ **Compression**
+  - 🖼️ **Image**: Convert PNG/JPG to compressed JPG (configurable quality 1-8)
+  - 📹 **Video**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
+  - 🎵 **Audio**: Convert WAV/MP3/AAC/FLAC/M4A/OGG/WMA to MP3 (configurable bitrate 128-320 kbps)
 
 ## Tech Stack
 
-- **Frontend**: React + TypeScript + Vite
-- **Styling**: Tailwind CSS
-- **Backend**: Rust (Tauri) calling FFmpeg directly
-- **Desktop**: Tauri v2
-- **Code Quality**: ESLint + Prettier
+- ⚛️ **Frontend**: React + TypeScript + Vite
+- 🎨 **Styling**: Tailwind CSS
+- 🦀 **Backend**: Rust calls bundled FFmpeg directly
+- 📦 **Native Builds**: Tauri v2
+- ✅ **Code Quality**: ESLint + Prettier
 
-## Prerequisites
+## Development Prerequisites
 
 - [Node.js](https://nodejs.org/) 18+
-- [Rust](https://www.rust-lang.org/tools/install) (for Tauri)
-- [npm](https://www.npmjs.com/)
+- [Rust](https://www.rust-lang.org/tools/install)
 
 ## Setup
 
@@ -102,11 +104,16 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 
 ## Usage
 
-1. Launch the application
-2. Click anywhere to select media files (PNG, JPG, MOV, MP4, WAV, MP3, AAC, FLAC, M4A, OGG, WMA)
-3. Files will automatically be compressed
-4. Adjust compression settings via the settings icon in the top-right corner
-5. Output files appear in the same directory as the source
+1. Launch the application (500x500 fixed window)
+2. **Select files**: Click anywhere or drag and drop media files onto the window
+3. Files will automatically be compressed in the background
+4. View progress in the file list (shows up to 6 files, scrolls for more)
+5. Adjust compression settings via the settings icon (⚙️) in the top-right corner
+6. View console logs via the terminal icon (⌘) in the top-right corner
+7. Press `Escape` to close any open drawers
+8. Output files appear in the same directory as the source with `-compressed` suffix
+
+**Settings persist** between sessions - your quality/CRF/bitrate preferences are saved automatically.
 
 ## File Conversion
 
