@@ -11,7 +11,6 @@ export function useFileProcessor() {
       onError: (id: string, error: string) => void
     ): Promise<void> => {
       try {
-        // For images, progress is simple (0 -> 100)
         if (file.type === 'image') {
           onProgress(file.id, 50);
         }
