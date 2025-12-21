@@ -29,6 +29,16 @@ A dead simple native desktop multimedia file compressor.
   - 📹 **Video**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
   - 🎵 **Audio**: Convert WAV/MP3/AAC/FLAC/M4A/OGG/WMA to MP3 (configurable bitrate 128-320 kbps)
 
+## Usage
+
+1. **Install** and **launch** the application
+1. Review **compression settings** via the settings icon (⚙️) in the top-right corner
+1. **Select files**: Click anywhere or drag and drop media files onto the window
+1. Files are **automatically compressed** in the background
+1. **Output** files appear in the same directory as the **source** file(s) with `-compressed` suffix
+
+**Settings persist** between sessions - your quality/CRF/bitrate preferences are saved automatically.
+
 ## Tech Stack
 
 - 🟢 **Runtime**: [Node.js](https://nodejs.org/)
@@ -38,31 +48,16 @@ A dead simple native desktop multimedia file compressor.
 - 🦀 **Backend**: [Rust](https://www.rust-lang.org/) calls bundled [FFmpeg](https://ffmpeg.org/) directly
 - ✅ **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
 
-## Project Structure
-
-```
-sk-compress/
-├── src/                 # React frontend
-│   ├── components/      # React components
-│   ├── hooks/           # React hooks
-│   └── utils/           # TS utilities
-├── src-tauri/           # Tauri/Rust backend
-│   ├── binaries/        # FFmpeg binaries (per platform)
-│   ├── icons/           # App icons
-│   └── src/             # Rust source
-└── docs/                # Documentation
-```
-
 ## Development Prerequisites
 
 - [Node.js](https://nodejs.org/) `v18`+ (includes `npm`)
 - [Rust](https://www.rust-lang.org/tools/install)
 - Platform-specific native build tools:
-  - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
-  - **Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other system dependencies (see [Tauri prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites))
-  - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or Visual Studio with C++ workload
+  - **macOS**: [Xcode Command Line Tools](https://developer.apple.com/xcode/) (`xcode-select --install`)
+  - **Linux**: [Tauri prerequisites](https://v1.tauri.app/v1/guides/getting-started/prerequisites/#setting-up-linux)
+  - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or [Visual Studio w/ C++ workload](https://visualstudio.microsoft.com/downloads/)
 
-## Setup
+## Development Setup
 
 1. Clone the repository
 2. Install dependencies:
@@ -101,6 +96,20 @@ cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
 
 > In development mode, if no bundled binary is found, the app falls back to system ffmpeg.
 
+## Project Structure
+
+```
+sk-compress/
+├── src/                 # React source (front-end)
+│   ├── components/      # React components
+│   ├── hooks/           # React hooks
+│   └── utils/           # TS utilities
+└── src-tauri/           # Tauri/Rust source (back-end)
+    ├── binaries/        # FFmpeg binaries (per platform)
+    ├── icons/           # App icons
+    └── src/             # Rust source
+```
+
 ## Development
 
 Run the development server:
@@ -129,21 +138,13 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 - **Linux**: `.AppImage` or `.deb`
 - **Windows**: `.exe` installer
 
-## Usage
+## File Conversion / Compression
 
-1. **Install** and **launch** the application
-1. Review **compression settings** via the settings icon (⚙️) in the top-right corner
-1. **Select files**: Click anywhere or drag and drop media files onto the window
-1. Files are **automatically compressed** in the background
-1. **Output** files appear in the same directory as the **source** file(s) with `-compressed` suffix
-
-**Settings persist** between sessions - your quality/CRF/bitrate preferences are saved automatically.
-
-## File Conversion
+Currently, we only render to compressed JPG, MP4, and MP3.
 
 - **PNG/JPG → JPG**: Compressed with configurable quality (default: 6, range: 1-8)
 - **MOV/MP4 → MP4**: H.264 codec with configurable CRF (default: 22, range: 18-28), medium preset
-- **WAV/MP3/AAC/FLAC/M4A/OGG/WMA → MP3**: Compressed with configurable bitrate (default: 320 kbps, options: 128, 192, 256, 320 kbps)
+- **WAV/MP3/AAC/FLAC/M4A/OGG/WMA → MP3**: Compressed with configurable bitrate (default: 320 kbps, range: 128-320 kbps)
 
 All settings are adjustable via the settings drawer (top-right icon). Output files are saved in the same directory as the source with `-compressed` suffix.
 
@@ -160,3 +161,7 @@ Contributions are welcome. Feel free to:
 1. Commit your changes (`git commit -m 'Add amazing feature'`)
 1. Push to the branch (`git push origin feature/amazing-feature`)
 1. Open a Pull Request
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file for details.
