@@ -107,7 +107,13 @@ fn get_output_path(input_path: &str, file_type: &str) -> Result<String, String> 
     let parent = path.parent().ok_or("No parent directory")?;
     let stem = path.file_stem().ok_or("No file stem")?.to_string_lossy();
 
-    let ext = if file_type == "image" { "jpg" } else { "mp4" };
+    let ext = if file_type == "image" {
+        "jpg"
+    } else if file_type == "audio" {
+        "mp3"
+    } else {
+        "mp4"
+    };
 
     let mut output_path = parent.join(format!("{}-compressed.{}", stem, ext));
     let mut counter = 1;
@@ -145,27 +151,62 @@ async fn compress_file(
     input_path: String,
     file_type: String,
     file_id: String,
+    image_quality: Option<u8>,
+    video_crf: Option<u8>,
+    audio_bitrate: Option<u32>,
 ) -> Result<CompressResult, String> {
     let ffmpeg_path = get_ffmpeg_path(&app)?;
     let output_path = get_output_path(&input_path, &file_type)?;
+    let output_path_clone = output_path.clone();
 
-    let args: Vec<&str> = if file_type == "image" {
-        vec!["-y", "-i", &input_path, "-q:v", "6", &output_path]
-    } else {
+    let args: Vec<String> = if file_type == "image" {
+        let quality = image_quality.unwrap_or(6).to_string();
         vec![
-            "-y", "-i", &input_path,
-            "-c:v", "libx264",
-            "-preset", "medium",
-            "-crf", "22",
-            "-c:a", "aac",
-            "-b:a", "128k",
-            "-stats_period", "0.5", // Update stats every 0.5 seconds
-            &output_path,
+            "-y".to_string(),
+            "-i".to_string(),
+            input_path,
+            "-q:v".to_string(),
+            quality,
+            output_path,
+        ]
+    } else if file_type == "audio" {
+        let bitrate = audio_bitrate.unwrap_or(320).to_string() + "k";
+        vec![
+            "-y".to_string(),
+            "-i".to_string(),
+            input_path,
+            "-codec:a".to_string(),
+            "libmp3lame".to_string(),
+            "-b:a".to_string(),
+            bitrate,
+            output_path,
+        ]
+    } else {
+        let crf = video_crf.unwrap_or(22).to_string();
+        vec![
+            "-y".to_string(),
+            "-i".to_string(),
+            input_path,
+            "-c:v".to_string(),
+            "libx264".to_string(),
+            "-preset".to_string(),
+            "medium".to_string(),
+            "-crf".to_string(),
+            crf,
+            "-c:a".to_string(),
+            "aac".to_string(),
+            "-b:a".to_string(),
+            "128k".to_string(),
+            "-stats_period".to_string(),
+            "0.5".to_string(),
+            output_path,
         ]
     };
 
+    let args_str: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
+
     let mut child = Command::new(&ffmpeg_path)
-        .args(&args)
+        .args(&args_str)
         .stderr(Stdio::piped())
         .spawn()
         .map_err(|e| format!("Failed to run FFmpeg: {}", e))?;
@@ -223,12 +264,12 @@ async fn compress_file(
     }
 
     // Get output file size
-    let output_size = std::fs::metadata(&output_path)
+    let output_size = std::fs::metadata(&output_path_clone)
         .map_err(|e| format!("Failed to get output file size: {}", e))?
         .len();
 
     Ok(CompressResult {
-        output_path,
+        output_path: output_path_clone,
         output_size,
     })
 }
