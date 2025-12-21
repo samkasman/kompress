@@ -1,6 +1,6 @@
 # sk-compress
 
-A dead simple native workstation multimedia compressor
+A dead simple native desktop multimedia compressor.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)

@@ -422,7 +422,7 @@ export default function DropZone({
                     showSK ? 'opacity-100' : 'opacity-0'
                   }`}
                 >
-                  A dead simple multimedia compressor
+                  A dead simple native desktop multimedia compressor.
                 </p>
               </div>
 
