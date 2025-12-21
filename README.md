@@ -6,13 +6,13 @@ A native desktop application built with Tauri and React for compressing images a
 
 - 🖼️ **Image Compression**: Convert PNG/JPG to compressed JPG (quality 85)
 - 📹 **Video Compression**: Convert MOV/MP4 to compressed MP4 (H.264, CRF 22)
-- 📦 **Bundled FFmpeg**: No need to install FFmpeg separately
+- 📦 **Bundled FFmpeg**: FFmpeg is bundled with the app - no external dependencies
 
 ## Tech Stack
 
 - **Frontend**: React + TypeScript + Vite
 - **Styling**: Tailwind CSS
-- **Backend**: Node.js + FFmpeg (via `ffmpeg-static`)
+- **Backend**: Rust (Tauri) calling FFmpeg directly
 - **Desktop**: Tauri v2
 - **Code Quality**: ESLint + Prettier
 
@@ -22,7 +22,7 @@ A native desktop application built with Tauri and React for compressing images a
 - Rust (for Tauri)
 - npm
 
-## Installation
+## Setup
 
 1. Clone the repository
 2. Install dependencies:
@@ -30,6 +30,36 @@ A native desktop application built with Tauri and React for compressing images a
 ```bash
 npm install
 ```
+
+3. Download FFmpeg binary for your platform and place it in `src-tauri/binaries/`:
+
+**macOS (Apple Silicon):**
+
+```bash
+# Download from https://evermeet.cx/ffmpeg/ or use Homebrew
+cp $(which ffmpeg) src-tauri/binaries/ffmpeg-aarch64-apple-darwin
+```
+
+**macOS (Intel):**
+
+```bash
+cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-apple-darwin
+```
+
+**Windows:**
+
+```bash
+# Download from https://www.gyan.dev/ffmpeg/builds/
+# Place ffmpeg.exe as src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
+```
+
+**Linux:**
+
+```bash
+cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
+```
+
+> In development mode, if no bundled binary is found, the app falls back to system ffmpeg.
 
 ## Development
 
@@ -53,9 +83,9 @@ Build for production:
 npm run tauri:build
 ```
 
-Outputs will be in `src-tauri/target/release/`:
+Outputs will be in `src-tauri/target/release/bundle/`:
 
-- **macOS**: `.app` bundle
+- **macOS**: `.app` bundle and `.dmg` installer
 - **Windows**: `.exe` installer
 - **Linux**: `.AppImage` or `.deb`
 
@@ -83,13 +113,8 @@ sk-convert/
 │   ├── components/      # React components
 │   ├── lib/             # Utilities
 │   └── utils/           # File utilities
-├── backend/             # Node.js backend
-│   ├── processors/      # Image/video processors
-│   └── utils/           # FFmpeg utilities
-├── src-tauri/           # Tauri configuration
+├── src-tauri/           # Tauri/Rust backend
+│   ├── binaries/        # FFmpeg binaries (per platform)
+│   └── src/             # Rust source
 └── docs/                # Documentation
 ```
-
-## License
-
-MIT
