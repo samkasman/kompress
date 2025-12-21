@@ -232,7 +232,10 @@ export default function DropZone({
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
+            <div className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-slate-100" />
+              <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
+            </div>
             <button
               className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
               onClick={() => setShowDrawer(false)}
@@ -264,14 +267,14 @@ export default function DropZone({
                   min={1}
                   max={8}
                   step={1}
-                  value={imageQuality}
-                  onChange={(e) => setImageQuality(Number(e.target.value))}
+                  value={9 - imageQuality}
+                  onChange={(e) => setImageQuality(9 - Number(e.target.value))}
                   className="w-full appearance-none cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
                 />
                 <div className="flex justify-between text-xs text-slate-500">
-                  <span>1 (Highest Quality)</span>
-                  <span>8 (Smallest Size)</span>
+                  <span>8 (Smallest)</span>
+                  <span>1 (Best)</span>
                 </div>
               </div>
             </div>
@@ -294,14 +297,14 @@ export default function DropZone({
                   min={18}
                   max={28}
                   step={1}
-                  value={videoCRF}
-                  onChange={(e) => setVideoCRF(Number(e.target.value))}
+                  value={46 - videoCRF}
+                  onChange={(e) => setVideoCRF(46 - Number(e.target.value))}
                   className="w-full appearance-none cursor-pointer"
                   onClick={(e) => e.stopPropagation()}
                 />
                 <div className="flex justify-between text-xs text-slate-500">
-                  <span>18 (Highest Quality)</span>
-                  <span>28 (Smallest Size)</span>
+                  <span>28 (Smallest)</span>
+                  <span>18 (Best)</span>
                 </div>
               </div>
             </div>
@@ -335,8 +338,8 @@ export default function DropZone({
                   onClick={(e) => e.stopPropagation()}
                 />
                 <div className="flex justify-between text-xs text-slate-500">
-                  <span>128 kbps</span>
-                  <span>320 kbps</span>
+                  <span>128 kbps (Smallest)</span>
+                  <span>320 kbps (Best)</span>
                 </div>
               </div>
             </div>
