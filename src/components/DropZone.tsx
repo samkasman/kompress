@@ -543,7 +543,7 @@ export default function DropZone({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-slate-200">
-                      Images
+                      Image
                     </p>
                     <p className="text-xs text-slate-400">PNG/JPG → JPG</p>
                   </div>
@@ -582,7 +582,7 @@ export default function DropZone({
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-slate-200">
-                      Videos
+                      Video
                     </p>
                     <p className="text-xs text-slate-400">MOV/MP4 → MP4</p>
                   </div>
