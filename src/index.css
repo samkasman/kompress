@@ -216,7 +216,7 @@
     opacity: 1;
     animation:
       twinkle 5s ease-in-out infinite alternate,
-      driftFast 200s linear infinite;
+      driftFast 100s linear infinite;
     pointer-events: none;
     z-index: 0;
   }
@@ -234,8 +234,11 @@
     0% {
       background-position: 0% 0%;
     }
+    50% {
+      background-position: 30% 25%;
+    }
     100% {
-      background-position: 20% 15%;
+      background-position: 0% 0%;
     }
   }
 
@@ -243,8 +246,11 @@
     0% {
       background-position: 0% 0%;
     }
+    50% {
+      background-position: -25% 18%;
+    }
     100% {
-      background-position: -15% 10%;
+      background-position: 0% 0%;
     }
   }
 
@@ -252,8 +258,11 @@
     0% {
       background-position: 0% 0%;
     }
+    50% {
+      background-position: 20% -15%;
+    }
     100% {
-      background-position: 12% -8%;
+      background-position: 0% 0%;
     }
   }
 
@@ -290,7 +299,7 @@
     background-repeat: no-repeat;
     opacity: 1;
     animation:
-      driftSlow 300s linear infinite,
+      driftSlow 150s linear infinite,
       twinkle 6s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: 0;
@@ -327,7 +336,7 @@
     background-repeat: no-repeat;
     opacity: 0.9;
     animation:
-      driftMedium 250s linear infinite,
+      driftMedium 125s linear infinite,
       twinkle 8s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: 0;

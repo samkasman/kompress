@@ -12,6 +12,7 @@ import {
   Loader2,
   Settings,
   X,
+  Minimize2,
 } from 'lucide-react';
 
 interface DropZoneProps {
@@ -183,13 +184,20 @@ export default function DropZone({
         <div className="flex items-start justify-between p-4">
           {/* SK Logo and subtitle - left */}
           <div>
-            <h1
-              className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
-                showSK ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              sk-compress
-            </h1>
+            <div className="flex items-center gap-2">
+              <Minimize2
+                className={`h-4 w-4 text-slate-100 transition-opacity duration-500 ${
+                  showSK ? 'opacity-100' : 'opacity-0'
+                }`}
+              />
+              <h1
+                className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
+                  showSK ? 'opacity-100' : 'opacity-0'
+                }`}
+              >
+                sk-compress
+              </h1>
+            </div>
             <p
               className={`text-xs text-slate-400 mt-1 transition-opacity duration-500 ${
                 showSK ? 'opacity-100' : 'opacity-0'
