@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 217.2 91.2% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 217.2 91.2% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 217.2 91.2% 60%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 47.4% 2%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 47.4% 3%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 47.4% 3%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 60%;
+    --primary-foreground: 222.2 47.4% 2%;
+    --secondary: 217.2 32.6% 10%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 10%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 91.2% 60%;
+    --accent-foreground: 222.2 47.4% 2%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 12%;
+    --input: 217.2 32.6% 12%;
+    --ring: 217.2 91.2% 60%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  html,
+  body,
+  #root {
+    min-height: 100vh;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  html {
+    background: linear-gradient(
+      135deg,
+      #020409 0%,
+      #050818 15%,
+      #0f0d2a 25%,
+      #0f1520 35%,
+      #0c1a4a 45%,
+      #080c16 60%,
+      #050505 75%,
+      #000000 100%
+    );
+    background-attachment: fixed;
+  }
+  body {
+    @apply text-foreground;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: transparent;
+  }
+}
