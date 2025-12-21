@@ -381,299 +381,316 @@ export default function DropZone({
 
   return (
     <div
-      className={`fixed inset-0 flex flex-col z-10 transition-colors ${
+      className={`fixed inset-0 z-10 overflow-hidden ${
         isDragging ? 'bg-slate-800/50' : ''
       }`}
-      onClick={handleFileDialog}
-      onDragOver={handleDragOver}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
     >
-      <div className="relative flex-shrink-0 pointer-events-none z-20">
-        <div className="flex items-start justify-between p-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <Minimize2
-                className={`h-4 w-4 text-slate-100 transition-opacity duration-500 ${
-                  showSK ? 'opacity-100' : 'opacity-0'
+      <div
+        className={`flex h-full transition-transform duration-300 ${
+          showDrawer || showConsole ? '-translate-x-1/2' : 'translate-x-0'
+        }`}
+        style={{ width: '200%' }}
+      >
+        {/* Main content panel - 50% of container = 100% viewport */}
+        <div
+          className="w-1/2 h-full flex flex-col cursor-pointer"
+          onClick={handleFileDialog}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <div className="relative flex-shrink-0 pointer-events-none z-20">
+            <div className="flex items-start justify-between p-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Minimize2
+                    className={`h-4 w-4 text-slate-100 transition-opacity duration-500 ${
+                      showSK ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                  <h1
+                    className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
+                      showSK ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  >
+                    sk-compress
+                  </h1>
+                </div>
+                <p
+                  className={`text-xs text-slate-400 mt-1 transition-opacity duration-500 ${
+                    showSK ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  A dead simple multimedia compressor
+                </p>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  data-no-drag
+                  className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowConsole(!showConsole);
+                  }}
+                >
+                  <Terminal className="h-5 w-5" />
+                </button>
+                <button
+                  data-no-drag
+                  className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDrawer(!showDrawer);
+                  }}
+                >
+                  <Settings className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto">
+            <div className="text-center pointer-events-none mb-8">
+              <Folder
+                className={`h-24 w-24 text-slate-100 mx-auto mb-4 transition-transform ${
+                  isDragging ? 'scale-110' : ''
                 }`}
               />
-              <h1
-                className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
-                  showSK ? 'opacity-100' : 'opacity-0'
-                }`}
+              <p className="text-xl font-semibold text-slate-100 mb-2">
+                {isDragging
+                  ? 'Drop files here'
+                  : 'Click or drag files to compress'}
+              </p>
+              <p className="text-xs text-slate-400">
+                PNG, JPG, JPEG, MOV, MP4, WAV, MP3, AAC, FLAC, M4A, OGG, WMA
+              </p>
+            </div>
+
+            {hasFiles && (
+              <div
+                ref={fileListRef}
+                className="w-full max-w-md max-h-[192px] overflow-y-auto space-y-2"
               >
-                sk-compress
-              </h1>
-            </div>
-            <p
-              className={`text-xs text-slate-400 mt-1 transition-opacity duration-500 ${
-                showSK ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              A dead simple multimedia compressor
-            </p>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <button
-              data-no-drag
-              className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowConsole(!showConsole);
-              }}
-            >
-              <Terminal className="h-5 w-5" />
-            </button>
-            <button
-              data-no-drag
-              className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowDrawer(!showDrawer);
-              }}
-            >
-              <Settings className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {(showDrawer || showConsole) && (
-        <div
-          data-no-drag
-          className="fixed inset-0 bg-black/50 z-30 pointer-events-auto"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowDrawer(false);
-            setShowConsole(false);
-          }}
-        />
-      )}
-
-      <div
-        data-no-drag
-        className={`fixed top-0 right-0 h-full w-full bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
-          showDrawer ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Settings className="h-5 w-5 text-slate-100" />
-              <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
-            </div>
-            <button
-              className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
-              onClick={() => setShowDrawer(false)}
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-slate-200">Images</p>
-                <p className="text-xs text-slate-400">PNG/JPG → JPG</p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="image-quality"
-                    className="text-xs text-slate-400"
+                {files.map((file) => (
+                  <div
+                    key={file.id}
+                    className="flex items-center gap-3 text-sm"
                   >
-                    Quality:
-                  </label>
-                  <span className="text-xs text-slate-300">{imageQuality}</span>
-                </div>
-                <input
-                  type="range"
-                  id="image-quality"
-                  min={1}
-                  max={8}
-                  step={1}
-                  value={9 - imageQuality}
-                  onChange={(e) => setImageQuality(9 - Number(e.target.value))}
-                  className="w-full appearance-none cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <div className="flex justify-between text-xs text-slate-500">
-                  <span>8 (Smallest)</span>
-                  <span>1 (Best)</span>
-                </div>
-              </div>
-            </div>
-            <hr className="border-slate-700" />
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-slate-200">Videos</p>
-                <p className="text-xs text-slate-400">MOV/MP4 → MP4</p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="video-crf" className="text-xs text-slate-400">
-                    CRF:
-                  </label>
-                  <span className="text-xs text-slate-300">{videoCRF}</span>
-                </div>
-                <input
-                  type="range"
-                  id="video-crf"
-                  min={18}
-                  max={28}
-                  step={1}
-                  value={46 - videoCRF}
-                  onChange={(e) => setVideoCRF(46 - Number(e.target.value))}
-                  className="w-full appearance-none cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <div className="flex justify-between text-xs text-slate-500">
-                  <span>28 (Smallest)</span>
-                  <span>18 (Best)</span>
-                </div>
-              </div>
-            </div>
-            <hr className="border-slate-700" />
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-slate-200">Audio</p>
-                <p className="text-xs text-slate-400">WAV/MP3 → MP3</p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="audio-bitrate"
-                    className="text-xs text-slate-400"
-                  >
-                    Bitrate:
-                  </label>
-                  <span className="text-xs text-slate-300">
-                    {audioBitrate} kbps
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  id="audio-bitrate"
-                  min={128}
-                  max={320}
-                  step={64}
-                  value={audioBitrate}
-                  onChange={(e) => setAudioBitrate(Number(e.target.value))}
-                  className="w-full appearance-none cursor-pointer"
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <div className="flex justify-between text-xs text-slate-500">
-                  <span>128 kbps (Smallest)</span>
-                  <span>320 kbps (Best)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="relative flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto cursor-pointer">
-        <div className="text-center pointer-events-none mb-8">
-          <Folder
-            className={`h-24 w-24 text-slate-100 mx-auto mb-4 transition-transform ${
-              isDragging ? 'scale-110' : ''
-            }`}
-          />
-          <p className="text-xl font-semibold text-slate-100 mb-2">
-            {isDragging ? 'Drop files here' : 'Click or drag files to compress'}
-          </p>
-          <p className="text-xs text-slate-400">
-            PNG, JPG, JPEG, MOV, MP4, WAV, MP3, AAC, FLAC, M4A, OGG, WMA
-          </p>
-        </div>
-
-        {hasFiles && (
-          <div
-            ref={fileListRef}
-            className="w-full max-w-md max-h-[192px] overflow-y-auto space-y-2"
-          >
-            {files.map((file) => (
-              <div key={file.id} className="flex items-center gap-3 text-sm">
-                <File className="h-4 w-4 text-slate-400 flex-shrink-0" />
-                <span className="text-slate-100 truncate flex-1">
-                  {file.name}
-                </span>
-                {file.status === 'processing' && (
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="h-3 w-3 text-slate-400 animate-spin" />
-                    <span className="text-slate-400 text-xs">
-                      Processing...
+                    <File className="h-4 w-4 text-slate-400 flex-shrink-0" />
+                    <span className="text-slate-100 truncate flex-1">
+                      {file.name}
                     </span>
-                    <span className="text-slate-500 text-xs">
-                      {formatTime(elapsedTimes[file.id] || 0)}
-                    </span>
-                  </div>
-                )}
-                {file.status === 'complete' && (
-                  <>
-                    {file.size > 0 && file.outputSize !== undefined && (
-                      <span className="text-green-400 text-xs">
-                        {Math.round((1 - file.outputSize / file.size) * 100)}%
-                        saved
-                      </span>
+                    {file.status === 'processing' && (
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-3 w-3 text-slate-400 animate-spin" />
+                        <span className="text-slate-400 text-xs">
+                          Processing...
+                        </span>
+                        <span className="text-slate-500 text-xs">
+                          {formatTime(elapsedTimes[file.id] || 0)}
+                        </span>
+                      </div>
                     )}
-                    <CheckCircle className="h-4 w-4 text-green-400" />
-                  </>
-                )}
-                {file.status === 'error' && (
-                  <AlertCircle className="h-4 w-4 text-red-400" />
-                )}
+                    {file.status === 'complete' && (
+                      <>
+                        {file.size > 0 && file.outputSize !== undefined && (
+                          <span className="text-green-400 text-xs">
+                            {Math.round(
+                              (1 - file.outputSize / file.size) * 100
+                            )}
+                            % saved
+                          </span>
+                        )}
+                        <CheckCircle className="h-4 w-4 text-green-400" />
+                      </>
+                    )}
+                    {file.status === 'error' && (
+                      <AlertCircle className="h-4 w-4 text-red-400" />
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
+        </div>
 
+        {/* Drawer panel - 50% of container = 100% viewport */}
         <div
           data-no-drag
-          className={`fixed top-0 right-0 h-full w-full bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
-            showConsole ? 'translate-x-0' : 'translate-x-full'
-          }`}
+          className="w-1/2 h-full pointer-events-auto overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="p-4 h-full flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <Terminal className="h-5 w-5 text-slate-100" />
-                <h2 className="text-lg font-semibold text-slate-100">
-                  Console
-                </h2>
-              </div>
-              <button
-                className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
-                onClick={() => setShowConsole(false)}
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div
-              ref={debugLogsRef}
-              className="flex-1 overflow-y-auto bg-slate-950/50 rounded-lg p-3"
-            >
-              {debugLogs.length === 0 ? (
-                <div className="text-xs text-slate-500 font-mono">
-                  No logs yet...
+          {showDrawer && (
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-slate-100" />
+                  <h2 className="text-lg font-semibold text-slate-100">
+                    Settings
+                  </h2>
                 </div>
-              ) : (
-                debugLogs.map((log, idx) => (
-                  <div
-                    key={idx}
-                    className="text-xs text-slate-400 font-mono leading-5"
-                  >
-                    {log}
+                <button
+                  className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                  onClick={() => setShowDrawer(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-slate-200">
+                      Images
+                    </p>
+                    <p className="text-xs text-slate-400">PNG/JPG → JPG</p>
                   </div>
-                ))
-              )}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="image-quality"
+                        className="text-xs text-slate-400"
+                      >
+                        Quality:
+                      </label>
+                      <span className="text-xs text-slate-300">
+                        {imageQuality}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      id="image-quality"
+                      min={1}
+                      max={8}
+                      step={1}
+                      value={9 - imageQuality}
+                      onChange={(e) =>
+                        setImageQuality(9 - Number(e.target.value))
+                      }
+                      className="w-full appearance-none cursor-pointer"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex justify-between text-xs text-slate-500">
+                      <span>8 (Smallest)</span>
+                      <span>1 (Best)</span>
+                    </div>
+                  </div>
+                </div>
+                <hr className="border-slate-700" />
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-slate-200">
+                      Videos
+                    </p>
+                    <p className="text-xs text-slate-400">MOV/MP4 → MP4</p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="video-crf"
+                        className="text-xs text-slate-400"
+                      >
+                        CRF:
+                      </label>
+                      <span className="text-xs text-slate-300">{videoCRF}</span>
+                    </div>
+                    <input
+                      type="range"
+                      id="video-crf"
+                      min={18}
+                      max={28}
+                      step={1}
+                      value={46 - videoCRF}
+                      onChange={(e) => setVideoCRF(46 - Number(e.target.value))}
+                      className="w-full appearance-none cursor-pointer"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex justify-between text-xs text-slate-500">
+                      <span>28 (Smallest)</span>
+                      <span>18 (Best)</span>
+                    </div>
+                  </div>
+                </div>
+                <hr className="border-slate-700" />
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-semibold text-slate-200">
+                      Audio
+                    </p>
+                    <p className="text-xs text-slate-400">WAV/MP3 → MP3</p>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="audio-bitrate"
+                        className="text-xs text-slate-400"
+                      >
+                        Bitrate:
+                      </label>
+                      <span className="text-xs text-slate-300">
+                        {audioBitrate} kbps
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      id="audio-bitrate"
+                      min={128}
+                      max={320}
+                      step={64}
+                      value={audioBitrate}
+                      onChange={(e) => setAudioBitrate(Number(e.target.value))}
+                      className="w-full appearance-none cursor-pointer"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex justify-between text-xs text-slate-500">
+                      <span>128 kbps (Smallest)</span>
+                      <span>320 kbps (Best)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {showConsole && (
+            <div className="p-4 h-full flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Terminal className="h-5 w-5 text-slate-100" />
+                  <h2 className="text-lg font-semibold text-slate-100">
+                    Console
+                  </h2>
+                </div>
+                <button
+                  className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                  onClick={() => setShowConsole(false)}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div
+                ref={debugLogsRef}
+                className="flex-1 overflow-y-auto bg-slate-950/50 rounded-lg p-3"
+              >
+                {debugLogs.length === 0 ? (
+                  <div className="text-xs text-slate-500 font-mono">
+                    No logs yet...
+                  </div>
+                ) : (
+                  debugLogs.map((log, idx) => (
+                    <div
+                      key={idx}
+                      className="text-xs text-slate-400 font-mono leading-5"
+                    >
+                      {log}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
