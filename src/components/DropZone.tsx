@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FileInfo, getFileType, isValidFileType } from '../utils/fileUtils';
 import { open } from '@tauri-apps/plugin-dialog';
 import { stat } from '@tauri-apps/plugin-fs';
 import { invoke } from '@tauri-apps/api/core';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import { ProcessingFile } from '../App';
 import {
   CheckCircle,
@@ -13,6 +14,7 @@ import {
   Settings,
   X,
   Minimize2,
+  Terminal,
 } from 'lucide-react';
 
 interface DropZoneProps {
@@ -33,6 +35,20 @@ export default function DropZone({
   const [imageQuality, setImageQuality] = useState(6);
   const [videoCRF, setVideoCRF] = useState(22);
   const [audioBitrate, setAudioBitrate] = useState(320);
+  const [isDragging, setIsDragging] = useState(false);
+  const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const [showConsole, setShowConsole] = useState(false);
+  const debugLogsRef = useRef<HTMLDivElement>(null);
+  const isProcessingDrop = useRef(false);
+
+  // Helper to add debug logs
+  const addLog = useCallback((message: string) => {
+    setDebugLogs((prev) => [
+      ...prev.slice(-9),
+      `${new Date().toLocaleTimeString()}: ${message}`,
+    ]);
+    console.log(message);
+  }, []);
 
   // Load persisted slider values from localStorage on mount
   useEffect(() => {
@@ -67,6 +83,39 @@ export default function DropZone({
     localStorage.setItem('sk-compress:audioBitrate', audioBitrate.toString());
   }, [audioBitrate]);
 
+  // Add initial debug log
+  useEffect(() => {
+    // addLog('App loaded - drag and drop ready');
+  }, [addLog]);
+
+  // Auto-scroll console to bottom whenever logs change or console opens
+  useEffect(() => {
+    // Use setTimeout to ensure DOM has updated after render
+    const timer = setTimeout(() => {
+      if (debugLogsRef.current) {
+        // Only scroll if content overflows (can actually scroll)
+        const { scrollHeight, clientHeight } = debugLogsRef.current;
+        if (scrollHeight > clientHeight) {
+          debugLogsRef.current.scrollTop = scrollHeight;
+        }
+      }
+    }, 10);
+    return () => clearTimeout(timer);
+  }, [debugLogs, showConsole]);
+
+  // Close drawers on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowDrawer(false);
+        setShowConsole(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Track elapsed time for processing files
   useEffect(() => {
     const processingFiles = files.filter((f) => f.status === 'processing');
@@ -98,6 +147,8 @@ export default function DropZone({
       setElapsedTimes((prev) => ({ ...prev, [file.id]: 0 }));
       onFileUpdate(file.id, { status: 'processing', progress: 0 });
 
+      addLog(`⏳ Processing: ${file.name} (${file.type})`);
+
       try {
         const result = await invoke<{
           output_path: string;
@@ -110,6 +161,12 @@ export default function DropZone({
           videoCRF,
           audioBitrate,
         });
+
+        const savedPercent =
+          file.size > 0
+            ? Math.round((1 - result.output_size / file.size) * 100)
+            : 0;
+        addLog(`✅ Complete: ${file.name} (${savedPercent}% saved)`);
 
         onFileUpdate(file.id, {
           status: 'complete',
@@ -125,10 +182,11 @@ export default function DropZone({
               ? error.message
               : 'Unknown error occurred';
         console.error('Compression error:', error);
+        addLog(`❌ Error: ${file.name} - ${errorMessage}`);
         onFileUpdate(file.id, { status: 'error', error: errorMessage });
       }
     },
-    [onFileUpdate, imageQuality, videoCRF, audioBitrate]
+    [onFileUpdate, imageQuality, videoCRF, audioBitrate, addLog]
   );
 
   // Process pending files
@@ -139,6 +197,54 @@ export default function DropZone({
       }
     });
   }, [files, processFile]);
+
+  const processFilePaths = useCallback(
+    async (filePaths: string[]) => {
+      const validFiles: FileInfo[] = [];
+
+      // Filter out files that are already in the queue
+      const existingPaths = new Set(files.map((f) => f.path));
+
+      for (const filePath of filePaths) {
+        // Skip if already in queue
+        if (existingPaths.has(filePath)) {
+          addLog(`Skipping duplicate: ${filePath}`);
+          continue;
+        }
+
+        if (isValidFileType(filePath)) {
+          const pathParts = filePath.split(/[/\\]/);
+          const fileName = pathParts[pathParts.length - 1];
+
+          try {
+            const fileMetadata = await stat(filePath);
+            const fileSize = fileMetadata.size || 0;
+
+            validFiles.push({
+              path: filePath,
+              name: fileName,
+              type: getFileType(filePath),
+              size: fileSize,
+            });
+          } catch (error) {
+            // If we can't get file size, still add the file with size 0
+            validFiles.push({
+              path: filePath,
+              name: fileName,
+              type: getFileType(filePath),
+              size: 0,
+            });
+          }
+        }
+      }
+
+      if (validFiles.length > 0) {
+        addLog(`Adding ${validFiles.length} new file(s)`);
+        onFilesAdded(validFiles);
+      }
+    },
+    [onFilesAdded, files, addLog]
+  );
 
   const handleFileDialog = useCallback(async () => {
     try {
@@ -167,50 +273,132 @@ export default function DropZone({
 
       if (selected) {
         const filePaths = Array.isArray(selected) ? selected : [selected];
-        const validFiles: FileInfo[] = [];
-
-        for (const filePath of filePaths) {
-          if (isValidFileType(filePath)) {
-            const pathParts = filePath.split(/[/\\]/);
-            const fileName = pathParts[pathParts.length - 1];
-
-            try {
-              const fileMetadata = await stat(filePath);
-              const fileSize = fileMetadata.size || 0;
-
-              validFiles.push({
-                path: filePath,
-                name: fileName,
-                type: getFileType(filePath),
-                size: fileSize,
-              });
-            } catch (error) {
-              // If we can't get file size, still add the file with size 0
-              validFiles.push({
-                path: filePath,
-                name: fileName,
-                type: getFileType(filePath),
-                size: 0,
-              });
-            }
-          }
-        }
-
-        if (validFiles.length > 0) {
-          onFilesAdded(validFiles);
-        }
+        await processFilePaths(filePaths);
       }
     } catch (error) {
       console.error('Failed to open file dialog:', error);
     }
-  }, [onFilesAdded]);
+  }, [processFilePaths]);
+
+  // Listen for Tauri v2 window drag-drop events
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+
+    const setupFileDrop = async () => {
+      try {
+        // addLog('Setting up Tauri v2 drag-drop listener...');
+
+        const appWindow = getCurrentWindow();
+
+        unlisten = await appWindow.onDragDropEvent((event) => {
+          // addLog(`🎯 Tauri drag-drop event: ${event.payload.type}`);
+
+          if (event.payload.type === 'enter' || event.payload.type === 'over') {
+            setIsDragging(true);
+          } else if (event.payload.type === 'drop') {
+            setIsDragging(false);
+
+            // Prevent duplicate drop processing
+            if (isProcessingDrop.current) {
+              // addLog('Drop already processing, skipping...');
+              return;
+            }
+
+            isProcessingDrop.current = true;
+            const paths = event.payload.paths;
+            addLog(`Dropped ${paths.length} file(s): ${paths.join(', ')}`);
+
+            if (paths.length > 0 && !showDrawer) {
+              processFilePaths(paths);
+            }
+
+            // Reset after a short delay
+            setTimeout(() => {
+              isProcessingDrop.current = false;
+            }, 500);
+          } else if (event.payload.type === 'leave') {
+            setIsDragging(false);
+          }
+        });
+
+        // addLog('✓ Tauri v2 drag-drop listener registered');
+      } catch (error) {
+        const errorMsg = `❌ Failed to set up drag-drop listener: ${error}`;
+        addLog(errorMsg);
+        console.error(errorMsg, error);
+      }
+    };
+
+    setupFileDrop();
+
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, [processFilePaths, showDrawer, addLog]);
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Don't show drag state if over drawer or settings button
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-no-drag]')) return;
+
+      if (!isDragging) {
+        setIsDragging(true);
+        addLog('Drag over detected');
+      }
+    },
+    [isDragging, addLog]
+  );
+
+  const handleDragEnter = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Don't show drag state if over drawer or settings button
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-no-drag]')) return;
+
+      setIsDragging(true);
+      addLog('🎯 Drag enter detected!');
+    },
+    [addLog]
+  );
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set dragging to false if we're leaving the main drop zone
+    // (not just moving between child elements)
+    if (e.currentTarget === e.target) {
+      setIsDragging(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      // Tauri's onDragDropEvent handles the actual file processing
+      addLog('HTML5 drop event (Tauri handles files)');
+    },
+    [addLog]
+  );
 
   const hasFiles = files.length > 0;
 
   return (
     <div
-      className="fixed inset-0 cursor-pointer z-10"
+      className={`fixed inset-0 cursor-pointer z-10 transition-colors ${
+        isDragging ? 'bg-slate-800/50' : ''
+      }`}
       onClick={handleFileDialog}
+      onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
       {/* Top container with SK and settings */}
       <div className="fixed top-0 left-0 right-0 z-20 pointer-events-none">
@@ -240,39 +428,55 @@ export default function DropZone({
             </p>
           </div>
 
-          {/* Settings button - right */}
-          <button
-            className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowDrawer(!showDrawer);
-            }}
-          >
-            <Settings className="h-5 w-5" />
-          </button>
+          {/* Console and Settings buttons - right */}
+          <div className="flex items-center gap-1">
+            <button
+              data-no-drag
+              className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowConsole(!showConsole);
+              }}
+            >
+              <Terminal className="h-5 w-5" />
+            </button>
+            <button
+              data-no-drag
+              className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDrawer(!showDrawer);
+              }}
+            >
+              <Settings className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Drawer backdrop */}
-      {showDrawer && (
+      {(showDrawer || showConsole) && (
         <div
+          data-no-drag
           className="fixed inset-0 bg-black/50 z-30 pointer-events-auto"
           onClick={(e) => {
             e.stopPropagation();
             setShowDrawer(false);
+            setShowConsole(false);
           }}
         />
       )}
 
       {/* Drawer from right */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
+        data-no-drag
+        className={`fixed top-0 right-0 h-full w-full bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
           showDrawer ? 'translate-x-0' : 'translate-x-full'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Settings className="h-5 w-5 text-slate-100" />
               <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
@@ -388,11 +592,18 @@ export default function DropZone({
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center h-full p-8">
+      <div className="flex flex-col items-center justify-center h-full p-8 pt-20">
         <div className="text-center pointer-events-none mb-8">
-          <Folder className="h-24 w-24 text-slate-100 mx-auto mb-4" />
-          <p className="text-xl font-semibold text-slate-100 mb-6">
-            Click to select files
+          <Folder
+            className={`h-24 w-24 text-slate-100 mx-auto mb-4 transition-transform ${
+              isDragging ? 'scale-110' : ''
+            }`}
+          />
+          <p className="text-xl font-semibold text-slate-100 mb-2">
+            {isDragging ? 'Drop files here' : 'Click or drag files to compress'}
+          </p>
+          <p className="text-xs text-slate-400">
+            PNG, JPG, JPEG, MOV, MP4, WAV, MP3, AAC, FLAC, M4A, OGG, WMA
           </p>
         </div>
 
@@ -433,6 +644,51 @@ export default function DropZone({
             ))}
           </div>
         )}
+
+        {/* Console drawer from right */}
+        <div
+          data-no-drag
+          className={`fixed top-0 right-0 h-full w-full bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
+            showConsole ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="p-4 h-full flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Terminal className="h-5 w-5 text-slate-100" />
+                <h2 className="text-lg font-semibold text-slate-100">
+                  Console
+                </h2>
+              </div>
+              <button
+                className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+                onClick={() => setShowConsole(false)}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div
+              ref={debugLogsRef}
+              className="flex-1 overflow-y-auto bg-slate-950/50 rounded-lg p-3"
+            >
+              {debugLogs.length === 0 ? (
+                <div className="text-xs text-slate-500 font-mono">
+                  No logs yet...
+                </div>
+              ) : (
+                debugLogs.map((log, idx) => (
+                  <div
+                    key={idx}
+                    className="text-xs text-slate-400 font-mono leading-5"
+                  >
+                    {log}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
