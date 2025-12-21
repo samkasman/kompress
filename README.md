@@ -55,7 +55,7 @@ sk-compress/
 
 ## Development Prerequisites
 
-- [Node.js](https://nodejs.org/) 18+ (includes `npm`)
+- [Node.js](https://nodejs.org/) `v18`+ (includes `npm`)
 - [Rust](https://www.rust-lang.org/tools/install)
 
 - Platform-specific native build tools:
