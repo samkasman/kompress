@@ -1,9 +1,10 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
-use std::process::Command;
-use tauri::Manager;
+use std::process::{Command, Stdio};
+use tauri::{Emitter, Manager};
 
 fn get_ffmpeg_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     // Tauri bundles externalBin binaries in Contents/MacOS/ (macOS) or next to the exe (Windows/Linux)
@@ -54,6 +55,53 @@ fn get_ffmpeg_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     Err("FFmpeg binary not found".to_string())
 }
 
+fn parse_duration(line: &str) -> Option<f64> {
+    // Parse "Duration: 00:01:23.45" format
+    if let Some(start) = line.find("Duration: ") {
+        let start = start + 10;
+        if let Some(end) = line[start..].find(',') {
+            let duration_str = &line[start..start + end];
+            // Parse HH:MM:SS.mmm
+            let parts: Vec<&str> = duration_str.split(':').collect();
+            if parts.len() == 3 {
+                if let (Ok(hours), Ok(minutes), Ok(seconds)) = (
+                    parts[0].parse::<f64>(),
+                    parts[1].parse::<f64>(),
+                    parts[2].parse::<f64>(),
+                ) {
+                    return Some(hours * 3600.0 + minutes * 60.0 + seconds);
+                }
+            }
+        }
+    }
+    None
+}
+
+fn parse_progress(line: &str, duration: Option<f64>) -> Option<(f64, f64)> {
+    // Parse "time=00:00:05.00" format
+    if let Some(start) = line.find("time=") {
+        let start = start + 5;
+        if let Some(end) = line[start..].find(' ') {
+            let time_str = &line[start..start + end];
+            // Parse HH:MM:SS.mmm
+            let parts: Vec<&str> = time_str.split(':').collect();
+            if parts.len() == 3 {
+                if let (Ok(hours), Ok(minutes), Ok(seconds)) = (
+                    parts[0].parse::<f64>(),
+                    parts[1].parse::<f64>(),
+                    parts[2].parse::<f64>(),
+                ) {
+                    let current_time = hours * 3600.0 + minutes * 60.0 + seconds;
+                    if let Some(dur) = duration {
+                        return Some((current_time, dur));
+                    }
+                }
+            }
+        }
+    }
+    None
+}
+
 fn get_output_path(input_path: &str, file_type: &str) -> Result<String, String> {
     let path = PathBuf::from(input_path);
     let parent = path.parent().ok_or("No parent directory")?;
@@ -73,50 +121,116 @@ fn get_output_path(input_path: &str, file_type: &str) -> Result<String, String> 
     Ok(output_path.to_string_lossy().to_string())
 }
 
+#[derive(serde::Serialize, Clone)]
+struct FfmpegOutput {
+    file_id: String,
+    line: String,
+}
+
+#[derive(serde::Serialize, Clone)]
+struct FfmpegProgress {
+    file_id: String,
+    progress: u32, // 0-100
+}
+
+#[derive(serde::Serialize)]
+struct CompressResult {
+    output_path: String,
+    output_size: u64,
+}
+
 #[tauri::command]
 async fn compress_file(
     app: tauri::AppHandle,
     input_path: String,
     file_type: String,
-) -> Result<String, String> {
+    file_id: String,
+) -> Result<CompressResult, String> {
     let ffmpeg_path = get_ffmpeg_path(&app)?;
     let output_path = get_output_path(&input_path, &file_type)?;
 
-    let output = if file_type == "image" {
-        // Image compression: convert to JPG with ~85% quality
-        // Minimal options to preserve original dimensions
-        Command::new(&ffmpeg_path)
-            .args([
-                "-y",              // Overwrite output
-                "-i", &input_path, // Input file
-                "-q:v", "6",       // Quality (2-31, lower = better)
-                &output_path,      // Output file
-            ])
-            .output()
-            .map_err(|e| format!("Failed to run FFmpeg: {}", e))?
+    let args: Vec<&str> = if file_type == "image" {
+        vec!["-y", "-i", &input_path, "-q:v", "6", &output_path]
     } else {
-        // Video compression: H.264, CRF 22, medium preset
-        Command::new(&ffmpeg_path)
-            .args([
-                "-y",                // Overwrite output
-                "-i", &input_path,   // Input file
-                "-c:v", "libx264",   // H.264 codec
-                "-preset", "medium", // Encoding speed/quality trade-off
-                "-crf", "22",        // Quality (lower = better, 22 is good balance)
-                "-c:a", "aac",       // AAC audio codec
-                "-b:a", "128k",      // Audio bitrate
-                &output_path,        // Output file
-            ])
-            .output()
-            .map_err(|e| format!("Failed to run FFmpeg: {}", e))?
+        vec![
+            "-y", "-i", &input_path,
+            "-c:v", "libx264",
+            "-preset", "medium",
+            "-crf", "22",
+            "-c:a", "aac",
+            "-b:a", "128k",
+            "-stats_period", "0.5", // Update stats every 0.5 seconds
+            &output_path,
+        ]
     };
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("FFmpeg error: {}", stderr));
+    let mut child = Command::new(&ffmpeg_path)
+        .args(&args)
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("Failed to run FFmpeg: {}", e))?;
+
+    // Stream stderr output in realtime and parse progress
+    if let Some(stderr) = child.stderr.take() {
+        let app_clone = app.clone();
+        let file_id_clone = file_id.clone();
+        let file_type_clone = file_type.clone();
+        
+        // Spawn thread to read stderr in background (blocking I/O)
+        std::thread::spawn(move || {
+            let reader = BufReader::new(stderr);
+            let mut duration_seconds: Option<f64> = None;
+
+            // Read lines and emit events
+            for line in reader.lines() {
+                if let Ok(line) = line {
+                    // Emit output line
+                    let _ = app_clone.emit("ffmpeg-output", FfmpegOutput {
+                        file_id: file_id_clone.clone(),
+                        line: line.clone(),
+                    });
+
+                    // Parse duration (for video files)
+                    if file_type_clone == "video" && duration_seconds.is_none() {
+                        if let Some(dur) = parse_duration(&line) {
+                            duration_seconds = Some(dur);
+                        }
+                    }
+
+                    // Parse progress (for video files)
+                    if file_type_clone == "video" {
+                        if let Some((current_time, dur)) = parse_progress(&line, duration_seconds) {
+                            let progress = if dur > 0.0 {
+                                ((current_time / dur) * 100.0).min(100.0) as u32
+                            } else {
+                                0
+                            };
+                            let _ = app_clone.emit("ffmpeg-progress", FfmpegProgress {
+                                file_id: file_id_clone.clone(),
+                                progress,
+                            });
+                        }
+                    }
+                }
+            }
+        });
     }
 
-    Ok(output_path)
+    let status = child.wait().map_err(|e| format!("FFmpeg process error: {}", e))?;
+
+    if !status.success() {
+        return Err("FFmpeg compression failed".to_string());
+    }
+
+    // Get output file size
+    let output_size = std::fs::metadata(&output_path)
+        .map_err(|e| format!("Failed to get output file size: {}", e))?
+        .len();
+
+    Ok(CompressResult {
+        output_path,
+        output_size,
+    })
 }
 
 #[tauri::command]
