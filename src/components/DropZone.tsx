@@ -144,7 +144,7 @@ export default function DropZone({
   const hasFiles = files.length > 0;
 
   return (
-    <div className="fixed inset-0 cursor-pointer" onClick={handleFileDialog}>
+    <div className="fixed inset-0 cursor-pointer z-10" onClick={handleFileDialog}>
       <div className="flex flex-col items-center justify-center h-full p-8">
         <div className="text-center pointer-events-none mb-8">
           <Folder className="h-24 w-24 text-slate-100 mx-auto mb-4" />
