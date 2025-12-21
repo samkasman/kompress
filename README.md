@@ -57,7 +57,6 @@ sk-compress/
 
 - [Node.js](https://nodejs.org/) `v18`+ (includes `npm`)
 - [Rust](https://www.rust-lang.org/tools/install)
-
 - Platform-specific native build tools:
   - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
   - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or Visual Studio with C++ workload
@@ -133,11 +132,10 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 ## Usage
 
 1. Launch the application (500x500 fixed window)
+1. Review compression settings via the settings icon (⚙️) in the top-right corner
 1. **Select files**: Click anywhere or drag and drop media files onto the window
 1. Files will automatically be compressed in the background
 1. View progress in the file list (shows up to 6 files, scrolls for more)
-1. Adjust compression settings via the settings icon (⚙️) in the top-right corner
-1. View console logs via the terminal icon (⌘) in the top-right corner
 1. Output files appear in the same directory as the source with `-compressed` suffix
 
 **Settings persist** between sessions - your quality/CRF/bitrate preferences are saved automatically.
