@@ -9,6 +9,7 @@ export interface ProcessingFile extends FileInfo {
   status: FileStatus;
   progress: number;
   outputPath?: string;
+  outputSize?: number;
   error?: string;
 }
 

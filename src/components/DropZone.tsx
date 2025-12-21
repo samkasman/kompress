@@ -1,10 +1,10 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FileInfo, getFileType, isValidFileType } from '../utils/fileUtils';
 import { open } from '@tauri-apps/plugin-dialog';
 import { stat } from '@tauri-apps/plugin-fs';
 import { invoke } from '@tauri-apps/api/core';
 import { ProcessingFile } from '../App';
-import { CheckCircle, AlertCircle, File, Folder } from 'lucide-react';
+import { CheckCircle, AlertCircle, File, Folder, Loader2 } from 'lucide-react';
 
 interface DropZoneProps {
   files: ProcessingFile[];
@@ -17,24 +17,54 @@ export default function DropZone({
   onFilesAdded,
   onFileUpdate,
 }: DropZoneProps) {
+  const [elapsedTimes, setElapsedTimes] = useState<Record<string, number>>({});
+
+  // Track elapsed time for processing files
+  useEffect(() => {
+    const processingFiles = files.filter((f) => f.status === 'processing');
+    if (processingFiles.length === 0) return;
+
+    const interval = setInterval(() => {
+      setElapsedTimes((prev) => {
+        const updated = { ...prev };
+        processingFiles.forEach((file) => {
+          updated[file.id] = (updated[file.id] || 0) + 1;
+        });
+        return updated;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [files]);
+
+  // Format elapsed time as M:SS
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   const processFile = useCallback(
     async (file: ProcessingFile) => {
+      // Start timer
+      setElapsedTimes((prev) => ({ ...prev, [file.id]: 0 }));
       onFileUpdate(file.id, { status: 'processing', progress: 0 });
 
       try {
-        if (file.type === 'image') {
-          onFileUpdate(file.id, { progress: 50 });
-        }
-
-        const outputPath = await invoke<string>('compress_file', {
+        const result = await invoke<{
+          output_path: string;
+          output_size: number;
+        }>('compress_file', {
           inputPath: file.path,
           fileType: file.type,
+          fileId: file.id,
         });
 
         onFileUpdate(file.id, {
           status: 'complete',
           progress: 100,
-          outputPath,
+          outputPath: result.output_path,
+          outputSize: result.output_size,
         });
       } catch (error) {
         const errorMessage =
@@ -133,10 +163,26 @@ export default function DropZone({
                   {file.name}
                 </span>
                 {file.status === 'processing' && (
-                  <span className="text-slate-400 text-xs">Processing...</span>
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-3 w-3 text-slate-400 animate-spin" />
+                    <span className="text-slate-400 text-xs">
+                      Processing...
+                    </span>
+                    <span className="text-slate-500 text-xs">
+                      {formatTime(elapsedTimes[file.id] || 0)}
+                    </span>
+                  </div>
                 )}
                 {file.status === 'complete' && (
-                  <CheckCircle className="h-4 w-4 text-green-400" />
+                  <>
+                    {file.size > 0 && file.outputSize !== undefined && (
+                      <span className="text-green-400 text-xs">
+                        {Math.round((1 - file.outputSize / file.size) * 100)}%
+                        saved
+                      </span>
+                    )}
+                    <CheckCircle className="h-4 w-4 text-green-400" />
+                  </>
                 )}
                 {file.status === 'error' && (
                   <AlertCircle className="h-4 w-4 text-red-400" />
