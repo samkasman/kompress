@@ -34,6 +34,39 @@ export default function DropZone({
   const [videoCRF, setVideoCRF] = useState(22);
   const [audioBitrate, setAudioBitrate] = useState(320);
 
+  // Load persisted slider values from localStorage on mount
+  useEffect(() => {
+    const savedImageQuality = localStorage.getItem('sk-compress:imageQuality');
+    const savedVideoCRF = localStorage.getItem('sk-compress:videoCRF');
+    const savedAudioBitrate = localStorage.getItem('sk-compress:audioBitrate');
+
+    if (savedImageQuality) {
+      const value = Number(savedImageQuality);
+      if (value >= 1 && value <= 8) setImageQuality(value);
+    }
+    if (savedVideoCRF) {
+      const value = Number(savedVideoCRF);
+      if (value >= 18 && value <= 28) setVideoCRF(value);
+    }
+    if (savedAudioBitrate) {
+      const value = Number(savedAudioBitrate);
+      if (value >= 128 && value <= 320) setAudioBitrate(value);
+    }
+  }, []);
+
+  // Persist slider values to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('sk-compress:imageQuality', imageQuality.toString());
+  }, [imageQuality]);
+
+  useEffect(() => {
+    localStorage.setItem('sk-compress:videoCRF', videoCRF.toString());
+  }, [videoCRF]);
+
+  useEffect(() => {
+    localStorage.setItem('sk-compress:audioBitrate', audioBitrate.toString());
+  }, [audioBitrate]);
+
   // Track elapsed time for processing files
   useEffect(() => {
     const processingFiles = files.filter((f) => f.status === 'processing');
