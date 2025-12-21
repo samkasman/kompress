@@ -4,7 +4,7 @@ import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import { Button } from './ui/button';
 import { ProcessingFile } from '../App';
-import { formatFileSize } from '@/lib/utils';
+import { formatFileSize } from '../utils/fileUtils';
 import { invoke } from '@tauri-apps/api/core';
 import { X, CheckCircle, AlertCircle, FolderOpen, File } from 'lucide-react';
 import { useFileProcessor } from '../hooks/useFileProcessor';
