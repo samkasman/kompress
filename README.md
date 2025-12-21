@@ -38,11 +38,27 @@ A dead simple native desktop multimedia file compressor.
 - 🦀 **Backend**: [Rust](https://www.rust-lang.org/) calls bundled [FFmpeg](https://ffmpeg.org/) directly
 - ✅ **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
 
+## Project Structure
+
+```
+sk-compress/
+├── src/                 # React frontend
+│   ├── components/      # React components
+│   ├── hooks/           # React hooks
+│   └── utils/           # TS utilities
+├── src-tauri/           # Tauri/Rust backend
+│   ├── binaries/        # FFmpeg binaries (per platform)
+│   ├── icons/           # App icons
+│   └── src/             # Rust source
+└── docs/                # Documentation
+```
+
 ## Development Prerequisites
 
 - [Node.js](https://nodejs.org/) 18+ (includes `npm`)
 - [Rust](https://www.rust-lang.org/tools/install)
-- Platform-specific build tools:
+
+- Platform-specific native build tools:
   - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
   - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or Visual Studio with C++ workload
   - **Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other system dependencies (see [Tauri prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites))
@@ -97,8 +113,8 @@ npm run tauri:dev
 This will:
 
 - Start the `Vite` dev server on `http://localhost:5173`
-- Launch the `Tauri` window
-- Enable hot reload
+- Launch the `Tauri` native app dev window
+- Enable hot reload (UI updates on file changes)
 
 ## Building
 
@@ -134,17 +150,16 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 
 All settings are adjustable via the settings drawer (top-right icon). Output files are saved in the same directory as the source with `-compressed` suffix.
 
-## Project Structure
+## Issues
 
-```
-sk-compress/
-├── src/                 # React frontend
-│   ├── components/      # React components
-│   ├── hooks/           # React hooks
-│   └── utils/           # TS utilities
-├── src-tauri/           # Tauri/Rust backend
-│   ├── binaries/        # FFmpeg binaries (per platform)
-│   ├── icons/           # App icons
-│   └── src/             # Rust source
-└── docs/                # Documentation
-```
+For bugs or feature requests, please [open an issue](https://github.com/yourusername/sk-compress/issues).
+
+## Contributing
+
+Contributions are welcome. Feel free to:
+
+1. Fork the repository
+1. Create a feature branch (`git checkout -b feature/amazing-feature`)
+1. Commit your changes (`git commit -m 'Add amazing feature'`)
+1. Push to the branch (`git push origin feature/amazing-feature`)
+1. Open a Pull Request
