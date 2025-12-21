@@ -539,7 +539,7 @@ export default function DropZone({
                 </button>
               </div>
 
-              <div className="space-y-6">
+              <div className="bg-slate-950/50 rounded-lg p-3 space-y-6">
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm font-semibold text-slate-200">

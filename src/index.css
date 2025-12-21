@@ -64,7 +64,7 @@
   }
   html {
     position: relative;
-    background: #000000;
+    background: linear-gradient(135deg, #0a0e27 0%, #0f1a2e 50%, #0a1628 100%);
   }
 
   html::after {
