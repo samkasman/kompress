@@ -1,6 +1,6 @@
 {
-  "name": "sk-convert",
-  "version": "0.0.1",
+  "name": "sk-compress",
+  "version": "1.0.0",
   "description": "Native desktop app for compressing images and videos",
   "type": "module",
   "scripts": {

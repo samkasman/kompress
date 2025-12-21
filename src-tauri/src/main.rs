@@ -6,41 +6,44 @@ use std::process::Command;
 use tauri::Manager;
 
 fn get_ffmpeg_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
-    // In production, Tauri puts externalBin in Contents/MacOS/ (same as the main binary)
+    // Tauri bundles externalBin binaries in Contents/MacOS/ (macOS) or next to the exe (Windows/Linux)
     // The binary name is just "ffmpeg" (or "ffmpeg.exe" on Windows)
-    let exe_dir = app
-        .path()
-        .resource_dir()
-        .map_err(|e| format!("Failed to get resource dir: {}", e))?
-        .parent()
-        .ok_or("No parent directory")?
-        .join("MacOS");
-
-    let ffmpeg_in_macos = if cfg!(target_os = "windows") {
-        exe_dir.join("ffmpeg.exe")
+    let binary_name = if cfg!(target_os = "windows") {
+        "ffmpeg.exe"
     } else {
-        exe_dir.join("ffmpeg")
+        "ffmpeg"
     };
 
-    if ffmpeg_in_macos.exists() {
-        return Ok(ffmpeg_in_macos);
+    // Try resource directory first (production bundle location)
+    if let Ok(resource_dir) = app.path().resource_dir() {
+        let ffmpeg_path = if cfg!(target_os = "macos") {
+            // On macOS, externalBin goes in Contents/MacOS/
+            resource_dir
+                .parent()
+                .ok_or("No parent directory")?
+                .join("MacOS")
+                .join(binary_name)
+        } else {
+            // On Windows/Linux, externalBin goes in the resource directory
+            resource_dir.join(binary_name)
+        };
+
+        if ffmpeg_path.exists() {
+            return Ok(ffmpeg_path);
+        }
     }
 
-    // Also check next to the executable directly
+    // Fallback: check next to the executable
     if let Ok(exe_path) = std::env::current_exe() {
         if let Some(exe_dir) = exe_path.parent() {
-            let ffmpeg_next_to_exe = if cfg!(target_os = "windows") {
-                exe_dir.join("ffmpeg.exe")
-            } else {
-                exe_dir.join("ffmpeg")
-            };
-            if ffmpeg_next_to_exe.exists() {
-                return Ok(ffmpeg_next_to_exe);
+            let ffmpeg_path = exe_dir.join(binary_name);
+            if ffmpeg_path.exists() {
+                return Ok(ffmpeg_path);
             }
         }
     }
 
-    // In development, fall back to system ffmpeg
+    // In development, fall back to system ffmpeg if available
     #[cfg(debug_assertions)]
     {
         if Command::new("ffmpeg").arg("-version").output().is_ok() {
@@ -80,13 +83,13 @@ async fn compress_file(
     let output_path = get_output_path(&input_path, &file_type)?;
 
     let output = if file_type == "image" {
-        // Image compression: convert to JPG with quality 85
-        // -q:v 2-5 is roughly equivalent to quality 85 in other tools
+        // Image compression: convert to JPG with ~85% quality
+        // Minimal options to preserve original dimensions
         Command::new(&ffmpeg_path)
             .args([
                 "-y",              // Overwrite output
                 "-i", &input_path, // Input file
-                "-q:v", "2",       // Quality (2 = high quality, ~85%)
+                "-q:v", "6",       // Quality (2-31, lower = better)
                 &output_path,      // Output file
             ])
             .output()

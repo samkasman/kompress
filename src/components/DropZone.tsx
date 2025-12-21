@@ -1,9 +1,10 @@
 import { useCallback, useEffect } from 'react';
 import { FileInfo, getFileType, isValidFileType } from '../utils/fileUtils';
 import { open } from '@tauri-apps/plugin-dialog';
+import { stat } from '@tauri-apps/plugin-fs';
 import { invoke } from '@tauri-apps/api/core';
 import { ProcessingFile } from '../App';
-import { CheckCircle, AlertCircle, File } from 'lucide-react';
+import { CheckCircle, AlertCircle, File, Folder } from 'lucide-react';
 
 interface DropZoneProps {
   files: ProcessingFile[];
@@ -16,6 +17,39 @@ export default function DropZone({
   onFilesAdded,
   onFileUpdate,
 }: DropZoneProps) {
+  const processFile = useCallback(
+    async (file: ProcessingFile) => {
+      onFileUpdate(file.id, { status: 'processing', progress: 0 });
+
+      try {
+        if (file.type === 'image') {
+          onFileUpdate(file.id, { progress: 50 });
+        }
+
+        const outputPath = await invoke<string>('compress_file', {
+          inputPath: file.path,
+          fileType: file.type,
+        });
+
+        onFileUpdate(file.id, {
+          status: 'complete',
+          progress: 100,
+          outputPath,
+        });
+      } catch (error) {
+        const errorMessage =
+          typeof error === 'string'
+            ? error
+            : error instanceof Error
+              ? error.message
+              : 'Unknown error occurred';
+        console.error('Compression error:', error);
+        onFileUpdate(file.id, { status: 'error', error: errorMessage });
+      }
+    },
+    [onFileUpdate]
+  );
+
   // Process pending files
   useEffect(() => {
     files.forEach((file) => {
@@ -23,33 +57,7 @@ export default function DropZone({
         processFile(file);
       }
     });
-  }, [files]);
-
-  const processFile = async (file: ProcessingFile) => {
-    onFileUpdate(file.id, { status: 'processing', progress: 0 });
-
-    try {
-      if (file.type === 'image') {
-        onFileUpdate(file.id, { progress: 50 });
-      }
-
-      const outputPath = await invoke<string>('compress_file', {
-        inputPath: file.path,
-        fileType: file.type,
-      });
-
-      onFileUpdate(file.id, { status: 'complete', progress: 100, outputPath });
-    } catch (error) {
-      const errorMessage =
-        typeof error === 'string'
-          ? error
-          : error instanceof Error
-            ? error.message
-            : 'Unknown error occurred';
-      console.error('Compression error:', error);
-      onFileUpdate(file.id, { status: 'error', error: errorMessage });
-    }
-  };
+  }, [files, processFile]);
 
   const handleFileDialog = useCallback(async () => {
     try {
@@ -72,12 +80,25 @@ export default function DropZone({
             const pathParts = filePath.split(/[/\\]/);
             const fileName = pathParts[pathParts.length - 1];
 
-            validFiles.push({
-              path: filePath,
-              name: fileName,
-              type: getFileType(filePath),
-              size: 0,
-            });
+            try {
+              const fileMetadata = await stat(filePath);
+              const fileSize = fileMetadata.size || 0;
+
+              validFiles.push({
+                path: filePath,
+                name: fileName,
+                type: getFileType(filePath),
+                size: fileSize,
+              });
+            } catch (error) {
+              // If we can't get file size, still add the file with size 0
+              validFiles.push({
+                path: filePath,
+                name: fileName,
+                type: getFileType(filePath),
+                size: 0,
+              });
+            }
           }
         }
 
@@ -96,7 +117,7 @@ export default function DropZone({
     <div className="fixed inset-0 cursor-pointer" onClick={handleFileDialog}>
       <div className="flex flex-col items-center justify-center h-full p-8">
         <div className="text-center pointer-events-none mb-8">
-          <div className="text-6xl mb-4">📁</div>
+          <Folder className="h-24 w-24 text-slate-100 mx-auto mb-4" />
           <p className="text-xl font-semibold text-slate-100">
             Click to select files
           </p>

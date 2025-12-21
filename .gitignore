@@ -30,11 +30,5 @@ src-tauri/Cargo.lock
 src-tauri/gen/schemas
 src-tauri/binaries/
 
-# Media files
-*.mp4
-*.mov
-*.png
-*.jpg
-*.jpeg
-output.*
-*-compressed.*
+# Allow screenshot for README
+!screenshot.jpg
