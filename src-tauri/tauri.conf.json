@@ -15,10 +15,8 @@
         "title": "sk-compress",
         "width": 500,
         "height": 500,
-        "resizable": true,
+        "resizable": false,
         "fullscreen": false,
-        "minWidth": 500,
-        "minHeight": 500,
         "backgroundColor": "#000000",
         "visible": true
       }

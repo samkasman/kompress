@@ -301,6 +301,15 @@ async fn open_file(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+async fn get_file_path(file_name: String) -> Result<Option<String>, String> {
+    // This is a helper to try to resolve file paths from dropped files
+    // In Tauri, File objects from drag-and-drop should have a path property
+    // but if not, we can't reliably get it from just the filename
+    // This is mainly for debugging - the frontend should extract the path directly
+    Ok(None)
+}
+
+#[tauri::command]
 async fn reveal_in_folder(path: String) -> Result<(), String> {
     #[cfg(target_os = "macos")]
     {
@@ -338,7 +347,8 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             compress_file,
             open_file,
-            reveal_in_folder
+            reveal_in_folder,
+            get_file_path
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
