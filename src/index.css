@@ -66,15 +66,37 @@
     background: linear-gradient(
       135deg,
       #020409 0%,
-      #050818 15%,
-      #0f0d2a 25%,
-      #0f1520 35%,
-      #0c1a4a 45%,
-      #080c16 60%,
-      #050505 75%,
+      #050818 10%,
+      #0a1628 20%,
+      #0d2847 30%,
+      #0f3060 40%,
+      #0a2445 50%,
+      #061a35 60%,
+      #0c1a4a 70%,
+      #080c16 85%,
       #000000 100%
     );
+    background-size: 400% 400%;
     background-attachment: fixed;
+    animation: aurora 20s ease infinite;
+  }
+
+  @keyframes aurora {
+    0% {
+      background-position: 0% 50%;
+    }
+    25% {
+      background-position: 50% 100%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    75% {
+      background-position: 50% 0%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
   body {
     @apply text-foreground;
