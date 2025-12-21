@@ -9,7 +9,7 @@ A dead simple native media compressor app
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
 
-<img src="screenshot.jpg" alt="sk-compress screenshot" width="400">
+<img src="demo.gif" alt="sk-compress demo GIF" width="400">
 
 ## Features
 
