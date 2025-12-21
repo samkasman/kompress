@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "sk-compress",
-        "width": 500,
-        "height": 500,
+        "width": 400,
+        "height": 478,
         "resizable": false,
         "fullscreen": false,
         "backgroundColor": "#000000",
