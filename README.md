@@ -1,13 +1,16 @@
 # sk-compress
 
-A dead simple native media compressor app
-
-![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
-![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-Proprietary-red)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
-![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
+![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
+![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
+
+A dead simple native multimedia compressor for ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white) ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
 <img src="demo.gif" alt="sk-compress demo GIF" width="400">
 
@@ -15,8 +18,8 @@ A dead simple native media compressor app
 
 - 🖱️ **Drag & Drop**: Drag files directly onto the window or click to browse
 - ⚙️ **Configurable Settings**: Adjustable quality, CRF, and bitrate via settings drawer with persistent storage
-- 📝 **Console Logs**: Built-in console for monitoring/debugging
-- 📦 **Bundled FFmpeg**: FFmpeg is bundled with the app - no external dependencies/requirements
+- 📝 **Console Logs**: Built-in console drawer for monitoring compression progress and debug logs
+- 📦 **Bundled Packages**: FFmpeg is bundled with the app - no external dependencies/requirements
 - 🗜️ **Compression**
   - 🖼️ **Image**: Convert PNG/JPG to compressed JPG (configurable quality 1-8)
   - 📹 **Video**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
@@ -105,13 +108,12 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 ## Usage
 
 1. Launch the application (500x500 fixed window)
-2. **Select files**: Click anywhere or drag and drop media files onto the window
-3. Files will automatically be compressed in the background
-4. View progress in the file list (shows up to 6 files, scrolls for more)
-5. Adjust compression settings via the settings icon (⚙️) in the top-right corner
-6. View console logs via the terminal icon (⌘) in the top-right corner
-7. Press `Escape` to close any open drawers
-8. Output files appear in the same directory as the source with `-compressed` suffix
+1. **Select files**: Click anywhere or drag and drop media files onto the window
+1. Files will automatically be compressed in the background
+1. View progress in the file list (shows up to 6 files, scrolls for more)
+1. Adjust compression settings via the settings icon (⚙️) in the top-right corner
+1. View console logs via the terminal icon (⌘) in the top-right corner
+1. Output files appear in the same directory as the source with `-compressed` suffix
 
 **Settings persist** between sessions - your quality/CRF/bitrate preferences are saved automatically.
 
