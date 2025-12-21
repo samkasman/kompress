@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Default capabilities for sk-convert",
+  "description": "Default capabilities for sk-compress",
   "windows": ["main"],
   "permissions": [
     "core:default",

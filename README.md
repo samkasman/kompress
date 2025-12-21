@@ -1,6 +1,15 @@
-# sk-convert
+# sk-compress
 
-A native desktop application built with Tauri and React for compressing images and videos. Click to select files and they compress automatically.
+A native desktop application for dead simple image and video compression.
+
+![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
+![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
+
+<img src="screenshot.jpg" alt="sk-compress screenshot" width="400">
 
 ## Features
 
@@ -18,9 +27,9 @@ A native desktop application built with Tauri and React for compressing images a
 
 ## Prerequisites
 
-- Node.js 18+
-- Rust (for Tauri)
-- npm
+- [Node.js](https://nodejs.org/) 18+
+- [Rust](https://www.rust-lang.org/tools/install) (for Tauri)
+- [npm](https://www.npmjs.com/)
 
 ## Setup
 
@@ -108,7 +117,7 @@ Output files are saved in the same directory as the source with `-compressed` su
 ## Project Structure
 
 ```
-sk-convert/
+sk-compress/
 ├── src/                 # React frontend
 │   ├── components/      # React components
 │   ├── lib/             # Utilities
