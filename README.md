@@ -59,8 +59,8 @@ sk-compress/
 - [Rust](https://www.rust-lang.org/tools/install)
 - Platform-specific native build tools:
   - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
-  - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or Visual Studio with C++ workload
   - **Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other system dependencies (see [Tauri prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites))
+  - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or Visual Studio with C++ workload
 
 ## Setup
 
@@ -86,17 +86,17 @@ cp $(which ffmpeg) src-tauri/binaries/ffmpeg-aarch64-apple-darwin
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-apple-darwin
 ```
 
+**Linux:**
+
+```bash
+cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
+```
+
 **Windows:**
 
 ```bash
 # Download from https://www.gyan.dev/ffmpeg/builds/
 # Place ffmpeg.exe as src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
-```
-
-**Linux:**
-
-```bash
-cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
 ```
 
 > In development mode, if no bundled binary is found, the app falls back to system ffmpeg.
@@ -126,8 +126,8 @@ npm run tauri:build
 Outputs will be in `src-tauri/target/release/bundle/`:
 
 - **macOS**: `.app` bundle and `.dmg` installer
-- **Windows**: `.exe` installer
 - **Linux**: `.AppImage` or `.deb`
+- **Windows**: `.exe` installer
 
 ## Usage
 
