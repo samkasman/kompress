@@ -3,9 +3,9 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
-![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
 ![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
@@ -28,16 +28,21 @@ A dead simple native multimedia compressor for ![macOS](https://img.shields.io/b
 
 ## Tech Stack
 
-- ⚛️ **Frontend**: React + TypeScript + Vite
-- 🎨 **Styling**: Tailwind CSS
-- 🦀 **Backend**: Rust calls bundled FFmpeg directly
-- 📦 **Native Builds**: Tauri v2
-- ✅ **Code Quality**: ESLint + Prettier
+- 🟢 **Runtime**: [Node.js](https://nodejs.org/)
+- ⚛️ **Frontend**: [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vitejs.dev/)
+- 🎨 **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- 📦 **Native Builds**: [Tauri](https://tauri.app/)
+- 🦀 **Backend**: [Tauri](https://tauri.app/)/[Rust](https://www.rust-lang.org/) calls bundled [FFmpeg](https://ffmpeg.org/) directly
+- ✅ **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
 
 ## Development Prerequisites
 
-- [Node.js](https://nodejs.org/) 18+
+- [Node.js](https://nodejs.org/) 18+ (includes `npm`)
 - [Rust](https://www.rust-lang.org/tools/install)
+- Platform-specific build tools:
+  - **macOS**: Xcode Command Line Tools (`xcode-select --install`)
+  - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or Visual Studio with C++ workload
+  - **Linux**: `build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, and other system dependencies (see [Tauri prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites))
 
 ## Setup
 

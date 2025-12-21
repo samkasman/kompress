@@ -19,12 +19,10 @@ function App() {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // SK fades in first (starts after 0.1s)
     const timer1 = setTimeout(() => {
       setShowSK(true);
     }, 100);
 
-    // Content fades in after SK finishes (0.6s after SK starts = 0.7s total)
     const timer2 = setTimeout(() => {
       setShowContent(true);
     }, 700);
@@ -53,7 +51,6 @@ function App() {
 
   return (
     <div className="min-h-screen relative z-10">
-      {/* Main Content */}
       <div
         className={`relative z-10 transition-opacity duration-500 ${
           showContent ? 'opacity-100' : 'opacity-0'

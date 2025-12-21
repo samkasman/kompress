@@ -42,7 +42,6 @@ export default function DropZone({
   const fileListRef = useRef<HTMLDivElement>(null);
   const isProcessingDrop = useRef(false);
 
-  // Helper to add debug logs
   const addLog = useCallback((message: string) => {
     setDebugLogs((prev) => [
       ...prev.slice(-9),
@@ -51,7 +50,6 @@ export default function DropZone({
     console.log(message);
   }, []);
 
-  // Load persisted slider values from localStorage on mount
   useEffect(() => {
     const savedImageQuality = localStorage.getItem('sk-compress:imageQuality');
     const savedVideoCRF = localStorage.getItem('sk-compress:videoCRF');
@@ -71,7 +69,6 @@ export default function DropZone({
     }
   }, []);
 
-  // Persist slider values to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('sk-compress:imageQuality', imageQuality.toString());
   }, [imageQuality]);
@@ -84,17 +81,9 @@ export default function DropZone({
     localStorage.setItem('sk-compress:audioBitrate', audioBitrate.toString());
   }, [audioBitrate]);
 
-  // Add initial debug log
   useEffect(() => {
-    // addLog('App loaded - drag and drop ready');
-  }, [addLog]);
-
-  // Auto-scroll console to bottom whenever logs change or console opens
-  useEffect(() => {
-    // Use setTimeout to ensure DOM has updated after render
     const timer = setTimeout(() => {
       if (debugLogsRef.current) {
-        // Only scroll if content overflows (can actually scroll)
         const { scrollHeight, clientHeight } = debugLogsRef.current;
         if (scrollHeight > clientHeight) {
           debugLogsRef.current.scrollTop = scrollHeight;
@@ -104,7 +93,6 @@ export default function DropZone({
     return () => clearTimeout(timer);
   }, [debugLogs, showConsole]);
 
-  // Close drawers on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -117,7 +105,6 @@ export default function DropZone({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Auto-scroll file list to bottom when files are added
   useEffect(() => {
     if (fileListRef.current && files.length > 0) {
       const timer = setTimeout(() => {
@@ -132,7 +119,6 @@ export default function DropZone({
     }
   }, [files]);
 
-  // Track elapsed time for processing files
   useEffect(() => {
     const processingFiles = files.filter((f) => f.status === 'processing');
     if (processingFiles.length === 0) return;
@@ -150,7 +136,6 @@ export default function DropZone({
     return () => clearInterval(interval);
   }, [files]);
 
-  // Format elapsed time as M:SS
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -159,7 +144,6 @@ export default function DropZone({
 
   const processFile = useCallback(
     async (file: ProcessingFile) => {
-      // Start timer
       setElapsedTimes((prev) => ({ ...prev, [file.id]: 0 }));
       onFileUpdate(file.id, { status: 'processing', progress: 0 });
 
@@ -205,7 +189,6 @@ export default function DropZone({
     [onFileUpdate, imageQuality, videoCRF, audioBitrate, addLog]
   );
 
-  // Process pending files
   useEffect(() => {
     files.forEach((file) => {
       if (file.status === 'pending') {
@@ -218,11 +201,9 @@ export default function DropZone({
     async (filePaths: string[]) => {
       const validFiles: FileInfo[] = [];
 
-      // Filter out files that are already in the queue
       const existingPaths = new Set(files.map((f) => f.path));
 
       for (const filePath of filePaths) {
-        // Skip if already in queue
         if (existingPaths.has(filePath)) {
           addLog(`Skipping duplicate: ${filePath}`);
           continue;
@@ -296,7 +277,6 @@ export default function DropZone({
     }
   }, [processFilePaths]);
 
-  // Listen for Tauri v2 window drag-drop events
   useEffect(() => {
     let unlisten: (() => void) | undefined;
 
@@ -314,9 +294,7 @@ export default function DropZone({
           } else if (event.payload.type === 'drop') {
             setIsDragging(false);
 
-            // Prevent duplicate drop processing
             if (isProcessingDrop.current) {
-              // addLog('Drop already processing, skipping...');
               return;
             }
 
@@ -328,7 +306,6 @@ export default function DropZone({
               processFilePaths(paths);
             }
 
-            // Reset after a short delay
             setTimeout(() => {
               isProcessingDrop.current = false;
             }, 500);
@@ -385,8 +362,6 @@ export default function DropZone({
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Only set dragging to false if we're leaving the main drop zone
-    // (not just moving between child elements)
     if (e.currentTarget === e.target) {
       setIsDragging(false);
     }
@@ -397,7 +372,6 @@ export default function DropZone({
       e.preventDefault();
       e.stopPropagation();
       setIsDragging(false);
-      // Tauri's onDragDropEvent handles the actual file processing
       addLog('HTML5 drop event (Tauri handles files)');
     },
     [addLog]
@@ -416,10 +390,8 @@ export default function DropZone({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* Header container */}
       <div className="relative flex-shrink-0 pointer-events-none z-20">
         <div className="flex items-start justify-between p-4">
-          {/* SK Logo and subtitle - left */}
           <div>
             <div className="flex items-center gap-2">
               <Minimize2
@@ -444,7 +416,6 @@ export default function DropZone({
             </p>
           </div>
 
-          {/* Console and Settings buttons - right */}
           <div className="flex items-center gap-1">
             <button
               data-no-drag
@@ -470,7 +441,6 @@ export default function DropZone({
         </div>
       </div>
 
-      {/* Drawer backdrop */}
       {(showDrawer || showConsole) && (
         <div
           data-no-drag
@@ -483,7 +453,6 @@ export default function DropZone({
         />
       )}
 
-      {/* Drawer from right */}
       <div
         data-no-drag
         className={`fixed top-0 right-0 h-full w-full bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
@@ -505,7 +474,6 @@ export default function DropZone({
             </button>
           </div>
 
-          {/* Settings sections */}
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -608,7 +576,6 @@ export default function DropZone({
         </div>
       </div>
 
-      {/* Main content container */}
       <div className="relative flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto cursor-pointer">
         <div className="text-center pointer-events-none mb-8">
           <Folder
@@ -665,7 +632,6 @@ export default function DropZone({
           </div>
         )}
 
-        {/* Console drawer from right */}
         <div
           data-no-drag
           className={`fixed top-0 right-0 h-full w-full bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
