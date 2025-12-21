@@ -137,10 +137,11 @@ All settings are adjustable via the settings drawer (top-right icon). Output fil
 sk-compress/
 ├── src/                 # React frontend
 │   ├── components/      # React components
-│   ├── lib/             # Utilities
-│   └── utils/           # File utilities
+│   ├── hooks/           # React hooks
+│   └── utils/           # TS utilities
 ├── src-tauri/           # Tauri/Rust backend
 │   ├── binaries/        # FFmpeg binaries (per platform)
+│   ├── icons/           # App icons
 │   └── src/             # Rust source
 └── docs/                # Documentation
 ```
