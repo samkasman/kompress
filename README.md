@@ -35,7 +35,7 @@ A dead simple native desktop multimedia compressor.
 - ⚛️ **Frontend**: [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vitejs.dev/)
 - 🎨 **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - 📦 **Native Builds**: [Tauri](https://tauri.app/)
-- 🦀 **Backend**: [Tauri](https://tauri.app/)/[Rust](https://www.rust-lang.org/) calls bundled [FFmpeg](https://ffmpeg.org/) directly
+- 🦀 **Backend**: [Rust](https://www.rust-lang.org/) calls bundled [FFmpeg](https://ffmpeg.org/) directly
 - ✅ **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
 
 ## Development Prerequisites
@@ -96,8 +96,8 @@ npm run tauri:dev
 
 This will:
 
-- Start the Vite dev server on `http://localhost:5173`
-- Launch the Tauri window
+- Start the `Vite` dev server on `http://localhost:5173`
+- Launch the `Tauri` window
 - Enable hot reload
 
 ## Building
