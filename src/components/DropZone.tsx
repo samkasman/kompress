@@ -4,20 +4,34 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { stat } from '@tauri-apps/plugin-fs';
 import { invoke } from '@tauri-apps/api/core';
 import { ProcessingFile } from '../App';
-import { CheckCircle, AlertCircle, File, Folder, Loader2 } from 'lucide-react';
+import {
+  CheckCircle,
+  AlertCircle,
+  File,
+  Folder,
+  Loader2,
+  Settings,
+  X,
+} from 'lucide-react';
 
 interface DropZoneProps {
   files: ProcessingFile[];
   onFilesAdded: (files: FileInfo[]) => void;
   onFileUpdate: (id: string, updates: Partial<ProcessingFile>) => void;
+  showSK: boolean;
 }
 
 export default function DropZone({
   files,
   onFilesAdded,
   onFileUpdate,
+  showSK,
 }: DropZoneProps) {
   const [elapsedTimes, setElapsedTimes] = useState<Record<string, number>>({});
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [imageQuality, setImageQuality] = useState(6);
+  const [videoCRF, setVideoCRF] = useState(22);
+  const [audioBitrate, setAudioBitrate] = useState(320);
 
   // Track elapsed time for processing files
   useEffect(() => {
@@ -58,6 +72,9 @@ export default function DropZone({
           inputPath: file.path,
           fileType: file.type,
           fileId: file.id,
+          imageQuality,
+          videoCRF,
+          audioBitrate,
         });
 
         onFileUpdate(file.id, {
@@ -77,7 +94,7 @@ export default function DropZone({
         onFileUpdate(file.id, { status: 'error', error: errorMessage });
       }
     },
-    [onFileUpdate]
+    [onFileUpdate, imageQuality, videoCRF, audioBitrate]
   );
 
   // Process pending files
@@ -96,7 +113,20 @@ export default function DropZone({
         filters: [
           {
             name: 'Media Files',
-            extensions: ['png', 'jpg', 'jpeg', 'mov', 'mp4'],
+            extensions: [
+              'png',
+              'jpg',
+              'jpeg',
+              'mov',
+              'mp4',
+              'wav',
+              'mp3',
+              'aac',
+              'flac',
+              'm4a',
+              'ogg',
+              'wma',
+            ],
           },
         ],
       });
@@ -144,14 +174,182 @@ export default function DropZone({
   const hasFiles = files.length > 0;
 
   return (
-    <div className="fixed inset-0 cursor-pointer z-10" onClick={handleFileDialog}>
+    <div
+      className="fixed inset-0 cursor-pointer z-10"
+      onClick={handleFileDialog}
+    >
+      {/* Top container with SK and settings */}
+      <div className="fixed top-0 left-0 right-0 z-20 pointer-events-none">
+        <div className="flex items-start justify-between p-4">
+          {/* SK Logo and subtitle - left */}
+          <div>
+            <h1
+              className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
+                showSK ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              sk-compress
+            </h1>
+            <p
+              className={`text-xs text-slate-400 mt-1 transition-opacity duration-500 ${
+                showSK ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              A dead simple media compressor
+            </p>
+          </div>
+
+          {/* Settings button - right */}
+          <button
+            className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDrawer(!showDrawer);
+            }}
+          >
+            <Settings className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Drawer backdrop */}
+      {showDrawer && (
+        <div
+          className="fixed inset-0 bg-black/50 z-30 pointer-events-auto"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowDrawer(false);
+          }}
+        />
+      )}
+
+      {/* Drawer from right */}
+      <div
+        className={`fixed top-0 right-0 h-full w-80 bg-slate-900/95 backdrop-blur-md z-40 pointer-events-auto transition-transform duration-300 ease-in-out ${
+          showDrawer ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
+            <button
+              className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
+              onClick={() => setShowDrawer(false)}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Settings sections */}
+          <div className="space-y-6">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold text-slate-200">Images</p>
+                <p className="text-xs text-slate-400">PNG/JPG → JPG</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="image-quality"
+                    className="text-xs text-slate-400"
+                  >
+                    Quality:
+                  </label>
+                  <span className="text-xs text-slate-300">{imageQuality}</span>
+                </div>
+                <input
+                  type="range"
+                  id="image-quality"
+                  min={1}
+                  max={8}
+                  step={1}
+                  value={imageQuality}
+                  onChange={(e) => setImageQuality(Number(e.target.value))}
+                  className="w-full appearance-none cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>1 (Highest Quality)</span>
+                  <span>8 (Smallest Size)</span>
+                </div>
+              </div>
+            </div>
+            <hr className="border-slate-700" />
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold text-slate-200">Videos</p>
+                <p className="text-xs text-slate-400">MOV/MP4 → MP4</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="video-crf" className="text-xs text-slate-400">
+                    CRF:
+                  </label>
+                  <span className="text-xs text-slate-300">{videoCRF}</span>
+                </div>
+                <input
+                  type="range"
+                  id="video-crf"
+                  min={18}
+                  max={28}
+                  step={1}
+                  value={videoCRF}
+                  onChange={(e) => setVideoCRF(Number(e.target.value))}
+                  className="w-full appearance-none cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>18 (Highest Quality)</span>
+                  <span>28 (Smallest Size)</span>
+                </div>
+              </div>
+            </div>
+            <hr className="border-slate-700" />
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold text-slate-200">Audio</p>
+                <p className="text-xs text-slate-400">WAV/MP3 → MP3</p>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="audio-bitrate"
+                    className="text-xs text-slate-400"
+                  >
+                    Bitrate:
+                  </label>
+                  <span className="text-xs text-slate-300">
+                    {audioBitrate} kbps
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  id="audio-bitrate"
+                  min={128}
+                  max={320}
+                  step={64}
+                  value={audioBitrate}
+                  onChange={(e) => setAudioBitrate(Number(e.target.value))}
+                  className="w-full appearance-none cursor-pointer"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <div className="flex justify-between text-xs text-slate-500">
+                  <span>128 kbps</span>
+                  <span>320 kbps</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col items-center justify-center h-full p-8">
         <div className="text-center pointer-events-none mb-8">
           <Folder className="h-24 w-24 text-slate-100 mx-auto mb-4" />
-          <p className="text-xl font-semibold text-slate-100">
+          <p className="text-xl font-semibold text-slate-100 mb-6">
             Click to select files
           </p>
-          <p className="text-xs text-slate-400 mt-2">PNG, JPG, MOV, MP4</p>
         </div>
 
         {hasFiles && (

@@ -1,4 +1,4 @@
-export type FileType = 'image' | 'video' | 'unknown';
+export type FileType = 'image' | 'video' | 'audio' | 'unknown';
 
 export interface FileInfo {
   path: string;
@@ -13,9 +13,11 @@ export function getFileType(filePath: string): FileType {
 
   const imageExts = ['png', 'jpg', 'jpeg'];
   const videoExts = ['mov', 'mp4'];
+  const audioExts = ['wav', 'mp3', 'aac', 'flac', 'm4a', 'ogg', 'wma'];
 
   if (imageExts.includes(ext)) return 'image';
   if (videoExts.includes(ext)) return 'video';
+  if (audioExts.includes(ext)) return 'audio';
   return 'unknown';
 }
 
@@ -27,7 +29,9 @@ export function getOutputPath(inputPath: string): string {
   const pathParts = inputPath.split('/');
   const fileName = pathParts[pathParts.length - 1];
   const nameWithoutExt = fileName.split('.').slice(0, -1).join('.');
-  const ext = getFileType(inputPath) === 'image' ? 'jpg' : 'mp4';
+  const fileType = getFileType(inputPath);
+  const ext =
+    fileType === 'image' ? 'jpg' : fileType === 'audio' ? 'mp3' : 'mp4';
   const dir = pathParts.slice(0, -1).join('/');
   return `${dir}/${nameWithoutExt}-compressed.${ext}`;
 }

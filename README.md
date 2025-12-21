@@ -1,6 +1,6 @@
 # sk-compress
 
-A native desktop application for dead simple image and video compression.
+A dead simple native media compressor app
 
 ![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
 ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
@@ -13,8 +13,10 @@ A native desktop application for dead simple image and video compression.
 
 ## Features
 
-- 🖼️ **Image Compression**: Convert PNG/JPG to compressed JPG (quality 85)
-- 📹 **Video Compression**: Convert MOV/MP4 to compressed MP4 (H.264, CRF 22)
+- 🖼️ **Image Compression**: Convert PNG/JPG to compressed JPG (configurable quality 1-8)
+- 📹 **Video Compression**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
+- 🎵 **Audio Compression**: Convert WAV/MP3/AAC/FLAC/M4A/OGG/WMA to MP3 (configurable bitrate 128-320 kbps)
+- ⚙️ **Configurable Settings**: Adjustable quality, CRF, and bitrate via settings drawer
 - 📦 **Bundled FFmpeg**: FFmpeg is bundled with the app - no external dependencies
 
 ## Tech Stack
@@ -101,18 +103,18 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 ## Usage
 
 1. Launch the application
-2. Click anywhere to select PNG, JPG, MOV, or MP4 files
+2. Click anywhere to select media files (PNG, JPG, MOV, MP4, WAV, MP3, AAC, FLAC, M4A, OGG, WMA)
 3. Files will automatically be compressed
-4. Output files appear in the same directory as the source
+4. Adjust compression settings via the settings icon in the top-right corner
+5. Output files appear in the same directory as the source
 
 ## File Conversion
 
-- **PNG → JPG**: Compressed with quality 85
-- **JPG → JPG**: Recompressed with quality 85
-- **MOV → MP4**: H.264 codec, CRF 22, medium preset
-- **MP4 → MP4**: Recompressed with H.264, CRF 22
+- **PNG/JPG → JPG**: Compressed with configurable quality (default: 6, range: 1-8)
+- **MOV/MP4 → MP4**: H.264 codec with configurable CRF (default: 22, range: 18-28), medium preset
+- **WAV/MP3/AAC/FLAC/M4A/OGG/WMA → MP3**: Compressed with configurable bitrate (default: 320 kbps, options: 128, 192, 256, 320 kbps)
 
-Output files are saved in the same directory as the source with `-compressed` suffix.
+All settings are adjustable via the settings drawer (top-right icon). Output files are saved in the same directory as the source with `-compressed` suffix.
 
 ## Project Structure
 

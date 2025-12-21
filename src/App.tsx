@@ -53,15 +53,6 @@ function App() {
 
   return (
     <div className="min-h-screen relative z-10">
-      {/* SK Logo - top-left, fades in first */}
-      <h1
-        className={`fixed top-4 left-4 text-2xl font-bold text-slate-100 leading-none z-50 transition-opacity duration-500 ${
-          showSK ? 'opacity-100' : 'opacity-0'
-        }`}
-      >
-        SK
-      </h1>
-
       {/* Main Content */}
       <div
         className={`relative z-10 transition-opacity duration-500 ${
@@ -72,6 +63,7 @@ function App() {
           files={files}
           onFilesAdded={handleFilesAdded}
           onFileUpdate={handleFileUpdate}
+          showSK={showSK}
         />
       </div>
     </div>
