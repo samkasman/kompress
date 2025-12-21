@@ -131,12 +131,11 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 
 ## Usage
 
-1. Launch the application (500x500 fixed window)
-1. Review compression settings via the settings icon (⚙️) in the top-right corner
+1. **Install** and **launch** the application
+1. Review **compression settings** via the settings icon (⚙️) in the top-right corner
 1. **Select files**: Click anywhere or drag and drop media files onto the window
-1. Files will automatically be compressed in the background
-1. View progress in the file list (shows up to 6 files, scrolls for more)
-1. Output files appear in the same directory as the source with `-compressed` suffix
+1. Files are **automatically compressed** in the background
+1. **Output** files appear in the same directory as the **source** file(s) with `-compressed` suffix
 
 **Settings persist** between sessions - your quality/CRF/bitrate preferences are saved automatically.
 
