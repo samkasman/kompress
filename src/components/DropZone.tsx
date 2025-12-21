@@ -39,6 +39,7 @@ export default function DropZone({
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
   const [showConsole, setShowConsole] = useState(false);
   const debugLogsRef = useRef<HTMLDivElement>(null);
+  const fileListRef = useRef<HTMLDivElement>(null);
   const isProcessingDrop = useRef(false);
 
   // Helper to add debug logs
@@ -115,6 +116,21 @@ export default function DropZone({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
+
+  // Auto-scroll file list to bottom when files are added
+  useEffect(() => {
+    if (fileListRef.current && files.length > 0) {
+      const timer = setTimeout(() => {
+        if (fileListRef.current) {
+          const { scrollHeight, clientHeight } = fileListRef.current;
+          if (scrollHeight > clientHeight) {
+            fileListRef.current.scrollTop = scrollHeight;
+          }
+        }
+      }, 10);
+      return () => clearTimeout(timer);
+    }
+  }, [files]);
 
   // Track elapsed time for processing files
   useEffect(() => {
@@ -391,7 +407,7 @@ export default function DropZone({
 
   return (
     <div
-      className={`fixed inset-0 cursor-pointer z-10 transition-colors ${
+      className={`fixed inset-0 flex flex-col z-10 transition-colors ${
         isDragging ? 'bg-slate-800/50' : ''
       }`}
       onClick={handleFileDialog}
@@ -400,8 +416,8 @@ export default function DropZone({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* Top container with SK and settings */}
-      <div className="fixed top-0 left-0 right-0 z-20 pointer-events-none">
+      {/* Header container */}
+      <div className="relative flex-shrink-0 pointer-events-none z-20">
         <div className="flex items-start justify-between p-4">
           {/* SK Logo and subtitle - left */}
           <div>
@@ -592,7 +608,8 @@ export default function DropZone({
         </div>
       </div>
 
-      <div className="flex flex-col items-center justify-center h-full p-8 pt-20">
+      {/* Main content container */}
+      <div className="relative flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto cursor-pointer">
         <div className="text-center pointer-events-none mb-8">
           <Folder
             className={`h-24 w-24 text-slate-100 mx-auto mb-4 transition-transform ${
@@ -608,7 +625,10 @@ export default function DropZone({
         </div>
 
         {hasFiles && (
-          <div className="w-full max-w-md space-y-2 pointer-events-none">
+          <div
+            ref={fileListRef}
+            className="w-full max-w-md max-h-[192px] overflow-y-auto space-y-2"
+          >
             {files.map((file) => (
               <div key={file.id} className="flex items-center gap-3 text-sm">
                 <File className="h-4 w-4 text-slate-400 flex-shrink-0" />
