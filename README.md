@@ -23,7 +23,7 @@ A dead simple native desktop multimedia file compressor.
 - 🖱️ **Drag & Drop**: Drag files directly onto the window or click to browse
 - ⚙️ **Configurable Settings**: Adjustable quality, CRF, and bitrate via settings drawer with persistent storage
 - 📝 **Console Logs**: Built-in console drawer for monitoring compression progress and debug logs
-- 📦 **Bundled Packages**: FFmpeg is bundled with the app - no external dependencies/requirements
+- 📦 **Bundled Packages**: `FFmpeg` is bundled with the app - no external dependencies/requirements
 - 🗜️ **Compression**
   - 🖼️ **Image**: Convert PNG/JPG to compressed JPG (configurable quality 1-8)
   - 📹 **Video**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
@@ -56,7 +56,7 @@ A dead simple native desktop multimedia file compressor.
 npm install
 ```
 
-3. Download FFmpeg binary for your platform and place it in `src-tauri/binaries/`:
+3. Download `FFmpeg` binary for your platform and place it in `src-tauri/binaries/`:
 
 **macOS (Apple Silicon):**
 
