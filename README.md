@@ -23,8 +23,6 @@ A dead simple native desktop multimedia file compressor.
 
 Download the latest release from the [Releases](https://github.com/samkasman/sk-compress/releases) page.
 
-**macOS**: Download `sk-compress-v1.0.0-aarch64.dmg`, open it, and drag `sk-compress.app` to your Applications folder.
-
 ## Features
 
 - 🖱️ **Drag & Drop**: Drag files directly onto the window or click to browse
