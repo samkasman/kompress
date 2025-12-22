@@ -36,7 +36,7 @@ export default function DropArea({
         <div className="flex flex-wrap items-center justify-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-md">
             <Image className="h-3.5 w-3.5 text-blue-400" />
-            <span className="text-[10px] font-medium text-blue-300">PNG, JPG, JPEG, HEIC</span>
+            <span className="text-[10px] font-medium text-blue-300">PNG, JPG, JPEG, HEIC, WEBP</span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-md">
             <Video className="h-3.5 w-3.5 text-purple-400" />
