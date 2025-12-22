@@ -26,8 +26,10 @@ export default function DropZone({
 }: DropZoneProps) {
   const [elapsedTimes, setElapsedTimes] = useState<Record<string, number>>({});
   const [showDrawer, setShowDrawer] = useState(false);
+  const [isDrawerClosing, setIsDrawerClosing] = useState(false);
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
   const [showConsole, setShowConsole] = useState(false);
+  const [isConsoleClosing, setIsConsoleClosing] = useState(false);
   const fileListRef = useRef<HTMLDivElement>(null);
 
   const { settings, setImageQuality, setVideoCRF, setAudioBitrate } =
@@ -199,7 +201,9 @@ export default function DropZone({
     >
       <div
         className={`flex h-full transition-transform duration-300 ${
-          showDrawer || showConsole ? '-translate-x-1/2' : 'translate-x-0'
+          (showDrawer && !isDrawerClosing) || (showConsole && !isConsoleClosing)
+            ? '-translate-x-1/2'
+            : 'translate-x-0'
         }`}
         style={{ width: '200%' }}
       >
@@ -213,8 +217,28 @@ export default function DropZone({
         >
           <Header
             showSK={showSK}
-            onSettingsClick={() => setShowDrawer(!showDrawer)}
-            onConsoleClick={() => setShowConsole(!showConsole)}
+            onSettingsClick={() => {
+              if (showDrawer) {
+                setIsDrawerClosing(true);
+                setTimeout(() => {
+                  setShowDrawer(false);
+                  setIsDrawerClosing(false);
+                }, 300);
+              } else {
+                setShowDrawer(true);
+              }
+            }}
+            onConsoleClick={() => {
+              if (showConsole) {
+                setIsConsoleClosing(true);
+                setTimeout(() => {
+                  setShowConsole(false);
+                  setIsConsoleClosing(false);
+                }, 300);
+              } else {
+                setShowConsole(true);
+              }
+            }}
           />
 
           <DropArea
@@ -232,7 +256,7 @@ export default function DropZone({
           className="w-1/2 h-full pointer-events-auto overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          {showDrawer && (
+          {(showDrawer || isDrawerClosing) && (
             <SettingsDrawer
               imageQuality={settings.imageQuality}
               videoCRF={settings.videoCRF}
@@ -240,14 +264,26 @@ export default function DropZone({
               onImageQualityChange={setImageQuality}
               onVideoCRFChange={setVideoCRF}
               onAudioBitrateChange={setAudioBitrate}
-              onClose={() => setShowDrawer(false)}
+              onClose={() => {
+                setIsDrawerClosing(true);
+                setTimeout(() => {
+                  setShowDrawer(false);
+                  setIsDrawerClosing(false);
+                }, 300);
+              }}
             />
           )}
 
-          {showConsole && (
+          {(showConsole || isConsoleClosing) && (
             <ConsoleDrawer
               logs={debugLogs}
-              onClose={() => setShowConsole(false)}
+              onClose={() => {
+                setIsConsoleClosing(true);
+                setTimeout(() => {
+                  setShowConsole(false);
+                  setIsConsoleClosing(false);
+                }, 300);
+              }}
             />
           )}
         </div>
