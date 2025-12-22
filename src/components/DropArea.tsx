@@ -40,7 +40,7 @@ export default function DropArea({
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-md">
             <Video className="h-3.5 w-3.5 text-purple-400" />
-            <span className="text-[10px] font-medium text-purple-300">MOV, MP4</span>
+            <span className="text-[10px] font-medium text-purple-300">MOV, MP4, MKV</span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-md">
             <Music className="h-3.5 w-3.5 text-green-400" />
