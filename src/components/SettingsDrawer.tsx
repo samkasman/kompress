@@ -68,7 +68,7 @@ export default function SettingsDrawer({
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-semibold text-slate-200">Video</p>
-            <p className="text-xs text-slate-400">MOV/MP4 → MP4</p>
+            <p className="text-xs text-slate-400">MOV/MP4/MKV → MP4</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
