@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env
+.env.local
+.env*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -30,5 +35,5 @@ src-tauri/Cargo.lock
 src-tauri/gen/schemas
 src-tauri/binaries/
 
-# Allow screenshot for README
-!screenshot.jpg
+# Release builds
+releases/

@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build && node scripts/rename-dmg.js",
+    "tauri:build": "tauri build && node scripts/copy-release.js",
+    "tauri:build:aarch64": "tauri build --target aarch64-apple-darwin && node scripts/copy-release.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
   },
