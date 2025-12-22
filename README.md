@@ -25,8 +25,8 @@ A dead simple multimedia file compressor.
 - 📝 **Console Logs**: Built-in console drawer for monitoring compression progress and debug logs
 - 📦 **Bundled Packages**: `FFmpeg` is bundled with the app - no external dependencies/requirements
 - 🗜️ **Compression**
-  - 🖼️ **Image**: Convert PNG/JPG to compressed JPG (configurable quality 1-8)
-  - 📹 **Video**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
+  - 🖼️ **Image**: Convert PNG/JPG/JPEG/HEIC/WEBP to compressed JPG (configurable quality 1-8)
+  - 📹 **Video**: Convert MOV/MP4/MKV to compressed MP4 (H.264, configurable CRF 18-28)
   - 🎵 **Audio**: Convert WAV/MP3/AAC/FLAC/M4A/OGG/WMA to MP3 (configurable bitrate 128-320 kbps)
 
 ## Download / Install
@@ -36,7 +36,7 @@ Download the latest release from the [Releases](https://github.com/samkasman/sk-
 ## Usage
 
 1. **Install** and **launch** the application
-1. Review **compression settings** via the settings icon (⚙️) in the top-right corner
+1. Review **compression settings** via the settings icon in the top-right corner
 1. **Select files**: Click anywhere or drag and drop media files onto the window
 1. Files are **automatically compressed** in the background
 1. **Output** files appear in the same directory as the **source** file(s) with `-compressed` suffix
@@ -146,8 +146,8 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 
 Currently, we only render to compressed JPG, MP4, and MP3.
 
-- **PNG/JPG → JPG**: Compressed with configurable quality (default: 6, range: 1-8)
-- **MOV/MP4 → MP4**: H.264 codec with configurable CRF (default: 22, range: 18-28), medium preset
+- **PNG/JPG/JPEG/HEIC/WEBP → JPG**: Compressed with configurable quality (default: 6, range: 1-8)
+- **MOV/MP4/MKV → MP4**: H.264 codec with configurable CRF (default: 22, range: 18-28), medium preset
 - **WAV/MP3/AAC/FLAC/M4A/OGG/WMA → MP3**: Compressed with configurable bitrate (default: 320 kbps, range: 128-320 kbps)
 
 All settings are adjustable via the settings drawer (top-right icon). Output files are saved in the same directory as the source with `-compressed` suffix.

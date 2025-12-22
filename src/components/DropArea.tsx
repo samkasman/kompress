@@ -1,9 +1,9 @@
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import {
-  WindowsFolder,
-  Windows95Bitmap,
-  WindowsVideoFile,
-  Windows95WaveSound,
+  WindowsXPShell3212,
+  WindowsXPJPEG,
+  WindowsXPMovieMaker,
+  WindowsXPAudioCD,
 } from 'react-old-icons';
 import { ProcessingFile } from '../App';
 
@@ -36,7 +36,7 @@ export default function DropArea({
       onClick={onFileDialog}
     >
       <div className="text-center pointer-events-none mb-4">
-        <WindowsFolder
+        <WindowsXPShell3212
           size={48}
           className={`mx-auto mb-3 transition-transform ${
             isDragging ? 'scale-110' : ''
@@ -51,13 +51,13 @@ export default function DropArea({
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-md">
-            <Windows95Bitmap size={14} className="text-blue-400" alt="Image" />
+            <WindowsXPJPEG size={14} className="text-blue-400" alt="Image" />
             <span className="text-[10px] font-medium text-blue-300">
               PNG, JPG, JPEG, HEIC, WEBP
             </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-md">
-            <WindowsVideoFile
+            <WindowsXPMovieMaker
               size={14}
               className="text-purple-400"
               alt="Video"
@@ -67,7 +67,7 @@ export default function DropArea({
             </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-md">
-            <Windows95WaveSound
+            <WindowsXPAudioCD
               size={14}
               className="text-green-400"
               alt="Audio"
@@ -87,21 +87,21 @@ export default function DropArea({
           {files.map((file) => (
             <div key={file.id} className="flex items-center gap-3 text-sm">
               {file.type === 'image' && (
-                <Windows95Bitmap
+                <WindowsXPJPEG
                   size={16}
                   className="text-blue-400 flex-shrink-0"
                   alt="Image"
                 />
               )}
               {file.type === 'video' && (
-                <WindowsVideoFile
+                <WindowsXPMovieMaker
                   size={16}
                   className="text-purple-400 flex-shrink-0"
                   alt="Video"
                 />
               )}
               {file.type === 'audio' && (
-                <Windows95WaveSound
+                <WindowsXPAudioCD
                   size={16}
                   className="text-green-400 flex-shrink-0"
                   alt="Audio"
