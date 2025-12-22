@@ -38,7 +38,7 @@ export default function SettingsDrawer({
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-semibold text-slate-200">Image</p>
-            <p className="text-xs text-slate-400">PNG/JPG → JPG</p>
+            <p className="text-xs text-slate-400">PNG/JPG/HEIC → JPG</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">

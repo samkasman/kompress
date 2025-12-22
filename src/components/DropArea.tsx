@@ -1,4 +1,4 @@
-import { Folder, File, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Image, Video, Music, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { ProcessingFile } from '../App';
 
 interface DropAreaProps {
@@ -29,18 +29,24 @@ export default function DropArea({
       className="relative flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto cursor-pointer"
       onClick={onFileDialog}
     >
-      <div className="text-center pointer-events-none mb-8">
-        <Folder
-          className={`h-24 w-24 text-slate-100 mx-auto mb-4 transition-transform ${
-            isDragging ? 'scale-110' : ''
-          }`}
-        />
-        <p className="text-xl font-semibold text-slate-100 mb-2">
+      <div className="text-center pointer-events-none mb-4">
+        <p className="text-base font-semibold text-slate-100 mb-3">
           {isDragging ? 'Drop files here' : 'Click or drag files to compress'}
         </p>
-        <p className="text-xs text-slate-400">
-          PNG, JPG, JPEG, MOV, MP4, WAV, MP3, AAC, FLAC, M4A, OGG, WMA
-        </p>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-md">
+            <Image className="h-3.5 w-3.5 text-blue-400" />
+            <span className="text-[10px] font-medium text-blue-300">PNG, JPG, JPEG, HEIC</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-md">
+            <Video className="h-3.5 w-3.5 text-purple-400" />
+            <span className="text-[10px] font-medium text-purple-300">MOV, MP4</span>
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-md">
+            <Music className="h-3.5 w-3.5 text-green-400" />
+            <span className="text-[10px] font-medium text-green-300">WAV, MP3, AAC, FLAC, M4A, OGG, WMA</span>
+          </div>
+        </div>
       </div>
 
       {hasFiles && (
@@ -50,7 +56,9 @@ export default function DropArea({
         >
           {files.map((file) => (
             <div key={file.id} className="flex items-center gap-3 text-sm">
-              <File className="h-4 w-4 text-slate-400 flex-shrink-0" />
+              {file.type === 'image' && <Image className="h-4 w-4 text-blue-400 flex-shrink-0" />}
+              {file.type === 'video' && <Video className="h-4 w-4 text-purple-400 flex-shrink-0" />}
+              {file.type === 'audio' && <Music className="h-4 w-4 text-green-400 flex-shrink-0" />}
               <span className="text-slate-100 truncate flex-1">
                 {file.name}
               </span>
