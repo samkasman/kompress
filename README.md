@@ -2,9 +2,9 @@
 
 A dead simple native desktop multimedia file compressor.
 
+![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 
 <!-- ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white) -->
@@ -19,10 +19,6 @@ A dead simple native desktop multimedia file compressor.
 
 <img src="demo.gif" alt="sk-compress demo GIF" width="400">
 
-## Download / Install
-
-Download the latest release from the [Releases](https://github.com/samkasman/sk-compress/releases) page.
-
 ## Features
 
 - 🖱️ **Drag & Drop**: Drag files directly onto the window or click to browse
@@ -33,6 +29,10 @@ Download the latest release from the [Releases](https://github.com/samkasman/sk-
   - 🖼️ **Image**: Convert PNG/JPG to compressed JPG (configurable quality 1-8)
   - 📹 **Video**: Convert MOV/MP4 to compressed MP4 (H.264, configurable CRF 18-28)
   - 🎵 **Audio**: Convert WAV/MP3/AAC/FLAC/M4A/OGG/WMA to MP3 (configurable bitrate 128-320 kbps)
+
+## Download / Install
+
+Download the latest release from the [Releases](https://github.com/samkasman/sk-compress/releases) page.
 
 ## Usage
 
@@ -80,11 +80,11 @@ npm install
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-aarch64-apple-darwin
 ```
 
-**macOS (Intel):**
+<!-- **macOS (Intel):**
 
 ```bash
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-apple-darwin
-```
+``` -->
 
 <!-- **Linux:**
 
@@ -170,17 +170,18 @@ Contributions are welcome. Feel free to:
 ## Releasing
 
 1. Update version in `src-tauri/tauri.conf.json` and `package.json`
-2. Build for target platform:
+2. Build for target platform (automatically signs app and creates DMG):
    ```bash
    npm run tauri:build:aarch64  # For macOS Apple Silicon
    ```
+   This creates a signed DMG in `releases/sk-compress-v{version}-aarch64.dmg`
 3. Commit changes and tag:
    ```bash
    git add .
-   git commit -m "Release v0.0.0"
-   git tag v0.0.0
+   git commit -m "Release v1.0.0"
+   git tag v1.0.0
    git push origin master  # or your branch name
-   git push origin v0.0.0
+   git push origin v1.0.0
    ```
 4. Create GitHub release:
    ```bash
