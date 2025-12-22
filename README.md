@@ -170,17 +170,18 @@ Contributions are welcome. Feel free to:
 ## Releasing
 
 1. Update version in `src-tauri/tauri.conf.json` and `package.json`
-2. Build for target platform:
+2. Build for target platform (automatically signs app and creates DMG):
    ```bash
    npm run tauri:build:aarch64  # For macOS Apple Silicon
    ```
+   This creates a signed DMG in `releases/sk-compress-v{version}-aarch64.dmg`
 3. Commit changes and tag:
    ```bash
    git add .
-   git commit -m "Release v0.0.0"
-   git tag v0.0.0
+   git commit -m "Release v1.0.0"
+   git tag v1.0.0
    git push origin master  # or your branch name
-   git push origin v0.0.0
+   git push origin v1.0.0
    ```
 4. Create GitHub release:
    ```bash
