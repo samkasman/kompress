@@ -1,4 +1,5 @@
-import { X, Terminal } from 'lucide-react';
+import { X } from 'lucide-react';
+import { WindowsXPCommandPrompt } from 'react-old-icons';
 import { useEffect, useRef } from 'react';
 
 interface ConsoleDrawerProps {
@@ -25,7 +26,11 @@ export default function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
     <div className="p-4 h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Terminal className="h-5 w-5 text-slate-100" />
+          <WindowsXPCommandPrompt
+            size={20}
+            className="text-slate-100"
+            alt="Console"
+          />
           <h2 className="text-lg font-semibold text-slate-100">Console</h2>
         </div>
         <button

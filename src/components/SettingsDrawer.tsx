@@ -1,4 +1,5 @@
-import { X, Settings } from 'lucide-react';
+import { X } from 'lucide-react';
+import { WindowsXPShell32Icon274 } from 'react-old-icons';
 
 interface SettingsDrawerProps {
   imageQuality: number;
@@ -23,7 +24,11 @@ export default function SettingsDrawer({
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Settings className="h-5 w-5 text-slate-100" />
+          <WindowsXPShell32Icon274
+            size={20}
+            className="text-slate-100"
+            alt="Settings"
+          />
           <h2 className="text-lg font-semibold text-slate-100">Settings</h2>
         </div>
         <button

@@ -1,4 +1,7 @@
-import { Settings, Terminal, Minimize2 } from 'lucide-react';
+import {
+  WindowsXPShell32Icon274,
+  WindowsXPCommandPrompt,
+} from 'react-old-icons';
 
 interface HeaderProps {
   showSK: boolean;
@@ -15,20 +18,13 @@ export default function Header({
     <div className="relative flex-shrink-0 pointer-events-none z-20">
       <div className="flex items-start justify-between p-4">
         <div>
-          <div className="flex items-center gap-2">
-            <Minimize2
-              className={`h-4 w-4 text-slate-100 transition-opacity duration-500 ${
-                showSK ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-            <h1
-              className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
-                showSK ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              sk-compress
-            </h1>
-          </div>
+          <h1
+            className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
+              showSK ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            sk-compress
+          </h1>
           <p
             className={`text-xs text-slate-400 mt-1 transition-opacity duration-500 ${
               showSK ? 'opacity-100' : 'opacity-0'
@@ -47,7 +43,7 @@ export default function Header({
               onConsoleClick();
             }}
           >
-            <Terminal className="h-5 w-5" />
+            <WindowsXPCommandPrompt size={20} alt="Console" />
           </button>
           <button
             data-no-drag
@@ -57,7 +53,7 @@ export default function Header({
               onSettingsClick();
             }}
           >
-            <Settings className="h-5 w-5" />
+            <WindowsXPShell32Icon274 size={20} alt="Settings" />
           </button>
         </div>
       </div>

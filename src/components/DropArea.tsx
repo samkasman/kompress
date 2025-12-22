@@ -1,4 +1,10 @@
-import { Image, Video, Music, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import {
+  WindowsFolder,
+  Windows95Bitmap,
+  WindowsVideoFile,
+  Windows95WaveSound,
+} from 'react-old-icons';
 import { ProcessingFile } from '../App';
 
 interface DropAreaProps {
@@ -30,21 +36,45 @@ export default function DropArea({
       onClick={onFileDialog}
     >
       <div className="text-center pointer-events-none mb-4">
+        <WindowsFolder
+          size={48}
+          className={`mx-auto mb-3 transition-transform ${
+            isDragging ? 'scale-110' : ''
+          }`}
+          style={{
+            filter: 'drop-shadow(2px 2px 2px rgba(0,0,0,0.3))',
+          }}
+          alt="Folder"
+        />
         <p className="text-base font-semibold text-slate-100 mb-3">
           {isDragging ? 'Drop files here' : 'Click or drag files to compress'}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-md">
-            <Image className="h-3.5 w-3.5 text-blue-400" />
-            <span className="text-[10px] font-medium text-blue-300">PNG, JPG, JPEG, HEIC, WEBP</span>
+            <Windows95Bitmap size={14} className="text-blue-400" alt="Image" />
+            <span className="text-[10px] font-medium text-blue-300">
+              PNG, JPG, JPEG, HEIC, WEBP
+            </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-md">
-            <Video className="h-3.5 w-3.5 text-purple-400" />
-            <span className="text-[10px] font-medium text-purple-300">MOV, MP4, MKV</span>
+            <WindowsVideoFile
+              size={14}
+              className="text-purple-400"
+              alt="Video"
+            />
+            <span className="text-[10px] font-medium text-purple-300">
+              MOV, MP4, MKV
+            </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-md">
-            <Music className="h-3.5 w-3.5 text-green-400" />
-            <span className="text-[10px] font-medium text-green-300">WAV, MP3, AAC, FLAC, M4A, OGG, WMA</span>
+            <Windows95WaveSound
+              size={14}
+              className="text-green-400"
+              alt="Audio"
+            />
+            <span className="text-[10px] font-medium text-green-300">
+              WAV, MP3, AAC, FLAC, M4A, OGG, WMA
+            </span>
           </div>
         </div>
       </div>
@@ -56,9 +86,27 @@ export default function DropArea({
         >
           {files.map((file) => (
             <div key={file.id} className="flex items-center gap-3 text-sm">
-              {file.type === 'image' && <Image className="h-4 w-4 text-blue-400 flex-shrink-0" />}
-              {file.type === 'video' && <Video className="h-4 w-4 text-purple-400 flex-shrink-0" />}
-              {file.type === 'audio' && <Music className="h-4 w-4 text-green-400 flex-shrink-0" />}
+              {file.type === 'image' && (
+                <Windows95Bitmap
+                  size={16}
+                  className="text-blue-400 flex-shrink-0"
+                  alt="Image"
+                />
+              )}
+              {file.type === 'video' && (
+                <WindowsVideoFile
+                  size={16}
+                  className="text-purple-400 flex-shrink-0"
+                  alt="Video"
+                />
+              )}
+              {file.type === 'audio' && (
+                <Windows95WaveSound
+                  size={16}
+                  className="text-green-400 flex-shrink-0"
+                  alt="Audio"
+                />
+              )}
               <span className="text-slate-100 truncate flex-1">
                 {file.name}
               </span>
