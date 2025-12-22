@@ -1,13 +1,12 @@
 # sk-compress
 
-A dead simple native desktop multimedia file compressor.
+A dead simple multimedia file compressor.
 
-![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
-
-<!-- ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
-![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white) -->
+![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
+![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
@@ -59,8 +58,8 @@ Download the latest release from the [Releases](https://github.com/samkasman/sk-
 - [Rust](https://www.rust-lang.org/tools/install)
 - Platform-specific native build tools:
   - **macOS**: [Xcode Command Line Tools](https://developer.apple.com/xcode/) (`xcode-select --install`)
-    <!-- - **Linux**: [Tauri prerequisites](https://v1.tauri.app/v1/guides/getting-started/prerequisites/#setting-up-linux) -->
-    <!-- - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or [Visual Studio w/ C++ workload](https://visualstudio.microsoft.com/downloads/) -->
+    - **Linux**: [Tauri prerequisites](https://v1.tauri.app/v1/guides/getting-started/prerequisites/#setting-up-linux)
+    - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or [Visual Studio w/ C++ workload](https://visualstudio.microsoft.com/downloads/)
 
 ## Development Setup
 
@@ -80,24 +79,24 @@ npm install
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-aarch64-apple-darwin
 ```
 
-<!-- **macOS (Intel):**
+**macOS (Intel):**
 
 ```bash
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-apple-darwin
-``` -->
+```
 
-<!-- **Linux:**
+**Linux:**
 
 ```bash
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
-``` -->
+```
 
-<!-- **Windows:**
+**Windows:**
 
 ```bash
 # Download from https://www.gyan.dev/ffmpeg/builds/
 # Place ffmpeg.exe as src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
-``` -->
+```
 
 > In development mode, if no bundled binary is found, the app falls back to system ffmpeg.
 
@@ -140,8 +139,8 @@ npm run tauri:build
 Outputs will be in `src-tauri/target/release/bundle/`:
 
 - **macOS**: `.app` bundle and `.dmg` installer
-<!-- - **Linux**: `.AppImage` or `.deb`
-- **Windows**: `.exe` installer -->
+- **Linux**: `.AppImage` or `.deb`
+- **Windows**: `.exe` installer
 
 ## File Conversion / Compression
 
