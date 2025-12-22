@@ -18,7 +18,7 @@ export function getFileType(filePath: string): FileType {
   const ext = filePath.toLowerCase().split('.').pop();
   if (!ext) return 'unknown';
 
-  const imageExts = ['png', 'jpg', 'jpeg'];
+  const imageExts = ['png', 'jpg', 'jpeg', 'heic'];
   const videoExts = ['mov', 'mp4'];
   const audioExts = ['wav', 'mp3', 'aac', 'flac', 'm4a', 'ogg', 'wma'];
 
