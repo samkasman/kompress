@@ -28,7 +28,6 @@ export default function DropZone({
   const [showDrawer, setShowDrawer] = useState(false);
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
   const [showConsole, setShowConsole] = useState(false);
-  const debugLogsRef = useRef<HTMLDivElement>(null);
   const fileListRef = useRef<HTMLDivElement>(null);
 
   const { settings, setImageQuality, setVideoCRF, setAudioBitrate } =
