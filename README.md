@@ -1,6 +1,6 @@
-# sk-compress
+# kompress
 
-A dead-simple multimedia file compressor.
+A simple multimedia file compressor for macOS.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -16,7 +16,7 @@ A dead-simple multimedia file compressor.
 ![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
 ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
 
-<img src="demo.gif" alt="sk-compress demo GIF" width="400">
+<img src="demo.gif" alt="kompress demo GIF" width="400">
 
 ## Features
 
@@ -31,7 +31,7 @@ A dead-simple multimedia file compressor.
 
 ## Download / Install
 
-Download the latest release from the [Releases](https://github.com/samkasman/sk-compress/releases) page.
+Download the latest release from the [Releases](https://github.com/samkasman/kompress/releases) page.
 
 ## Usage
 
@@ -103,7 +103,7 @@ cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
 ## Project Structure
 
 ```
-sk-compress/
+kompress/
 ├── src/                 # React source (front-end)
 │   ├── components/      # React components
 │   ├── hooks/           # React hooks
@@ -144,7 +144,7 @@ Outputs will be in `src-tauri/target/release/bundle/`:
 
 ## Issues
 
-For bugs or feature requests, please [open an issue](https://github.com/samkasman/sk-compress/issues).
+For bugs or feature requests, please [open an issue](https://github.com/samkasman/kompress/issues).
 
 ## Contributing
 
@@ -163,7 +163,7 @@ Contributions are welcome. Feel free to:
    ```bash
    npm run tauri:build:aarch64  # For macOS Apple Silicon
    ```
-   This creates a signed DMG in `releases/sk-compress-v{version}-aarch64.dmg`
+   This creates a signed DMG in `releases/kompress-v{version}-aarch64.dmg`
 3. Commit changes and tag:
    ```bash
    git add .
@@ -174,7 +174,7 @@ Contributions are welcome. Feel free to:
    ```
 4. Create GitHub release:
    ```bash
-   gh release create v1.0.0 releases/sk-compress-v1.0.0-aarch64.dmg --title "v1.0.0" --notes "Release notes here"
+   gh release create v1.0.0 releases/kompress-v1.0.0-aarch64.dmg --title "v1.0.0" --notes "Release notes here"
    ```
 
 ## License

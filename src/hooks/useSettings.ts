@@ -12,7 +12,7 @@ const DEFAULT_SETTINGS: Settings = {
   audioBitrate: 320,
 };
 
-const STORAGE_KEY = 'sk-compress:settings';
+const STORAGE_KEY = 'kompress:settings';
 
 export function useSettings() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
