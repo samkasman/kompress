@@ -211,56 +211,60 @@ async fn compress_file(
         .spawn()
         .map_err(|e| format!("Failed to run FFmpeg: {}", e))?;
 
-    // Stream stderr output in realtime and parse progress
-    if let Some(stderr) = child.stderr.take() {
-        let app_clone = app.clone();
-        let file_id_clone = file_id.clone();
-        let file_type_clone = file_type.clone();
-        
-        // Spawn thread to read stderr in background (blocking I/O)
-        std::thread::spawn(move || {
-            let reader = BufReader::new(stderr);
-            let mut duration_seconds: Option<f64> = None;
+    // Spawn thread to stream stderr and collect lines for error reporting
+    let stderr = child.stderr.take().ok_or("Failed to capture FFmpeg stderr")?;
+    let app_clone = app.clone();
+    let file_id_clone = file_id.clone();
+    let file_type_clone = file_type.clone();
 
-            // Read lines and emit events
-            for line in reader.lines() {
-                if let Ok(line) = line {
-                    // Emit output line
-                    let _ = app_clone.emit("ffmpeg-output", FfmpegOutput {
-                        file_id: file_id_clone.clone(),
-                        line: line.clone(),
-                    });
+    let stderr_thread = std::thread::spawn(move || {
+        let reader = BufReader::new(stderr);
+        let mut duration_seconds: Option<f64> = None;
+        let mut lines_out: Vec<String> = Vec::new();
 
-                    // Parse duration (for video files)
-                    if file_type_clone == "video" && duration_seconds.is_none() {
+        for line in reader.lines() {
+            if let Ok(line) = line {
+                lines_out.push(line.clone());
+
+                let _ = app_clone.emit("ffmpeg-output", FfmpegOutput {
+                    file_id: file_id_clone.clone(),
+                    line: line.clone(),
+                });
+
+                if file_type_clone == "video" {
+                    if duration_seconds.is_none() {
                         if let Some(dur) = parse_duration(&line) {
                             duration_seconds = Some(dur);
                         }
                     }
-
-                    // Parse progress (for video files)
-                    if file_type_clone == "video" {
-                        if let Some((current_time, dur)) = parse_progress(&line, duration_seconds) {
-                            let progress = if dur > 0.0 {
-                                ((current_time / dur) * 100.0).min(100.0) as u32
-                            } else {
-                                0
-                            };
-                            let _ = app_clone.emit("ffmpeg-progress", FfmpegProgress {
-                                file_id: file_id_clone.clone(),
-                                progress,
-                            });
-                        }
+                    if let Some((current_time, dur)) = parse_progress(&line, duration_seconds) {
+                        let progress = if dur > 0.0 {
+                            ((current_time / dur) * 100.0).min(100.0) as u32
+                        } else {
+                            0
+                        };
+                        let _ = app_clone.emit("ffmpeg-progress", FfmpegProgress {
+                            file_id: file_id_clone.clone(),
+                            progress,
+                        });
                     }
                 }
             }
-        });
-    }
+        }
+        lines_out
+    });
 
     let status = child.wait().map_err(|e| format!("FFmpeg process error: {}", e))?;
+    let stderr_lines = stderr_thread.join().unwrap_or_default();
 
     if !status.success() {
-        return Err("FFmpeg compression failed".to_string());
+        let detail = stderr_lines
+            .iter()
+            .rev()
+            .find(|l| !l.trim().is_empty())
+            .map(|l| format!(": {}", l.trim()))
+            .unwrap_or_default();
+        return Err(format!("FFmpeg failed{}", detail));
     }
 
     // Get output file size
@@ -272,41 +276,6 @@ async fn compress_file(
         output_path: output_path_clone,
         output_size,
     })
-}
-
-#[tauri::command]
-async fn open_file(path: String) -> Result<(), String> {
-    #[cfg(target_os = "macos")]
-    {
-        Command::new("open")
-            .arg(&path)
-            .output()
-            .map_err(|e| e.to_string())?;
-    }
-    #[cfg(target_os = "windows")]
-    {
-        Command::new("cmd")
-            .args(["/C", "start", "", &path])
-            .output()
-            .map_err(|e| e.to_string())?;
-    }
-    #[cfg(target_os = "linux")]
-    {
-        Command::new("xdg-open")
-            .arg(&path)
-            .output()
-            .map_err(|e| e.to_string())?;
-    }
-    Ok(())
-}
-
-#[tauri::command]
-async fn get_file_path(file_name: String) -> Result<Option<String>, String> {
-    // This is a helper to try to resolve file paths from dropped files
-    // In Tauri, File objects from drag-and-drop should have a path property
-    // but if not, we can't reliably get it from just the filename
-    // This is mainly for debugging - the frontend should extract the path directly
-    Ok(None)
 }
 
 #[tauri::command]
@@ -346,9 +315,7 @@ fn main() {
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             compress_file,
-            open_file,
             reveal_in_folder,
-            get_file_path
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

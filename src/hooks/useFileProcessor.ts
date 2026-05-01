@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { ProcessingFile } from '../App';
 
 interface UseFileProcessorOptions {
@@ -22,6 +23,15 @@ export function useFileProcessor({
       onFileUpdate(file.id, { status: 'processing', progress: 0 });
 
       addLog?.(`⏳ Processing: ${file.name} (${file.type})`);
+
+      const unlisten = await listen<{ file_id: string; progress: number }>(
+        'ffmpeg-progress',
+        (event) => {
+          if (event.payload.file_id === file.id) {
+            onFileUpdate(file.id, { progress: event.payload.progress });
+          }
+        }
+      );
 
       try {
         const result = await invoke<{
@@ -58,6 +68,8 @@ export function useFileProcessor({
         console.error('Compression error:', error);
         addLog?.(`❌ Error: ${file.name} - ${errorMessage}`);
         onFileUpdate(file.id, { status: 'error', error: errorMessage });
+      } finally {
+        unlisten();
       }
     },
     [onFileUpdate, imageQuality, videoCRF, audioBitrate, addLog]

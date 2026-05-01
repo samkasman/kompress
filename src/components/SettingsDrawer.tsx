@@ -58,8 +58,9 @@ export default function SettingsDrawer({
               min={1}
               max={8}
               step={1}
-              value={9 - imageQuality}
-              onChange={(e) => onImageQualityChange(9 - Number(e.target.value))}
+              value={imageQuality}
+              onChange={(e) => onImageQualityChange(Number(e.target.value))}
+              style={{ transform: 'scaleX(-1)' }}
               className="w-full appearance-none cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             />
@@ -88,8 +89,9 @@ export default function SettingsDrawer({
               min={18}
               max={28}
               step={1}
-              value={46 - videoCRF}
-              onChange={(e) => onVideoCRFChange(46 - Number(e.target.value))}
+              value={videoCRF}
+              onChange={(e) => onVideoCRFChange(Number(e.target.value))}
+              style={{ transform: 'scaleX(-1)' }}
               className="w-full appearance-none cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             />
