@@ -1,4 +1,5 @@
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, FolderOpen } from 'lucide-react';
+import { invoke } from '@tauri-apps/api/core';
 import {
   WindowsXPShell3212,
   WindowsXPJPEG,
@@ -113,7 +114,9 @@ export default function DropArea({
               {file.status === 'processing' && (
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-3 w-3 text-slate-400 animate-spin" />
-                  <span className="text-slate-400 text-xs">Processing...</span>
+                  <span className="text-slate-400 text-xs">
+                    {file.progress > 0 ? `${file.progress}%` : 'Processing...'}
+                  </span>
                   <span className="text-slate-500 text-xs">
                     {formatTime(elapsedTimes[file.id] || 0)}
                   </span>
@@ -128,6 +131,18 @@ export default function DropArea({
                     </span>
                   )}
                   <CheckCircle className="h-4 w-4 text-green-400" />
+                  {file.outputPath && (
+                    <button
+                      className="pointer-events-auto text-slate-500 hover:text-slate-300 transition-colors"
+                      title="Show in Finder"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        invoke('reveal_in_folder', { path: file.outputPath! });
+                      }}
+                    >
+                      <FolderOpen className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </>
               )}
               {file.status === 'error' && (
