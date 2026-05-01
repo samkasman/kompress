@@ -1,7 +1,7 @@
 {
-  "name": "sk-compress",
-  "version": "1.0.1",
-  "description": "Native desktop app for compressing images and videos",
+  "name": "kompress",
+  "version": "1.1.0",
+  "description": "A simple multimedia file compressor for macOS",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
@@ -14,6 +14,8 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build && node scripts/sign-and-copy-release.js",
     "tauri:build:aarch64": "tauri build --target aarch64-apple-darwin && node scripts/sign-and-copy-release.js",
+    "release": "node scripts/release.js",
+    "release:local": "node scripts/release.js --local",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
   },
