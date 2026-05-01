@@ -21,7 +21,7 @@ const possiblePaths = [
 try {
   const config = JSON.parse(await readFile(configPath, 'utf-8'));
   const version = config.version;
-  const productName = config.productName || 'sk-compress';
+  const productName = config.productName || 'kompress';
 
   await mkdir(releasesDir, { recursive: true });
 

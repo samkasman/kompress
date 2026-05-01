@@ -23,14 +23,14 @@ export default function Header({
               showSK ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            sk-compress
+            kompress
           </h1>
           <p
             className={`text-xs text-slate-400 mt-1 transition-opacity duration-500 ${
               showSK ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            A dead simple multimedia file compressor.
+            A simple multimedia file compressor for macOS.
           </p>
         </div>
 
