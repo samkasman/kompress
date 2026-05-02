@@ -1,7 +1,4 @@
-import {
-  WindowsXPShell32Icon274,
-  WindowsXPCommandPrompt,
-} from 'react-old-icons';
+import { Settings, Terminal } from 'lucide-react';
 
 interface HeaderProps {
   showSK: boolean;
@@ -43,7 +40,7 @@ export default function Header({
               onConsoleClick();
             }}
           >
-            <WindowsXPCommandPrompt size={20} alt="Console" />
+            <Terminal className="h-5 w-5" />
           </button>
           <button
             data-no-drag
@@ -53,7 +50,7 @@ export default function Header({
               onSettingsClick();
             }}
           >
-            <WindowsXPShell32Icon274 size={20} alt="Settings" />
+            <Settings className="h-5 w-5" />
           </button>
         </div>
       </div>
