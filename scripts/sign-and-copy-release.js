@@ -1,15 +1,18 @@
-import { readdir, copyFile, mkdir } from 'fs/promises';
+import { readdir, mkdir, unlink } from 'fs/promises';
 import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { dirname, join } from 'path';
 import { execSync } from 'child_process';
-import { join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
+const SIGN_IDENTITY = 'Developer ID Application: Sam Kasman (WC8RY44BN7)';
+const NOTARY_PROFILE = 'kompress-notary';
+
 const configPath = join(rootDir, 'src-tauri/tauri.conf.json');
+const entitlementsPath = join(rootDir, 'src-tauri/entitlements.plist');
 const releasesDir = join(rootDir, 'releases');
 
 const possiblePaths = [
@@ -18,6 +21,11 @@ const possiblePaths = [
   'src-tauri/target/release/bundle',
 ];
 
+function run(cmd) {
+  console.log(`$ ${cmd}`);
+  execSync(cmd, { stdio: 'inherit' });
+}
+
 try {
   const config = JSON.parse(await readFile(configPath, 'utf-8'));
   const version = config.version;
@@ -25,11 +33,8 @@ try {
 
   await mkdir(releasesDir, { recursive: true });
 
-  let appPath = null;
-  let dmgFile = null;
-  let sourceDir = null;
-
   // Find .app bundle
+  let appPath = null;
   for (const basePath of possiblePaths) {
     const macosDir = join(rootDir, basePath, 'macos');
     try {
@@ -44,102 +49,48 @@ try {
     }
   }
 
-  // Find DMG
-  for (const basePath of possiblePaths) {
-    const dmgDir = join(rootDir, basePath, 'dmg');
-    const macosDir = join(rootDir, basePath, 'macos');
-
-    for (const dir of [dmgDir, macosDir]) {
-      try {
-        const files = await readdir(dir);
-        const found = files.find(
-          (f) => f.endsWith('.dmg') && !f.startsWith('rw.')
-        );
-        if (found) {
-          dmgFile = found;
-          sourceDir = dir;
-          break;
-        }
-      } catch {
-        // Directory doesn't exist
-      }
-    }
-    if (dmgFile) break;
+  if (!appPath) {
+    console.error('✗ No .app bundle found');
+    process.exit(1);
   }
 
-  // Ad-hoc sign the app and recreate DMG
-  if (appPath) {
-    try {
-      console.log('Signing app bundle...');
-      execSync(`codesign --force --deep --sign - "${appPath}"`, {
-        stdio: 'inherit',
-      });
-      console.log('✓ App signed');
+  const arch = appPath.includes('x86_64') ? 'x86_64' : 'aarch64';
+  const dmgPath = join(releasesDir, `${productName}-v${version}-${arch}.dmg`);
 
-      // Determine architecture from path or filename
-      let arch = 'aarch64';
-      if (appPath.includes('x86_64')) arch = 'x86_64';
-      else if (dmgFile) {
-        const archMatch = dmgFile.match(/_([a-z0-9_]+)\.dmg$/);
-        if (archMatch) arch = archMatch[1];
-      }
+  try { await unlink(dmgPath); } catch { /* doesn't exist */ }
 
-      const dmgPath = join(
-        releasesDir,
-        `${productName}-v${version}-${arch}.dmg`
-      );
+  // 1. Sign bundled FFmpeg binary first (innermost → outermost)
+  const ffmpegBin = join(appPath, 'Contents/MacOS/ffmpeg');
+  console.log('Signing FFmpeg...');
+  run(`codesign --force --options runtime --sign "${SIGN_IDENTITY}" "${ffmpegBin}"`);
+  console.log('✓ FFmpeg signed');
 
-      // Remove old DMG if it exists
-      try {
-        const { unlink } = await import('fs/promises');
-        await unlink(dmgPath);
-      } catch {
-        // Doesn't exist, that's fine
-      }
+  // 2. Sign app bundle with hardened runtime + entitlements
+  console.log('Signing app bundle...');
+  run(`codesign --force --options runtime --entitlements "${entitlementsPath}" --sign "${SIGN_IDENTITY}" "${appPath}"`);
+  console.log('✓ App signed');
 
-      console.log('Creating DMG with signed app...');
-      execSync(
-        `hdiutil create -volname "${productName}" -srcfolder "${appPath}" -ov -format UDZO "${dmgPath}"`,
-        { stdio: 'inherit' }
-      );
-      console.log(
-        `✓ Created signed DMG: releases/${productName}-v${version}-${arch}.dmg`
-      );
-    } catch (error) {
-      console.warn(
-        '⚠ Failed to sign/recreate DMG, copying existing:',
-        error.message
-      );
-      // Fall back to copying existing DMG
-      if (dmgFile && sourceDir) {
-        const archMatch = dmgFile.match(/_([a-z0-9_]+)\.dmg$/);
-        const arch = archMatch ? archMatch[1] : 'unknown';
-        const sourcePath = join(sourceDir, dmgFile);
-        const destPath = join(
-          releasesDir,
-          `${productName}-v${version}-${arch}.dmg`
-        );
-        await copyFile(sourcePath, destPath);
-        console.log(
-          `✓ Copied to releases/${productName}-v${version}-${arch}.dmg`
-        );
-      }
-    }
-  } else if (dmgFile && sourceDir) {
-    // No app found, just copy existing DMG
-    const archMatch = dmgFile.match(/_([a-z0-9_]+)\.dmg$/);
-    const arch = archMatch ? archMatch[1] : 'unknown';
-    const sourcePath = join(sourceDir, dmgFile);
-    const destPath = join(
-      releasesDir,
-      `${productName}-v${version}-${arch}.dmg`
-    );
-    await copyFile(sourcePath, destPath);
-    console.log(`✓ Copied to releases/${productName}-v${version}-${arch}.dmg`);
-  } else {
-    console.log('⚠ No app bundle or DMG found');
-  }
+  // 3. Create DMG
+  console.log('Creating DMG...');
+  run(`hdiutil create -volname "${productName}" -srcfolder "${appPath}" -ov -format UDZO "${dmgPath}"`);
+  console.log('✓ DMG created');
+
+  // 4. Sign DMG
+  console.log('Signing DMG...');
+  run(`codesign --force --sign "${SIGN_IDENTITY}" "${dmgPath}"`);
+  console.log('✓ DMG signed');
+
+  // 5. Notarize (submits to Apple and waits for approval)
+  console.log('Notarizing — this takes a minute...');
+  run(`xcrun notarytool submit "${dmgPath}" --keychain-profile "${NOTARY_PROFILE}" --wait`);
+  console.log('✓ Notarized');
+
+  // 6. Staple ticket to DMG so it works offline
+  console.log('Stapling...');
+  run(`xcrun stapler staple "${dmgPath}"`);
+  console.log(`\n✓ Done: releases/${productName}-v${version}-${arch}.dmg\n`);
+
 } catch (error) {
-  console.error('Error:', error);
+  console.error('✗ Error:', error.message);
   process.exit(1);
 }
