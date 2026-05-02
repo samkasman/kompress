@@ -1,4 +1,5 @@
-import { readdir, mkdir, unlink } from 'fs/promises';
+import { readdir, mkdir, unlink, rm, symlink, cp } from 'fs/promises';
+import { tmpdir } from 'os';
 import { readFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
@@ -70,9 +71,17 @@ try {
   run(`codesign --force --options runtime --timestamp --entitlements "${entitlementsPath}" --sign "${SIGN_IDENTITY}" "${appPath}"`);
   console.log('✓ App signed');
 
-  // 3. Create DMG
+  // 3. Create DMG with Applications symlink for drag-to-install
   console.log('Creating DMG...');
-  run(`hdiutil create -volname "${productName}" -srcfolder "${appPath}" -ov -format UDZO "${dmgPath}"`);
+  const stagingDir = join(tmpdir(), `kompress-dmg-${Date.now()}`);
+  await mkdir(stagingDir, { recursive: true });
+  try {
+    await cp(appPath, join(stagingDir, `${productName}.app`), { recursive: true });
+    await symlink('/Applications', join(stagingDir, 'Applications'));
+    run(`hdiutil create -volname "${productName}" -srcfolder "${stagingDir}" -ov -format UDZO "${dmgPath}"`);
+  } finally {
+    await rm(stagingDir, { recursive: true, force: true });
+  }
   console.log('✓ DMG created');
 
   // 4. Sign DMG
