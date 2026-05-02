@@ -49,7 +49,7 @@ if (!local) {
   const dirty = check('git status --porcelain')
     .split('\n')
     .filter(Boolean)
-    .filter((l) => !l.includes('package.json') && !l.includes('package-lock.json'));
+    .filter((l) => !l.includes('package.json') && !l.includes('package-lock.json') && !l.includes('tauri.conf.json') && !l.includes('scripts/release.js'));
   if (dirty.length > 0) {
     console.error('✗ Uncommitted changes exist — commit or stash them first:\n' + dirty.join('\n'));
     process.exit(1);
@@ -81,7 +81,7 @@ if (local) {
 }
 
 // Commit version bump, tag, push, release
-run(`git add src-tauri/tauri.conf.json package.json package-lock.json`);
+run(`git add src-tauri/tauri.conf.json package.json package-lock.json scripts/release.js`);
 
 const staged = check('git diff --cached --name-only');
 if (staged) run(`git commit -m "Release v${version}"`);

@@ -62,12 +62,12 @@ try {
   // 1. Sign bundled FFmpeg binary first (innermost → outermost)
   const ffmpegBin = join(appPath, 'Contents/MacOS/ffmpeg');
   console.log('Signing FFmpeg...');
-  run(`codesign --force --options runtime --sign "${SIGN_IDENTITY}" "${ffmpegBin}"`);
+  run(`codesign --force --options runtime --timestamp --sign "${SIGN_IDENTITY}" "${ffmpegBin}"`);
   console.log('✓ FFmpeg signed');
 
   // 2. Sign app bundle with hardened runtime + entitlements
   console.log('Signing app bundle...');
-  run(`codesign --force --options runtime --entitlements "${entitlementsPath}" --sign "${SIGN_IDENTITY}" "${appPath}"`);
+  run(`codesign --force --options runtime --timestamp --entitlements "${entitlementsPath}" --sign "${SIGN_IDENTITY}" "${appPath}"`);
   console.log('✓ App signed');
 
   // 3. Create DMG
@@ -77,7 +77,7 @@ try {
 
   // 4. Sign DMG
   console.log('Signing DMG...');
-  run(`codesign --force --sign "${SIGN_IDENTITY}" "${dmgPath}"`);
+  run(`codesign --force --timestamp --sign "${SIGN_IDENTITY}" "${dmgPath}"`);
   console.log('✓ DMG signed');
 
   // 5. Notarize (submits to Apple and waits for approval)
