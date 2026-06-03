@@ -27,12 +27,13 @@ export function useDragAndDrop({
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
+    let cancelled = false;
 
     const setupFileDrop = async () => {
       try {
         const appWindow = getCurrentWindow();
 
-        unlisten = await appWindow.onDragDropEvent((event) => {
+        const fn = await appWindow.onDragDropEvent((event) => {
           if (event.payload.type === 'enter' || event.payload.type === 'over') {
             handleDragStateChange(true);
           } else if (event.payload.type === 'drop') {
@@ -57,6 +58,15 @@ export function useDragAndDrop({
             handleDragStateChange(false);
           }
         });
+
+        // StrictMode (or any rapid effect re-run) can fire the cleanup before
+        // this promise resolves. If that happened, tear down the listener now
+        // — otherwise it leaks for the lifetime of the window.
+        if (cancelled) {
+          fn();
+        } else {
+          unlisten = fn;
+        }
       } catch (error) {
         const errorMsg = `❌ Failed to set up drag-drop listener: ${error}`;
         addLog?.(errorMsg);
@@ -67,6 +77,7 @@ export function useDragAndDrop({
     setupFileDrop();
 
     return () => {
+      cancelled = true;
       if (unlisten) unlisten();
     };
   }, [onFilesDropped, showDrawer, handleDragStateChange, addLog]);

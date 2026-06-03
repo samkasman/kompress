@@ -56,13 +56,12 @@ export default function SettingsDrawer({
               step={1}
               value={imageQuality}
               onChange={(e) => onImageQualityChange(Number(e.target.value))}
-              style={{ transform: 'scaleX(-1)' }}
               className="w-full appearance-none cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             />
             <div className="flex justify-between text-xs text-slate-500">
-              <span>8 (Smallest)</span>
               <span>1 (Best)</span>
+              <span>8 (Smallest)</span>
             </div>
           </div>
         </div>
@@ -87,13 +86,12 @@ export default function SettingsDrawer({
               step={1}
               value={videoCRF}
               onChange={(e) => onVideoCRFChange(Number(e.target.value))}
-              style={{ transform: 'scaleX(-1)' }}
               className="w-full appearance-none cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             />
             <div className="flex justify-between text-xs text-slate-500">
-              <span>28 (Smallest)</span>
               <span>18 (Best)</span>
+              <span>28 (Smallest)</span>
             </div>
           </div>
         </div>
