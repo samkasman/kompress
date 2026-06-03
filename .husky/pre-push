@@ -1,0 +1,21 @@
+#!/usr/bin/env sh
+# Fast checks first, then full conversion verification.
+# Bypass with `git push --no-verify` only when you know what you're doing.
+
+set -e
+
+echo "→ tsc"
+npx tsc --noEmit
+
+echo "→ lint"
+npm run lint --silent
+
+# Only run verify if the bundled ffmpeg binary is present.
+# In dev setups without it the fixture pipeline can't exercise the real binary;
+# CI-like environments should run `npm run verify` explicitly.
+if [ -x src-tauri/binaries/ffmpeg-aarch64-apple-darwin ]; then
+  echo "→ verify"
+  npm run verify --silent
+else
+  echo "→ verify skipped (no bundled ffmpeg in src-tauri/binaries/)"
+fi
