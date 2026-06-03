@@ -19,6 +19,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
     "verify": "bash scripts/verify-conversions.sh",
+    "changelog:draft": "git-cliff --unreleased",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -56,6 +57,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "git-cliff": "^2.13.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "postcss": "^8.4.33",
