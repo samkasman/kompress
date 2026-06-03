@@ -1,5 +1,6 @@
-import { X, Terminal } from 'lucide-react';
 import { useEffect, useRef } from 'react';
+import { Terminal } from 'lucide-react';
+import { Drawer } from '@/components/ui/drawer';
 
 interface ConsoleDrawerProps {
   logs: string[];
@@ -22,19 +23,7 @@ export default function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
   }, [logs]);
 
   return (
-    <div className="p-4 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Terminal className="h-5 w-5 text-slate-100" />
-          <h2 className="text-lg font-semibold text-slate-100">Console</h2>
-        </div>
-        <button
-          className="p-1 text-slate-400 hover:text-slate-200 transition-colors"
-          onClick={onClose}
-        >
-          <X className="h-5 w-5" />
-        </button>
-      </div>
+    <Drawer icon={Terminal} title="Console" onClose={onClose}>
       <div
         ref={logsRef}
         className="flex-1 overflow-y-auto bg-slate-950/50 rounded-lg p-3"
@@ -52,6 +41,6 @@ export default function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
           ))
         )}
       </div>
-    </div>
+    </Drawer>
   );
 }
