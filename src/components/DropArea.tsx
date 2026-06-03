@@ -1,7 +1,8 @@
 import { Loader2, CheckCircle, AlertCircle, FolderOpen, Upload, Image, Film, Music } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
 import { ProcessingFile } from '@/App';
-import { formatExtList } from '@/constants/formats';
+import { FormatBadge } from '@/components/ui/format-badge';
+import { IconButton } from '@/components/ui/icon-button';
 
 interface DropAreaProps {
   isDragging: boolean;
@@ -42,24 +43,9 @@ export default function DropArea({
           {isDragging ? 'Drop files here' : 'Click or drag files to compress'}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-md">
-            <Image className="h-3.5 w-3.5 text-blue-400" />
-            <span className="text-[10px] font-medium text-blue-300">
-              {formatExtList('image')}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-md">
-            <Film className="h-3.5 w-3.5 text-purple-400" />
-            <span className="text-[10px] font-medium text-purple-300">
-              {formatExtList('video')}
-            </span>
-          </div>
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-md">
-            <Music className="h-3.5 w-3.5 text-green-400" />
-            <span className="text-[10px] font-medium text-green-300">
-              {formatExtList('audio')}
-            </span>
-          </div>
+          <FormatBadge type="image" />
+          <FormatBadge type="video" />
+          <FormatBadge type="audio" />
         </div>
       </div>
 
@@ -97,16 +83,18 @@ export default function DropArea({
                   )}
                   <CheckCircle className="h-4 w-4 text-green-400" />
                   {file.outputPath && (
-                    <button
-                      className="pointer-events-auto text-slate-500 hover:text-slate-300 transition-colors"
+                    <IconButton
+                      variant="subtle"
+                      size="sm"
                       title="Show in Finder"
+                      aria-label="Show in Finder"
                       onClick={(e) => {
                         e.stopPropagation();
                         invoke('reveal_in_folder', { path: file.outputPath! });
                       }}
                     >
                       <FolderOpen className="h-3.5 w-3.5" />
-                    </button>
+                    </IconButton>
                   )}
                 </>
               )}

@@ -1,4 +1,5 @@
 import { Settings, Terminal } from 'lucide-react';
+import { IconButton } from '@/components/ui/icon-button';
 
 interface HeaderProps {
   showSK: boolean;
@@ -32,26 +33,24 @@ export default function Header({
         </div>
 
         <div className="flex items-center gap-1">
-          <button
-            data-no-drag
-            className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
+          <IconButton
+            aria-label="Toggle console"
             onClick={(e) => {
               e.stopPropagation();
               onConsoleClick();
             }}
           >
             <Terminal className="h-5 w-5" />
-          </button>
-          <button
-            data-no-drag
-            className="p-2 text-slate-100 hover:text-slate-200 transition-colors pointer-events-auto"
+          </IconButton>
+          <IconButton
+            aria-label="Toggle settings"
             onClick={(e) => {
               e.stopPropagation();
               onSettingsClick();
             }}
           >
             <Settings className="h-5 w-5" />
-          </button>
+          </IconButton>
         </div>
       </div>
     </div>
