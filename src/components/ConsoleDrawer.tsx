@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { Terminal } from 'lucide-react';
 import { Drawer } from '@/components/ui/drawer';
 
@@ -7,7 +7,7 @@ interface ConsoleDrawerProps {
   onClose: () => void;
 }
 
-export default function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
+function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
   const logsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,3 +44,5 @@ export default function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
     </Drawer>
   );
 }
+
+export default memo(ConsoleDrawer);
