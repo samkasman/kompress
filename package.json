@@ -17,7 +17,8 @@
     "release": "node scripts/release.js",
     "release:local": "node scripts/release.js --local",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "verify": "bash scripts/verify-conversions.sh"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.0.3",
