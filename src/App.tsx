@@ -13,23 +13,29 @@ export interface ProcessingFile extends FileInfo {
   error?: string;
 }
 
+// Splash animation timing — header fades in first, then the main content
+// crossfades a moment later.
+const SPLASH_HEADER_DELAY_MS = 100;
+const SPLASH_CONTENT_DELAY_MS = 700;
+
 function App() {
   const [files, setFiles] = useState<ProcessingFile[]>([]);
   const [showSK, setShowSK] = useState(false);
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    const timer1 = setTimeout(() => {
-      setShowSK(true);
-    }, 100);
-
-    const timer2 = setTimeout(() => {
-      setShowContent(true);
-    }, 700);
+    const headerTimer = setTimeout(
+      () => setShowSK(true),
+      SPLASH_HEADER_DELAY_MS
+    );
+    const contentTimer = setTimeout(
+      () => setShowContent(true),
+      SPLASH_CONTENT_DELAY_MS
+    );
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      clearTimeout(headerTimer);
+      clearTimeout(contentTimer);
     };
   }, []);
 

@@ -1,5 +1,4 @@
 import { Loader2, CheckCircle, AlertCircle, FolderOpen, Upload, Image, Film, Music } from 'lucide-react';
-import { invoke } from '@tauri-apps/api/core';
 import { ProcessingFile } from '@/App';
 import { FormatBadge } from '@/components/ui/format-badge';
 import { IconButton } from '@/components/ui/icon-button';
@@ -7,6 +6,7 @@ import { IconButton } from '@/components/ui/icon-button';
 interface DropAreaProps {
   isDragging: boolean;
   onFileDialog: () => void;
+  onRevealInFolder: (path: string) => void;
   files: ProcessingFile[];
   elapsedTimes: Record<string, number>;
   fileListRef: React.RefObject<HTMLDivElement>;
@@ -21,6 +21,7 @@ function formatTime(seconds: number): string {
 export default function DropArea({
   isDragging,
   onFileDialog,
+  onRevealInFolder,
   files,
   elapsedTimes,
   fileListRef,
@@ -52,7 +53,7 @@ export default function DropArea({
       {hasFiles && (
         <div
           ref={fileListRef}
-          className="w-full max-w-md max-h-[192px] overflow-y-auto space-y-2"
+          className="w-full max-w-md max-h-[50vh] overflow-y-auto space-y-2"
         >
           {files.map((file) => (
             <div key={file.id} className="flex items-center gap-3 text-sm">
@@ -90,7 +91,7 @@ export default function DropArea({
                       aria-label="Show in Finder"
                       onClick={(e) => {
                         e.stopPropagation();
-                        invoke('reveal_in_folder', { path: file.outputPath! });
+                        onRevealInFolder(file.outputPath!);
                       }}
                     >
                       <FolderOpen className="h-3.5 w-3.5" />
