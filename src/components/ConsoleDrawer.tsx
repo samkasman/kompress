@@ -1,5 +1,4 @@
-import { X } from 'lucide-react';
-import { Terminal } from 'lucide-react';
+import { X, Terminal } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 interface ConsoleDrawerProps {

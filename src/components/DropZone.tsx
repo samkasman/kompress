@@ -32,6 +32,7 @@ export default function DropZone({
   const [showConsole, setShowConsole] = useState(false);
   const [isConsoleClosing, setIsConsoleClosing] = useState(false);
   const fileListRef = useRef<HTMLDivElement>(null);
+  const startedFileIds = useRef<Set<string>>(new Set());
 
   const { settings, setImageQuality, setVideoCRF, setAudioBitrate } =
     useSettings();
@@ -126,11 +127,12 @@ export default function DropZone({
   });
 
   useEffect(() => {
-    files.forEach((file) => {
-      if (file.status === 'pending') {
+    for (const file of files) {
+      if (file.status === 'pending' && !startedFileIds.current.has(file.id)) {
+        startedFileIds.current.add(file.id);
         processFile(file);
       }
-    });
+    }
   }, [files, processFile]);
 
   useEffect(() => {
