@@ -161,10 +161,16 @@ async fn compress_file(
 
     let args: Vec<String> = if file_type == "image" {
         let quality = image_quality.unwrap_or(6).to_string();
+        // -update 1 -frames:v 1: image2 muxer requires this when writing a single
+        // still from a container that may hold multiple items (HEIF, AVIF, etc.)
         vec![
             "-y".to_string(),
             "-i".to_string(),
             input_path,
+            "-update".to_string(),
+            "1".to_string(),
+            "-frames:v".to_string(),
+            "1".to_string(),
             "-q:v".to_string(),
             quality,
             output_path,
