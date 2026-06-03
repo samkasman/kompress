@@ -18,7 +18,17 @@
     "release:local": "node scripts/release.js --local",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
-    "verify": "bash scripts/verify-conversions.sh"
+    "verify": "bash scripts/verify-conversions.sh",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{js,json,css,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",
@@ -32,6 +42,8 @@
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@tauri-apps/cli": "^2.0.0",
     "@types/node": "^20.11.5",
     "@types/react": "^18.2.48",
@@ -44,6 +56,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "postcss": "^8.4.33",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",
