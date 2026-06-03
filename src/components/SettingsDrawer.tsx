@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
-import { Settings } from 'lucide-react';
+import { memo, type ReactNode } from 'react';
+import { RotateCcw, Settings } from 'lucide-react';
 import { Drawer } from '@/components/ui/drawer';
 import { Slider } from '@/components/ui/slider';
+import { IconButton } from '@/components/ui/icon-button';
 import { formatConversionLabel } from '@/constants/formats';
 
 interface SettingsDrawerProps {
@@ -11,20 +12,37 @@ interface SettingsDrawerProps {
   onImageQualityChange: (value: number) => void;
   onVideoCRFChange: (value: number) => void;
   onAudioBitrateChange: (value: number) => void;
+  onResetDefaults: () => void;
   onClose: () => void;
 }
 
-export default function SettingsDrawer({
+function SettingsDrawer({
   imageQuality,
   videoCRF,
   audioBitrate,
   onImageQualityChange,
   onVideoCRFChange,
   onAudioBitrateChange,
+  onResetDefaults,
   onClose,
 }: SettingsDrawerProps) {
   return (
-    <Drawer icon={Settings} title="Settings" onClose={onClose}>
+    <Drawer
+      icon={Settings}
+      title="Settings"
+      onClose={onClose}
+      headerAction={
+        <IconButton
+          variant="ghost"
+          size="sm"
+          aria-label="Reset to defaults"
+          title="Reset to defaults"
+          onClick={onResetDefaults}
+        >
+          <RotateCcw className="h-4 w-4" />
+        </IconButton>
+      }
+    >
       <div className="bg-slate-950/50 rounded-lg p-3 space-y-6">
         <Group name="Image" subtitle={formatConversionLabel('image')}>
           <Slider
@@ -90,3 +108,5 @@ function Group({
     </div>
   );
 }
+
+export default memo(SettingsDrawer);

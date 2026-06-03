@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Settings, Terminal } from 'lucide-react';
 import { IconButton } from '@/components/ui/icon-button';
 
@@ -7,7 +8,7 @@ interface HeaderProps {
   onConsoleClick: () => void;
 }
 
-export default function Header({
+function Header({
   showSK,
   onSettingsClick,
   onConsoleClick,
@@ -56,3 +57,5 @@ export default function Header({
     </div>
   );
 }
+
+export default memo(Header);

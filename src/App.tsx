@@ -36,7 +36,7 @@ function App() {
   const handleFilesAdded = (newFiles: FileInfo[]) => {
     const processingFiles: ProcessingFile[] = newFiles.map((file) => ({
       ...file,
-      id: `${file.path}-${Date.now()}-${Math.random()}`,
+      id: crypto.randomUUID(),
       status: 'pending' as FileStatus,
       progress: 0,
     }));
