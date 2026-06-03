@@ -2,11 +2,9 @@
 
 A simple multimedia file compressor for macOS.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/github/package-json/v/samkasman/kompress)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
-![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
@@ -108,10 +106,13 @@ kompress/
 │   ├── components/      # React components
 │   ├── hooks/           # React hooks
 │   └── utils/           # TS utilities
-└── src-tauri/           # Tauri/Rust source (back-end)
-    ├── binaries/        # FFmpeg binaries (per platform)
-    ├── icons/           # App icons
-    └── src/             # Rust source
+├── src-tauri/           # Tauri/Rust source (back-end)
+│   ├── binaries/        # FFmpeg binaries (per platform, gitignored)
+│   ├── icons/           # App icons
+│   └── src/             # Rust source
+├── scripts/             # Build, release, and verification scripts
+└── tests/
+    └── fixtures/        # Real PD/CC0 media samples for every supported format
 ```
 
 ## Development
@@ -128,19 +129,29 @@ This will:
 - Launch the `Tauri` native app dev window
 - Enable hot reload (UI updates on file changes)
 
+### Other scripts
+
+| Script              | Purpose                                                                 |
+| ------------------- | ----------------------------------------------------------------------- |
+| `npm run lint`      | ESLint over `src/**/*.{ts,tsx}` (zero-warning gate)                     |
+| `npm run format`    | Prettier auto-format on `src/**`                                        |
+| `npm run verify`    | Run the bundled ffmpeg against every fixture in `tests/fixtures/` and validate each output codec via `ffprobe`. Requires a system `ffprobe` and a populated `src-tauri/binaries/`. |
+
 ## Building
 
-Build for production:
+For local development builds without code signing, invoke the Tauri CLI directly:
 
 ```bash
-npm run tauri:build
+npx tauri build
 ```
 
-Outputs will be in `src-tauri/target/release/bundle/`:
+Outputs land in `src-tauri/target/release/bundle/`:
 
 - **macOS**: `.app` bundle and `.dmg` installer
-- **Linux**: `.AppImage` or `.deb`
-- **Windows**: `.exe` installer
+- **Linux**: `.AppImage` or `.deb` (when built on Linux)
+- **Windows**: `.exe` installer (when built on Windows)
+
+> The `npm run tauri:build` script chains `sign-and-copy-release.js`, which hard-fails without macOS code-signing credentials. Use it only when releasing — see the [Releasing](#releasing) section below.
 
 ## Issues
 
@@ -158,24 +169,33 @@ Contributions are welcome. Feel free to:
 
 ## Releasing
 
-1. Update version in `src-tauri/tauri.conf.json` and `package.json`
-2. Build for target platform (automatically signs app and creates DMG):
+`src-tauri/tauri.conf.json` is the single source of truth for the app version; `release.js` syncs it into `package.json` and `package-lock.json` automatically.
+
+1. **Bump version** in `src-tauri/tauri.conf.json`
+2. **(Optional) dry run** — builds, signs, notarizes, and produces the DMG without tagging or publishing:
    ```bash
-   npm run tauri:build:aarch64  # For macOS Apple Silicon
+   npm run release:local
    ```
-   This creates a signed DMG in `releases/kompress-v{version}-aarch64.dmg`
-3. Commit changes and tag:
+3. **Publish:**
    ```bash
-   git add .
-   git commit -m "Release v1.0.0"
-   git tag v1.0.0
-   git push origin master  # or your branch name
-   git push origin v1.0.0
+   npm run release
    ```
-4. Create GitHub release:
-   ```bash
-   gh release create v1.0.0 releases/kompress-v1.0.0-aarch64.dmg --title "v1.0.0" --notes "Release notes here"
-   ```
+   This syncs versions, builds `aarch64-apple-darwin`, signs the bundled FFmpeg + app + DMG with the Developer ID, notarizes via `notarytool --wait`, staples the ticket, commits the version bump, tags `v{version}`, pushes to `origin`, and opens a GitHub release with the DMG and auto-generated notes.
+
+### Signing & notarization prerequisites
+
+The release pipeline (`scripts/sign-and-copy-release.js`) expects a macOS host with:
+
+- **A Developer ID Application certificate** in the login keychain. The identity is currently hardcoded as `Developer ID Application: Sam Kasman (WC8RY44BN7)` — a fork would need to update `SIGN_IDENTITY` in `scripts/sign-and-copy-release.js`.
+- **A notarytool keychain profile named `kompress-notary`**, set up once with:
+  ```bash
+  xcrun notarytool store-credentials kompress-notary \
+    --apple-id <apple-id-email> \
+    --team-id <team-id> \
+    --password <app-specific-password>
+  ```
+  See Apple's [Customizing the notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow) for app-specific password creation.
+- Xcode Command Line Tools (`codesign`, `xcrun notarytool`, `xcrun stapler`, `hdiutil`).
 
 ## License
 
