@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import { ProcessingFile } from '../App';
+import { ProcessingFile } from '@/App';
+import type { CompressResult, FfmpegProgress } from '@/types/ipc';
 
 interface UseFileProcessorOptions {
   imageQuality: number;
@@ -24,7 +25,7 @@ export function useFileProcessor({
 
       addLog?.(`⏳ Processing: ${file.name} (${file.type})`);
 
-      const unlisten = await listen<{ file_id: string; progress: number }>(
+      const unlisten = await listen<FfmpegProgress>(
         'ffmpeg-progress',
         (event) => {
           if (event.payload.file_id === file.id) {
@@ -34,10 +35,7 @@ export function useFileProcessor({
       );
 
       try {
-        const result = await invoke<{
-          output_path: string;
-          output_size: number;
-        }>('compress_file', {
+        const result = await invoke<CompressResult>('compress_file', {
           inputPath: file.path,
           fileType: file.type,
           fileId: file.id,
