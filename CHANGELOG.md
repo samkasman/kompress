@@ -9,26 +9,109 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Test fixtures in `tests/fixtures/` covering every supported input format,
-  derived from three canonical public-domain / Creative Commons masters
-  (Hubble *Pillars of Creation*, *Big Buck Bunny*, Apollo 11 audio).
-- `scripts/verify-conversions.sh` (`npm run verify`) — runs the exact ffmpeg
+- In-house design system in `src/components/ui/` backed by
+  `class-variance-authority`: `IconButton`, `Slider`, `Drawer`, `FormatBadge`.
+  Replaces ad-hoc className blobs throughout the app.
+- `tests/fixtures/` — real public-domain / Creative Commons media samples
+  covering every supported input format, derived from three canonical
+  masters (Hubble _Pillars of Creation_, _Big Buck Bunny_, Apollo 11 audio).
+  See `tests/fixtures/README.md` for sources and licenses.
+- `scripts/verify-conversions.sh` (`npm run verify`) runs the exact ffmpeg
   args from `compress_file` against every fixture using the bundled binary
   and validates each output codec via `ffprobe`.
+- Reset-to-defaults button in the settings drawer.
+- Window is now resizable (min 360×360); the file list grows with window
+  height (`max-h-[50vh]`).
+- `src/constants/formats.ts` — single source of truth for supported file
+  extensions, output formats, and UI label helpers.
+- `src/types/ipc.ts` — shared Rust↔TS payload types matching the structs
+  in `main.rs`.
+- Husky git hooks: `pre-commit` (lint-staged), `commit-msg` (commitlint
+  with Conventional Commits), `pre-push` (tsc + lint + verify).
+- `.editorconfig`, `.npmrc` with `engine-strict=true`.
+- git-cliff integration: `release.js` auto-promotes the `[Unreleased]`
+  section to a versioned section on each release, drafts entries from
+  conventional commits when `[Unreleased]` is empty, and uses the result
+  as the GitHub release body. `npm run changelog:draft` previews.
+- `bin/cut-release.sh patch|minor|major` wraps the entire release flow
+  including the version bump.
+- Release preflight checks in `release.js` — verifies the Developer ID
+  Application cert and the `kompress-notary` keychain profile before the
+  multi-minute build/sign cycle.
+- `CLAUDE.md` documenting load-bearing project conventions for AI
+  assistants and new contributors.
 
 ### Fixed
 
-- HEIC and other multi-item image containers (AVIF) now convert correctly.
-  The ffmpeg 8.x `image2` muxer rejects single-still output to a plain
-  filename without `-update 1 -frames:v 1`; previously this surfaced as an
-  opaque "FFmpeg failed" error from `compress_file`.
+- HEIC and other multi-item image containers now convert correctly.
+  The ffmpeg 8.x `image2` muxer needs `-update 1 -frames:v 1` when writing
+  a single still from a HEIF/AVIF input; without it the decode succeeded
+  but the mux step failed with an opaque "FFmpeg failed" error.
+- File dialog filter previously omitted `heic`, `webp`, and `mkv` —
+  the dialog and drag-drop now accept the same set, derived from
+  `ALL_INPUT_EXTS`.
+- Settings drawer subtitles for image and audio were inaccurate
+  (image dropped JPEG, audio said "WAV/MP3 → MP3"). Now generated from
+  the format constants.
+- Slider keyboard accessibility — image and video sliders previously
+  used `transform: scaleX(-1)` to flip direction, which left ArrowRight
+  decreasing the value and screen readers reading the wrong position.
+  Labels swapped instead.
+- `pending → processing` race in `DropZone`: the trigger effect could
+  re-fire with the same file before `processFile`'s status flip applied,
+  occasionally double-launching a compression. Started file IDs now
+  tracked in a ref-held `Set`.
+- StrictMode listener leak in `useDragAndDrop` — cleanup ran before
+  `onDragDropEvent`'s promise resolved, leaving an orphaned listener for
+  the lifetime of the window in dev. A `cancelled` flag now guards.
+- `reveal_in_folder` failures (e.g., file deleted) are now logged to the
+  console drawer instead of silently doing nothing.
 
 ### Changed
 
-- README refreshed for accuracy: documented the `release.js` workflow,
-  Developer ID + `notarytool` keychain profile prerequisites, lint/format/
-  verify scripts, and the current Project Structure. Removed Linux/Windows
-  badges that didn't match the macOS-only distribution pipeline.
+- `useSettings` hydrates via a lazy `useState` initializer instead of
+  defaults → effect-reads-localStorage → effect-writes round-trip. Adds
+  `resetDefaults()` and centralizes value clamping (read and write).
+- `useFileProcessor` mounts a single global `ffmpeg-progress` listener
+  at hook init instead of one per file. Listener reads callbacks via
+  refs to avoid resubscribing on every render.
+- `DropZone` panel state collapsed from four booleans to a `useReducer`
+  with `{ phase: 'closed' | 'open' | 'closing', panel: 'settings' | 'console' }`.
+  Drawer animations finish via `onTransitionEnd` instead of three
+  hardcoded `setTimeout(300)` calls.
+- File IDs switched from `${path}-${Date.now()}-${Math.random()}` to
+  `crypto.randomUUID()`.
+- `Header`, `SettingsDrawer`, `ConsoleDrawer` memoized; their onClick props
+  hoisted with `useCallback`.
+- All internal imports now use the `@/` path alias (configured in
+  `tsconfig.json` and `vite.config.ts`, previously unused).
+- Splash animation timing extracted to named constants; debug-log
+  truncation constant (`MAX_DEBUG_LOGS`) extracted from a magic 10.
+- README refreshed for accuracy: documented the release flow,
+  signing/notarization prerequisites, the lint/format/verify scripts,
+  and the current project structure. Removed Linux/Windows badges that
+  didn't match the macOS-only distribution pipeline.
+- Version badge now sourced from `shields.io/github/package-json/v` so
+  it tracks releases.
+- `demo.gif` re-encoded from 42 MB to 5.8 MB (400px wide, 10 fps,
+  per-frame-diff palette).
+
+### Removed
+
+- `react-old-icons` dep — orphan since v1.1.2 Lucide migration but never
+  uninstalled.
+- `@radix-ui/react-progress` and `@radix-ui/react-slot` deps — only
+  consumed by dead `src/components/ui/` components.
+- `class-variance-authority` was removed alongside the dead ui/ purge,
+  then re-added for the new design system primitives.
+- `ThemeToggle` component (unused — `main.tsx` forces dark mode).
+- `src/components/ui/{badge,button,card,progress}.tsx` — shadcn scaffolding
+  that nothing actually rendered.
+- `cn()` helper in `utils/fileUtils.ts` — re-added at the conventional
+  `src/lib/utils.ts` location as part of the design system commit.
+- `scripts/copy-release.js` — superseded by `sign-and-copy-release.js`.
+- `components.json` (shadcn CLI config) — will be regenerated by
+  `npx shadcn init` if shadcn is reintroduced.
 
 ## [1.1.2] — 2026-05-01
 
@@ -64,8 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   that syncs versions, builds, signs, and pushes a tagged GitHub release.
 - MKV input support (video).
 - WEBP input support (image).
-- HEIC input support (image). *Note: HEIC decoding worked but the output
-  step silently failed under ffmpeg 8.x; fixed in Unreleased.*
+- HEIC input support (image). _Note: HEIC decoding worked but the output
+  step silently failed under ffmpeg 8.x; fixed in Unreleased._
 - Surface FFmpeg errors in the UI rather than failing silently.
 - Real progress reporting (parsed from ffmpeg stderr `Duration:` / `time=`).
 - "Show in Finder" action on compressed output.
