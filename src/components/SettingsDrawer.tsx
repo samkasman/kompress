@@ -1,4 +1,5 @@
 import { X, Settings } from 'lucide-react';
+import { formatConversionLabel } from '@/constants/formats';
 
 interface SettingsDrawerProps {
   imageQuality: number;
@@ -38,7 +39,7 @@ export default function SettingsDrawer({
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-semibold text-slate-200">Image</p>
-            <p className="text-xs text-slate-400">PNG/JPG/HEIC/WEBP → JPG</p>
+            <p className="text-xs text-slate-400">{formatConversionLabel('image')}</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
@@ -69,7 +70,7 @@ export default function SettingsDrawer({
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-semibold text-slate-200">Video</p>
-            <p className="text-xs text-slate-400">MOV/MP4/MKV → MP4</p>
+            <p className="text-xs text-slate-400">{formatConversionLabel('video')}</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
@@ -100,7 +101,7 @@ export default function SettingsDrawer({
         <div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-sm font-semibold text-slate-200">Audio</p>
-            <p className="text-xs text-slate-400">WAV/MP3 → MP3</p>
+            <p className="text-xs text-slate-400">{formatConversionLabel('audio')}</p>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">

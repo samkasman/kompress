@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import DropZone from './components/DropZone';
-import { FileInfo } from './utils/fileUtils';
+import DropZone from '@/components/DropZone';
+import { FileInfo } from '@/utils/fileUtils';
 
 export type FileStatus = 'pending' | 'processing' | 'complete' | 'error';
 

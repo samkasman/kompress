@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FileInfo, getFileType, isValidFileType } from '../utils/fileUtils';
+import { FileInfo, getFileType, isValidFileType } from '@/utils/fileUtils';
 import { open } from '@tauri-apps/plugin-dialog';
 import { stat } from '@tauri-apps/plugin-fs';
-import { ProcessingFile } from '../App';
-import { useSettings } from '../hooks/useSettings';
-import { useDragAndDrop } from '../hooks/useDragAndDrop';
-import { useFileProcessor } from '../hooks/useFileProcessor';
-import Header from './Header';
-import SettingsDrawer from './SettingsDrawer';
-import ConsoleDrawer from './ConsoleDrawer';
-import DropArea from './DropArea';
+import { ProcessingFile } from '@/App';
+import { useSettings } from '@/hooks/useSettings';
+import { useDragAndDrop } from '@/hooks/useDragAndDrop';
+import { useFileProcessor } from '@/hooks/useFileProcessor';
+import { ALL_INPUT_EXTS } from '@/constants/formats';
+import Header from '@/components/Header';
+import SettingsDrawer from '@/components/SettingsDrawer';
+import ConsoleDrawer from '@/components/ConsoleDrawer';
+import DropArea from '@/components/DropArea';
 
 interface DropZoneProps {
   files: ProcessingFile[];
@@ -100,25 +101,7 @@ export default function DropZone({
     try {
       const selected = await open({
         multiple: true,
-        filters: [
-          {
-            name: 'Media Files',
-            extensions: [
-              'png',
-              'jpg',
-              'jpeg',
-              'mov',
-              'mp4',
-              'wav',
-              'mp3',
-              'aac',
-              'flac',
-              'm4a',
-              'ogg',
-              'wma',
-            ],
-          },
-        ],
+        filters: [{ name: 'Media Files', extensions: [...ALL_INPUT_EXTS] }],
       });
 
       if (selected) {

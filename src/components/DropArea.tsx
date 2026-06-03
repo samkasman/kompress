@@ -1,6 +1,7 @@
 import { Loader2, CheckCircle, AlertCircle, FolderOpen, Upload, Image, Film, Music } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/core';
-import { ProcessingFile } from '../App';
+import { ProcessingFile } from '@/App';
+import { formatExtList } from '@/constants/formats';
 
 interface DropAreaProps {
   isDragging: boolean;
@@ -44,19 +45,19 @@ export default function DropArea({
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-md">
             <Image className="h-3.5 w-3.5 text-blue-400" />
             <span className="text-[10px] font-medium text-blue-300">
-              PNG, JPG, JPEG, HEIC, WEBP
+              {formatExtList('image')}
             </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-500/10 border border-purple-500/20 rounded-md">
             <Film className="h-3.5 w-3.5 text-purple-400" />
             <span className="text-[10px] font-medium text-purple-300">
-              MOV, MP4, MKV
+              {formatExtList('video')}
             </span>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-md">
             <Music className="h-3.5 w-3.5 text-green-400" />
             <span className="text-[10px] font-medium text-green-300">
-              WAV, MP3, AAC, FLAC, M4A, OGG, WMA
+              {formatExtList('audio')}
             </span>
           </div>
         </div>
