@@ -24,6 +24,60 @@ const version = config.version;
 
 console.log(`\nkompress v${version}${local ? ' (local build)' : ''}\n`);
 
+// Preflight — fail fast before the multi-minute build/sign/notarize cycle.
+preflightChecks();
+
+function preflightChecks() {
+  console.log('• Preflight checks');
+
+  try {
+    const identities = execSync('security find-identity -v -p codesigning', {
+      cwd: rootDir,
+    }).toString();
+    if (!identities.includes('WC8RY44BN7')) {
+      console.error(
+        '  ✗ Developer ID Application certificate (team WC8RY44BN7) not found in keychain.'
+      );
+      console.error('    Available identities:\n' + identities);
+      process.exit(1);
+    }
+    console.log('  ✓ Developer ID Application cert present');
+  } catch (err) {
+    console.error('  ✗ `security find-identity` failed: ' + err.message);
+    process.exit(1);
+  }
+
+  try {
+    execSync('xcrun notarytool --help', { cwd: rootDir, stdio: 'ignore' });
+    console.log('  ✓ xcrun notarytool available');
+  } catch {
+    console.error(
+      '  ✗ xcrun notarytool unavailable — install Xcode Command Line Tools.'
+    );
+    process.exit(1);
+  }
+
+  if (!process.env.SKIP_NOTARY_PROFILE_CHECK) {
+    // Lightweight check that the keychain item exists — avoids the multi-second
+    // network round-trip of `xcrun notarytool history`. Set the env var to
+    // skip when iterating offline.
+    try {
+      execSync(
+        'security find-generic-password -s "com.apple.gke.notary.tool" -l kompress-notary',
+        { cwd: rootDir, stdio: 'ignore' }
+      );
+      console.log('  ✓ notarytool keychain profile "kompress-notary" present');
+    } catch {
+      console.error(
+        '  ✗ notarytool keychain profile "kompress-notary" not found.\n' +
+          '    Create it with: xcrun notarytool store-credentials kompress-notary \\\n' +
+          '      --apple-id <email> --team-id <team> --password <app-specific-password>'
+      );
+      process.exit(1);
+    }
+  }
+}
+
 // Sync version into package.json and package-lock.json
 const pkgPath = join(rootDir, 'package.json');
 const lockPath = join(rootDir, 'package-lock.json');
