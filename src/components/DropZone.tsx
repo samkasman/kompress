@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { stat } from '@tauri-apps/plugin-fs';
 import { FileInfo, getFileType, isValidFileType } from '@/utils/fileUtils';
@@ -219,6 +220,17 @@ export default function DropZone({
 
   const handleClosePanel = useCallback(() => dispatchPanel({ type: 'close' }), []);
 
+  const handleRevealInFolder = useCallback(
+    async (path: string) => {
+      try {
+        await invoke('reveal_in_folder', { path });
+      } catch (error) {
+        addLog(`❌ Show in Finder failed: ${error}`);
+      }
+    },
+    [addLog]
+  );
+
   const handleSlideTransitionEnd = useCallback(
     (e: React.TransitionEvent<HTMLDivElement>) => {
       // Only react to the outer container's own transform transition —
@@ -259,6 +271,7 @@ export default function DropZone({
           <DropArea
             isDragging={isDragging}
             onFileDialog={handleFileDialog}
+            onRevealInFolder={handleRevealInFolder}
             files={files}
             elapsedTimes={elapsedTimes}
             fileListRef={fileListRef}

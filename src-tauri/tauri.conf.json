@@ -15,7 +15,9 @@
         "title": "kompress",
         "width": 400,
         "height": 400,
-        "resizable": false,
+        "minWidth": 360,
+        "minHeight": 360,
+        "resizable": true,
         "fullscreen": false,
         "backgroundColor": "#000000",
         "visible": true
