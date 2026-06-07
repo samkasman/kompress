@@ -5,7 +5,13 @@ interface UseDragAndDropOptions {
   onFilesDropped: (paths: string[]) => void;
   onDragStateChange?: (isDragging: boolean) => void;
   addLog?: (message: string) => void;
+  /**
+   * If true, a drawer is open and is covering the drop zone. When a drop
+   * arrives we call `onDrawerClose` first (so the drawer slides away) and
+   * then forward the drop normally — instead of silently dropping it.
+   */
   showDrawer?: boolean;
+  onDrawerClose?: () => void;
 }
 
 export function useDragAndDrop({
@@ -13,6 +19,7 @@ export function useDragAndDrop({
   onDragStateChange,
   addLog,
   showDrawer = false,
+  onDrawerClose,
 }: UseDragAndDropOptions) {
   const [isDragging, setIsDragging] = useState(false);
   const isProcessingDrop = useRef(false);
@@ -47,7 +54,8 @@ export function useDragAndDrop({
             const paths = event.payload.paths;
             addLog?.(`Dropped ${paths.length} file(s): ${paths.join(', ')}`);
 
-            if (paths.length > 0 && !showDrawer) {
+            if (paths.length > 0) {
+              if (showDrawer) onDrawerClose?.();
               onFilesDropped(paths);
             }
 
@@ -80,7 +88,13 @@ export function useDragAndDrop({
       cancelled = true;
       if (unlisten) unlisten();
     };
-  }, [onFilesDropped, showDrawer, handleDragStateChange, addLog]);
+  }, [
+    onFilesDropped,
+    showDrawer,
+    onDrawerClose,
+    handleDragStateChange,
+    addLog,
+  ]);
 
   const handleDragOver = useCallback(
     (e: React.DragEvent) => {

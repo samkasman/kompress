@@ -34,10 +34,17 @@ export function useFileProcessor({
       onFileUpdateRef.current(event.payload.file_id, {
         progress: event.payload.progress,
       });
-    }).then((fn) => {
-      if (cancelled) fn();
-      else unlisten = fn;
-    });
+    })
+      .then((fn) => {
+        if (cancelled) fn();
+        else unlisten = fn;
+      })
+      .catch((err) => {
+        addLogRef.current?.(
+          `❌ Failed to subscribe to ffmpeg-progress: ${err}`
+        );
+        console.error('listen(ffmpeg-progress) rejected:', err);
+      });
 
     return () => {
       cancelled = true;
