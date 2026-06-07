@@ -35,5 +35,8 @@ src-tauri/Cargo.lock
 src-tauri/gen/schemas
 src-tauri/binaries/
 
+# TypeScript composite build cache
+*.tsbuildinfo
+
 # Release builds
 releases/
