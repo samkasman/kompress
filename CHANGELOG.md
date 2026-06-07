@@ -40,9 +40,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   multi-minute build/sign cycle.
 - `CLAUDE.md` documenting load-bearing project conventions for AI
   assistants and new contributors.
+- Vitest + happy-dom + `@testing-library/react` with 16 unit tests
+  covering `formats`, `fileUtils`, and `useSettings` hydration / clamping
+  / persistence / reset. `npm run test` (watch) and `npm run test:run`
+  (single pass); pre-push gates push on a clean test run.
 
 ### Fixed
 
+- Video progress percent now animates instead of jumping straight to
+  ~100% at the end. FFmpeg writes stats lines separated by `\r` and only
+  emits `\n` at major status events; the previous `BufRead::lines()`
+  parser couldn't see them. Stderr is now scanned byte-by-byte with
+  either delimiter treated as a line terminator.
+- TOCTOU race in `get_output_path` — two parallel compressions of the
+  same source could pick the same `-compressed-N` suffix between the
+  exists check and ffmpeg actually creating the file. Switched to
+  atomic `OpenOptions::create_new(true)` so each compression reserves a
+  unique placeholder ffmpeg's `-y` overwrites.
+- `useFileProcessor` now catches `listen('ffmpeg-progress')` rejections
+  and logs them to the console drawer instead of silently dropping the
+  error — the progress bar would have stopped working with no signal.
+- Drops over an open settings/console drawer used to be silently
+  ignored. They now auto-close the drawer and process the files.
+- DropZone elapsed-time timer no longer rebuilds on every file update.
+  Previously its `files` dep tore down and recreated the interval on
+  every progress tick, drifting per-file timers by up to ~1s per update.
 - HEIC and other multi-item image containers now convert correctly.
   The ffmpeg 8.x `image2` muxer needs `-update 1 -frames:v 1` when writing
   a single still from a HEIF/AVIF input; without it the decode succeeded
@@ -95,9 +117,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it tracks releases.
 - `demo.gif` re-encoded from 42 MB to 5.8 MB (400px wide, 10 fps,
   per-frame-diff palette).
+- Bumped `@tauri-apps/api` 2.9 → 2.11, `@tauri-apps/cli` 2.9 → 2.11,
+  `@tauri-apps/plugin-dialog` 2.4 → 2.7, `@tauri-apps/plugin-fs`
+  2.4 → 2.5, plus prettier/postcss/autoprefixer patches. React /
+  ESLint / Vite / Tailwind majors deferred.
+- Husky hooks standardized with shebangs, `set -e`, and
+  `--no-install` so fresh clones fail loud rather than silently
+  fetching from the network.
+- Cargo.toml `license`/`repository` fields populated; previously empty.
+- README clarifies up-front that distribution is macOS-only even
+  though the Rust source builds on Linux/Windows for contributor
+  convenience.
+- CLAUDE.md notes that `npm audit` will always report dev-dep CVEs
+  (Tauri ships static bundle + compiled Rust, not the npm tree); the
+  gate that matters is `npm audit --omit=dev`.
 
 ### Removed
 
+- Android, iOS, and Windows Store tile icon assets in `src-tauri/icons/`
+  that `tauri.conf.json` never referenced.
 - `react-old-icons` dep — orphan since v1.1.2 Lucide migration but never
   uninstalled.
 - `@radix-ui/react-progress` and `@radix-ui/react-slot` deps — only
