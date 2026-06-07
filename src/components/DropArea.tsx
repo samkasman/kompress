@@ -1,4 +1,13 @@
-import { Loader2, CheckCircle, AlertCircle, FolderOpen, Upload, Image, Film, Music } from 'lucide-react';
+import {
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  FolderOpen,
+  Upload,
+  Image,
+  Film,
+  Music,
+} from 'lucide-react';
 import { ProcessingFile } from '@/App';
 import { FormatBadge } from '@/components/ui/format-badge';
 import { IconButton } from '@/components/ui/icon-button';
@@ -53,13 +62,19 @@ export default function DropArea({
       {hasFiles && (
         <div
           ref={fileListRef}
-          className="w-full max-w-md max-h-[50vh] overflow-y-auto space-y-2"
+          className="w-full max-w-md max-h-[192px] overflow-y-auto space-y-2"
         >
           {files.map((file) => (
             <div key={file.id} className="flex items-center gap-3 text-sm">
-              {file.type === 'image' && <Image className="h-4 w-4 text-blue-400 flex-shrink-0" />}
-              {file.type === 'video' && <Film className="h-4 w-4 text-purple-400 flex-shrink-0" />}
-              {file.type === 'audio' && <Music className="h-4 w-4 text-green-400 flex-shrink-0" />}
+              {file.type === 'image' && (
+                <Image className="h-4 w-4 text-blue-400 flex-shrink-0" />
+              )}
+              {file.type === 'video' && (
+                <Film className="h-4 w-4 text-purple-400 flex-shrink-0" />
+              )}
+              {file.type === 'audio' && (
+                <Music className="h-4 w-4 text-green-400 flex-shrink-0" />
+              )}
               <span className="text-slate-100 truncate flex-1">
                 {file.name}
               </span>

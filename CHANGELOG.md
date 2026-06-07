@@ -11,8 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - HEIC, WEBP, and MKV are first-class inputs across the file picker,
   drag-drop, and format badges.
-- Window is resizable (360×360 minimum); the file list grows with the
-  window up to half the viewport.
 - Reset-to-defaults button in the settings drawer.
 - A new in-house design system replaces ad-hoc styling — consistent
   iconography, sliders, and drawer chrome throughout.
