@@ -66,7 +66,9 @@ These don't change app behavior but matter for contributors.
   preflight checks for the Developer ID cert and notary keychain
   profile. `release.js` integrates git-cliff to auto-promote
   `[Unreleased]` to a versioned section and draft entries from
-  conventional commits when empty.
+  conventional commits when empty. `npm run release:patch|minor|major`
+  shortcuts wrap the bin script with `--yes` so you only type the bump
+  level.
 - **Quality gates:** Husky hooks for `commit-msg` (commitlint /
   Conventional Commits), `pre-commit` (lint-staged), and `pre-push`
   (tsc + lint + test + verify).
