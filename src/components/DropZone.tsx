@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { stat } from '@tauri-apps/plugin-fs';
@@ -145,6 +139,11 @@ export default function DropZone({
   const isPanelOpen = panel.phase === 'open';
   const isPanelVisible = panel.phase !== 'closed';
 
+  const handleClosePanel = useCallback(
+    () => dispatchPanel({ type: 'close' }),
+    []
+  );
+
   const {
     isDragging,
     handleDragOver,
@@ -155,6 +154,7 @@ export default function DropZone({
     onFilesDropped: processFilePaths,
     addLog,
     showDrawer: isPanelOpen,
+    onDrawerClose: handleClosePanel,
   });
 
   useEffect(() => {
@@ -166,22 +166,30 @@ export default function DropZone({
     }
   }, [files, processFile]);
 
+  // Track currently-processing IDs in a ref so the 1s timer below doesn't
+  // tear down and recreate on every file update (which would reset its
+  // sub-second phase and drift elapsed times).
+  const processingIdsRef = useRef<string[]>([]);
   useEffect(() => {
-    const processingFiles = files.filter((f) => f.status === 'processing');
-    if (processingFiles.length === 0) return;
+    processingIdsRef.current = files
+      .filter((f) => f.status === 'processing')
+      .map((f) => f.id);
+  }, [files]);
 
+  useEffect(() => {
     const interval = setInterval(() => {
+      const ids = processingIdsRef.current;
+      if (ids.length === 0) return;
       setElapsedTimes((prev) => {
         const updated = { ...prev };
-        for (const file of processingFiles) {
-          updated[file.id] = (updated[file.id] || 0) + 1;
+        for (const id of ids) {
+          updated[id] = (updated[id] || 0) + 1;
         }
         return updated;
       });
     }, 1000);
-
     return () => clearInterval(interval);
-  }, [files]);
+  }, []);
 
   useEffect(() => {
     if (!fileListRef.current || files.length === 0) return;
@@ -217,8 +225,6 @@ export default function DropZone({
         : { type: 'open', panel: 'console' }
     );
   }, [panel]);
-
-  const handleClosePanel = useCallback(() => dispatchPanel({ type: 'close' }), []);
 
   const handleRevealInFolder = useCallback(
     async (path: string) => {
