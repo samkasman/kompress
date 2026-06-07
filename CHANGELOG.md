@@ -68,7 +68,9 @@ These don't change app behavior but matter for contributors.
   `[Unreleased]` to a versioned section and draft entries from
   conventional commits when empty. `npm run release:patch|minor|major`
   shortcuts wrap the bin script with `--yes` so you only type the bump
-  level.
+  level. `release.js` also fast-forwards `master` to the released commit
+  so the branch always reflects the latest shipped version (`develop`
+  remains the integration branch).
 - **Quality gates:** Husky hooks for `commit-msg` (commitlint /
   Conventional Commits), `pre-commit` (lint-staged), and `pre-push`
   (tsc + lint + test + verify).
