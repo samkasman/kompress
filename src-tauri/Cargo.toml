@@ -3,8 +3,8 @@ name = "kompress"
 version = "0.0.1"
 description = "A simple multimedia file compressor for macOS"
 authors = ["Sam Kasman"]
-license = ""
-repository = ""
+license = "MIT"
+repository = "https://github.com/samkasman/kompress"
 edition = "2021"
 
 [build-dependencies]
