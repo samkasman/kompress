@@ -165,18 +165,27 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, quality gates, commit conv
 
 ## Releasing
 
-`src-tauri/tauri.conf.json` is the single source of truth for the app version; `release.js` syncs it into `package.json` and `package-lock.json` automatically.
+`src-tauri/tauri.conf.json` is the single source of truth for the app version; the release flow syncs it into `package.json` and `package-lock.json` automatically.
 
-1. **Bump version** in `src-tauri/tauri.conf.json`
-2. **(Optional) dry run** — builds, signs, notarizes, and produces the DMG without tagging or publishing:
-   ```bash
-   npm run release:local
-   ```
-3. **Publish:**
-   ```bash
-   npm run release
-   ```
-   This syncs versions, builds `aarch64-apple-darwin`, signs the bundled FFmpeg + app + DMG with the Developer ID, notarizes via `notarytool --wait`, staples the ticket, commits the version bump, tags `v{version}`, pushes to `origin`, and opens a GitHub release with the DMG and auto-generated notes.
+Day-to-day work happens on `develop`. The release flow advances `master` to the released commit, so `master` is always "latest shipped" and `develop` is "in progress."
+
+**Cut a release** — one command, no prompts:
+
+```bash
+npm run release:patch    # 1.1.2 → 1.1.3 (bug-fix only)
+npm run release:minor    # 1.1.2 → 1.2.0 (new behavior, backward-compatible)
+npm run release:major    # 1.1.2 → 2.0.0 (breaking change)
+```
+
+The script: bumps the version in `tauri.conf.json` and syncs the package files; promotes `[Unreleased]` in `CHANGELOG.md` to a versioned section; builds `aarch64-apple-darwin`; signs the bundled FFmpeg + app + DMG with the Developer ID; notarizes via `notarytool --wait`; staples the ticket; commits the version + changelog; tags `v{version}`; pushes `develop` and the tag; fast-forwards `master` to the released commit; opens a GitHub release with the DMG attached and the promoted changelog as the body.
+
+**Dry-run** — build/sign/notarize without tagging or publishing:
+
+```bash
+bash bin/cut-release.sh minor --local --yes
+```
+
+If the version is already bumped, `npm run release` (publish) or `npm run release:local` (dry-run) skips the bump step and runs the rest.
 
 ### Signing & notarization prerequisites
 
