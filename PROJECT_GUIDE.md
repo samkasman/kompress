@@ -100,7 +100,9 @@ Use `@/` for all internal imports.
 | `npm run changelog:draft` | Preview what git-cliff would put in [Unreleased]                                                       |
 | `npm run release`         | Full release flow (assumes version already bumped)                                                     |
 | `npm run release:local`   | Same but stops before tag/push/publish                                                                 |
-| `bin/cut-release.sh X`    | Bump version (X = patch/minor/major) and run release                                                   |
+| `npm run release:patch`   | Bump patch and run the full release flow (wraps `bin/cut-release.sh patch`)                            |
+| `npm run release:minor`   | Bump minor and run the full release flow                                                               |
+| `npm run release:major`   | Bump major and run the full release flow                                                               |
 
 ## Notarization signing setup (release prerequisites)
 
