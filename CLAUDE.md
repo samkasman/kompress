@@ -42,6 +42,11 @@ files get compressed in-place with a `-compressed` suffix.
   `transform: scaleX(-1)` to flip image/video sliders, which broke keyboard
   input. Don't reintroduce CSS flipping. If you want a different direction,
   swap the label positions (left ↔ right).
+- **`npm audit` will show dev-dependency CVEs** (esbuild, eslint chain,
+  postcss, etc.). They cannot reach end users — Tauri ships a static Vite
+  bundle and compiled Rust, not the npm tree. `npm audit --omit=dev` is the
+  gate that matters; it must stay clean. Never run `npm audit fix --force` —
+  it will silently bump Vite to a major version and break the build.
 
 ## Where things live
 

@@ -131,13 +131,15 @@ This will:
 
 ### Other scripts
 
-| Script              | Purpose                                                                 |
-| ------------------- | ----------------------------------------------------------------------- |
-| `npm run lint`      | ESLint over `src/**/*.{ts,tsx}` (zero-warning gate)                     |
-| `npm run format`    | Prettier auto-format on `src/**`                                        |
-| `npm run verify`    | Run the bundled ffmpeg against every fixture in `tests/fixtures/` and validate each output codec via `ffprobe`. Requires a system `ffprobe` and a populated `src-tauri/binaries/`. |
+| Script           | Purpose                                                                                                                                                                            |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run lint`   | ESLint over `src/**/*.{ts,tsx}` (zero-warning gate)                                                                                                                                |
+| `npm run format` | Prettier auto-format on `src/**`                                                                                                                                                   |
+| `npm run verify` | Run the bundled ffmpeg against every fixture in `tests/fixtures/` and validate each output codec via `ffprobe`. Requires a system `ffprobe` and a populated `src-tauri/binaries/`. |
 
 ## Building
+
+> **Distribution is macOS-only.** The signing + notarization pipeline only ships macOS builds. The Rust/Tauri source itself builds on Linux and Windows too, so contributors on those platforms can clone, build, and run locally — they just won't get a signed release artifact out the other end.
 
 For local development builds without code signing, invoke the Tauri CLI directly:
 
@@ -148,8 +150,8 @@ npx tauri build
 Outputs land in `src-tauri/target/release/bundle/`:
 
 - **macOS**: `.app` bundle and `.dmg` installer
-- **Linux**: `.AppImage` or `.deb` (when built on Linux)
-- **Windows**: `.exe` installer (when built on Windows)
+- **Linux**: `.AppImage` or `.deb` (when built on Linux, unsigned)
+- **Windows**: `.exe` installer (when built on Windows, unsigned)
 
 > The `npm run tauri:build` script chains `sign-and-copy-release.js`, which hard-fails without macOS code-signing credentials. Use it only when releasing — see the [Releasing](#releasing) section below.
 
