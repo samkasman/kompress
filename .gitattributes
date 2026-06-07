@@ -1,0 +1,49 @@
+# Normalize line endings to LF in the repo regardless of the contributor's
+# platform. Critical for the shell scripts in scripts/ and bin/.
+* text=auto eol=lf
+
+# Explicitly mark shell scripts and config files as LF — they will fail on
+# macOS if checked out with CRLF.
+*.sh           text eol=lf
+*.bash         text eol=lf
+bin/*          text eol=lf
+.husky/*       text eol=lf
+
+# Source code is plain text; declare it so git's heuristics never guess.
+*.ts           text
+*.tsx          text
+*.js           text
+*.mjs          text
+*.cjs          text
+*.json         text
+*.rs           text
+*.toml         text
+*.md           text
+*.css          text
+*.html         text
+*.yml          text
+*.yaml         text
+
+# Binaries — never try to diff or modify.
+*.png          binary
+*.jpg          binary
+*.jpeg         binary
+*.gif          binary
+*.webp         binary
+*.heic         binary
+*.icns         binary
+*.ico          binary
+*.dmg          binary
+*.mov          binary
+*.mp4          binary
+*.mkv          binary
+*.mp3          binary
+*.aac          binary
+*.flac         binary
+*.m4a          binary
+*.ogg          binary
+*.wav          binary
+*.wma          binary
+
+# Lockfiles — treat as generated for diff readability.
+package-lock.json linguist-generated=true

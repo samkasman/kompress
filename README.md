@@ -157,17 +157,11 @@ Outputs land in `src-tauri/target/release/bundle/`:
 
 ## Issues
 
-For bugs or feature requests, please [open an issue](https://github.com/samkasman/kompress/issues).
+For bugs or feature requests, please [open an issue](https://github.com/samkasman/kompress/issues). For **security issues**, see [SECURITY.md](SECURITY.md) — please don't file public issues for vulnerabilities.
 
 ## Contributing
 
-Contributions are welcome. Feel free to:
-
-1. Fork the repository
-1. Create a feature branch (`git checkout -b feature/amazing-feature`)
-1. Commit your changes (`git commit -m 'Add amazing feature'`)
-1. Push to the branch (`git push origin feature/amazing-feature`)
-1. Open a Pull Request
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, quality gates, commit conventions, and how to add a new supported format. All participation in this project is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Releasing
 
@@ -201,4 +195,6 @@ The release pipeline (`scripts/sign-and-copy-release.js`) expects a macOS host w
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+kompress is released under the MIT License — see [LICENSE](LICENSE) for the full text.
+
+The app bundles FFmpeg (LGPL v2.1+) and other third-party software with their own licenses. See [NOTICE.md](NOTICE.md) for the full attribution list and your rights as a redistributor.
