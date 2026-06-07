@@ -2,10 +2,7 @@
 
 ## Reporting a vulnerability
 
-If you believe you've found a security issue in kompress, **please don't open a public GitHub issue.** Instead, use one of these private channels:
-
-- GitHub's [private vulnerability reporting](https://github.com/samkasman/kompress/security/advisories/new) (preferred).
-- Email **<redacted>** with the word "kompress" in the subject.
+If you believe you've found a security issue in kompress, **please don't open a public GitHub issue.** Use GitHub's [private vulnerability reporting](https://github.com/samkasman/kompress/security/advisories/new) — the report stays private between you and the maintainer, and GitHub provides a structured workflow for disclosure and patching.
 
 Please include:
 
