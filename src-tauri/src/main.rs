@@ -1,7 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::io::{BufRead, BufReader};
+use std::fs::OpenOptions;
+use std::io::{BufReader, ErrorKind, Read};
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
 use tauri::{Emitter, Manager};
@@ -115,16 +116,29 @@ fn get_output_path(input_path: &str, file_type: &str) -> Result<String, String> 
         "mp4"
     };
 
-    let mut output_path = parent.join(format!("{}-compressed.{}", stem, ext));
-    let mut counter = 1;
-
-    // Handle duplicate files
-    while output_path.exists() {
-        output_path = parent.join(format!("{}-compressed-{}.{}", stem, counter, ext));
-        counter += 1;
+    // Atomically reserve a unique path with O_CREAT|O_EXCL semantics to avoid
+    // a TOCTOU race when multiple compressions of the same source run in
+    // parallel. We create a 0-byte placeholder; ffmpeg's `-y` will overwrite.
+    let mut counter = 0;
+    loop {
+        let candidate = if counter == 0 {
+            parent.join(format!("{}-compressed.{}", stem, ext))
+        } else {
+            parent.join(format!("{}-compressed-{}.{}", stem, counter, ext))
+        };
+        match OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&candidate)
+        {
+            Ok(_) => return Ok(candidate.to_string_lossy().to_string()),
+            Err(e) if e.kind() == ErrorKind::AlreadyExists => {
+                counter += 1;
+                continue;
+            }
+            Err(e) => return Err(format!("Failed to reserve output path: {}", e)),
+        }
     }
-
-    Ok(output_path.to_string_lossy().to_string())
 }
 
 #[derive(serde::Serialize, Clone)]
@@ -224,38 +238,76 @@ async fn compress_file(
     let file_type_clone = file_type.clone();
 
     let stderr_thread = std::thread::spawn(move || {
-        let reader = BufReader::new(stderr);
+        // FFmpeg writes progress stats separated by \r (overwriting the same
+        // terminal line) and only emits \n at major status events. Splitting
+        // on \n alone makes stats invisible until the next status event, so
+        // we read byte-by-byte and treat \r OR \n as a line terminator.
+        let mut reader = BufReader::new(stderr);
         let mut duration_seconds: Option<f64> = None;
         let mut lines_out: Vec<String> = Vec::new();
+        let mut line_buf: Vec<u8> = Vec::with_capacity(256);
+        let mut byte = [0u8; 1];
 
-        for line in reader.lines() {
-            if let Ok(line) = line {
-                lines_out.push(line.clone());
+        let emit_line = |line: String,
+                             lines_out: &mut Vec<String>,
+                             duration_seconds: &mut Option<f64>| {
+            lines_out.push(line.clone());
 
-                let _ = app_clone.emit("ffmpeg-output", FfmpegOutput {
+            let _ = app_clone.emit(
+                "ffmpeg-output",
+                FfmpegOutput {
                     file_id: file_id_clone.clone(),
                     line: line.clone(),
-                });
+                },
+            );
 
-                if file_type_clone == "video" {
-                    if duration_seconds.is_none() {
-                        if let Some(dur) = parse_duration(&line) {
-                            duration_seconds = Some(dur);
-                        }
-                    }
-                    if let Some((current_time, dur)) = parse_progress(&line, duration_seconds) {
-                        let progress = if dur > 0.0 {
-                            ((current_time / dur) * 100.0).min(100.0) as u32
-                        } else {
-                            0
-                        };
-                        let _ = app_clone.emit("ffmpeg-progress", FfmpegProgress {
-                            file_id: file_id_clone.clone(),
-                            progress,
-                        });
+            if file_type_clone == "video" {
+                if duration_seconds.is_none() {
+                    if let Some(dur) = parse_duration(&line) {
+                        *duration_seconds = Some(dur);
                     }
                 }
+                if let Some((current_time, dur)) =
+                    parse_progress(&line, *duration_seconds)
+                {
+                    let progress = if dur > 0.0 {
+                        ((current_time / dur) * 100.0).min(100.0) as u32
+                    } else {
+                        0
+                    };
+                    let _ = app_clone.emit(
+                        "ffmpeg-progress",
+                        FfmpegProgress {
+                            file_id: file_id_clone.clone(),
+                            progress,
+                        },
+                    );
+                }
             }
+        };
+
+        loop {
+            match reader.read(&mut byte) {
+                Ok(0) => break,
+                Ok(_) => {
+                    let b = byte[0];
+                    if b == b'\n' || b == b'\r' {
+                        if !line_buf.is_empty() {
+                            let line =
+                                String::from_utf8_lossy(&line_buf).into_owned();
+                            line_buf.clear();
+                            emit_line(line, &mut lines_out, &mut duration_seconds);
+                        }
+                    } else {
+                        line_buf.push(b);
+                    }
+                }
+                Err(_) => break,
+            }
+        }
+        if !line_buf.is_empty() {
+            let line = String::from_utf8_lossy(&line_buf).into_owned();
+            emit_line(line, &mut lines_out, &mut duration_seconds);
         }
         lines_out
     });
