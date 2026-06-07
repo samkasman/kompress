@@ -10,6 +10,9 @@ npx tsc --noEmit
 echo "→ lint"
 npm run lint --silent
 
+echo "→ test"
+npm run test:run --silent
+
 # Only run verify if the bundled ffmpeg binary is present.
 # In dev setups without it the fixture pipeline can't exercise the real binary;
 # CI-like environments should run `npm run verify` explicitly.
