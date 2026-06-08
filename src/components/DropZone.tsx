@@ -258,8 +258,10 @@ export default function DropZone({
         isDragging ? 'bg-zinc-900/60' : ''
       }`}
     >
+      {/* macOS Overlay title bar reserves ~28px at the top. Push everything
+          below it so the traffic lights don't overlap the header buttons. */}
       <div
-        className={`flex h-full transition-transform duration-300 ${
+        className={`flex h-[calc(100vh-28px)] mt-[28px] transition-transform duration-300 ${
           isPanelOpen ? '-translate-x-1/2' : 'translate-x-0'
         }`}
         style={{ width: '200%' }}

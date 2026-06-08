@@ -43,7 +43,7 @@ function SettingsDrawer({
         </IconButton>
       }
     >
-      <div className="space-y-7">
+      <div className="space-y-5">
         <Group name="Image" subtitle={formatConversionLabel('image')}>
           <Slider
             id="image-quality"
@@ -79,8 +79,8 @@ function SettingsDrawer({
             max={320}
             step={64}
             valueLabel={`${audioBitrate} kbps`}
-            minLabel="128 kbps"
-            maxLabel="320 kbps"
+            minLabel="Smallest"
+            maxLabel="Best"
             onChange={onAudioBitrateChange}
           />
         </Group>
