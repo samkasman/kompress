@@ -5,7 +5,6 @@ Thanks for thinking about contributing. kompress is a small, opinionated macOS a
 ## Before you start
 
 - Skim [`CLAUDE.md`](CLAUDE.md). It's the authoritative project-conventions doc — load-bearing rules around the macOS-only distribution stance, the single source of truth for versions, the no-CI policy, and a handful of ffmpeg quirks. Saves you re-discovering them.
-- Read the [Code of Conduct](CODE_OF_CONDUCT.md).
 - For security issues, see [SECURITY.md](SECURITY.md) — please don't file public issues for vulnerabilities.
 
 ## Dev setup

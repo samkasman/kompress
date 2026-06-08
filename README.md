@@ -161,7 +161,7 @@ For bugs or feature requests, please [open an issue](https://github.com/samkasma
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, quality gates, commit conventions, and how to add a new supported format. All participation in this project is governed by the [Code of Conduct](CODE_OF_CONDUCT.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, quality gates, commit conventions, and how to add a new supported format.
 
 ## Releasing
 
