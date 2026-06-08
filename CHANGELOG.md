@@ -153,6 +153,13 @@ These don't change app behavior but matter for contributors.
 
 Initial release.
 
+> **Historical note.** The `v1.0.0` tag points to commit `4d7e908`, which sits
+> on an early-development branch that was abandoned shortly after release.
+> v1.0.1 onwards was developed on a parallel line that became canonical, so
+> `v1.0.0` is not an ancestor of `main`. The tag is preserved as-is for
+> historical accuracy of what actually shipped — moving or deleting it would
+> rewrite a published release.
+
 ### Added
 
 - Drag-and-drop multimedia compression for macOS.
