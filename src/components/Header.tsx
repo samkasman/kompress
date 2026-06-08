@@ -10,6 +10,8 @@ interface HeaderProps {
   toolbarSlot?: ReactNode;
 }
 
+const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '';
+
 function Header({
   showSK,
   onSettingsClick,
@@ -18,14 +20,21 @@ function Header({
 }: HeaderProps) {
   return (
     <div className="relative flex-shrink-0 pointer-events-none z-20 border-b border-zinc-900">
-      <div className="flex items-center justify-between px-4 py-3">
-        <h1
-          className={`text-sm font-medium tracking-tight text-zinc-100 leading-none transition-opacity duration-500 ${
+      <div className="flex items-baseline justify-between px-4 py-2.5">
+        <div
+          className={`flex items-baseline gap-1.5 transition-opacity duration-500 ${
             showSK ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          kompress
-        </h1>
+          <h1 className="font-mono text-[13px] text-zinc-100 leading-none tracking-tight">
+            kompress
+          </h1>
+          {APP_VERSION && (
+            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-600 leading-none">
+              v{APP_VERSION}
+            </span>
+          )}
+        </div>
 
         <div className="flex items-center gap-1.5">
           {toolbarSlot}

@@ -23,7 +23,11 @@ function formatTime(seconds: number): string {
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
-const FORMAT_CATEGORIES: SupportedFileType[] = ['image', 'video', 'audio'];
+const FORMAT_CATEGORIES: { type: SupportedFileType; mark: string }[] = [
+  { type: 'image', mark: 'I' },
+  { type: 'video', mark: 'V' },
+  { type: 'audio', mark: 'A' },
+];
 
 export default function DropArea({
   isDragging,
@@ -36,7 +40,17 @@ export default function DropArea({
   const hasFiles = files.length > 0;
 
   return (
-    <div className="flex-1 min-h-0 flex flex-col">
+    <div className="relative flex-1 min-h-0 flex flex-col">
+      {/* Decisive drag state — the entire content area gets a hairline white
+          inset frame plus a slight backdrop tint. There is zero ambiguity
+          about whether the drop is registered. */}
+      {isDragging && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-2 z-30 border border-zinc-100/80 transition-opacity"
+        />
+      )}
+
       {hasFiles ? (
         <DropStrip isDragging={isDragging} onClick={onFileDialog} />
       ) : (
@@ -44,10 +58,7 @@ export default function DropArea({
       )}
 
       {hasFiles && (
-        <div
-          ref={fileListRef}
-          className="flex-1 min-h-0 overflow-y-auto px-2 py-1"
-        >
+        <div ref={fileListRef} className="flex-1 min-h-0 overflow-y-auto">
           <ul className="divide-y divide-zinc-900/80">
             {files.map((file) => (
               <FileRow
@@ -75,30 +86,41 @@ function EmptyState({
     <button
       type="button"
       onClick={onClick}
-      className={`flex-1 flex flex-col items-center justify-center w-full text-center transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 ${
-        isDragging ? 'bg-zinc-900/40' : 'hover:bg-zinc-900/30'
-      }`}
+      className="flex-1 flex flex-col items-center justify-center w-full px-6 text-center cursor-pointer focus-visible:outline-none focus-visible:ring-0 group"
     >
-      <p className="text-xs uppercase tracking-[0.22em] text-zinc-400 mb-6">
-        {isDragging ? 'Release to compress' : 'Click or drop files'}
-      </p>
-
-      <div className="flex flex-col gap-1 text-[10px] uppercase tracking-wider text-zinc-600">
-        {FORMAT_CATEGORIES.map((type) => (
-          <FormatLine key={type} type={type} />
+      {/* Spec-sheet style format table — reads like equipment documentation,
+          not a marketing badge. Single hairline frame, monospace contents. */}
+      <div className="w-full max-w-[240px] border-y border-zinc-800">
+        {FORMAT_CATEGORIES.map(({ type, mark }, idx) => (
+          <div
+            key={type}
+            className={`flex items-baseline gap-3 px-1 py-2 ${
+              idx < FORMAT_CATEGORIES.length - 1
+                ? 'border-b border-zinc-900'
+                : ''
+            }`}
+          >
+            <span className="font-mono text-[10px] text-zinc-600">{mark}</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 text-left flex-1">
+              {FORMATS[type].inputExts.join('  ')}
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+              → {FORMATS[type].outputExt}
+            </span>
+          </div>
         ))}
       </div>
-    </button>
-  );
-}
 
-function FormatLine({ type }: { type: SupportedFileType }) {
-  const exts = FORMATS[type].inputExts;
-  return (
-    <div className="flex items-center gap-3">
-      <span className="w-12 text-right text-zinc-700">{type}</span>
-      <span className="text-zinc-500">{exts.join(' · ').toUpperCase()}</span>
-    </div>
+      <p
+        className={`mt-6 font-mono text-[10px] uppercase tracking-[0.28em] transition-colors ${
+          isDragging
+            ? 'text-zinc-100'
+            : 'text-zinc-500 group-hover:text-zinc-300'
+        }`}
+      >
+        {isDragging ? '— release —' : 'drop or click'}
+      </p>
+    </button>
   );
 }
 
@@ -113,12 +135,12 @@ function DropStrip({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center justify-center gap-2 px-4 py-2.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500 border-b border-zinc-900 transition-colors hover:text-zinc-300 hover:bg-zinc-900/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-700 ${
-        isDragging ? 'bg-zinc-900/50 text-zinc-300' : ''
+      className={`flex items-center justify-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500 border-b border-zinc-900 transition-colors hover:text-zinc-200 hover:bg-zinc-900/40 focus-visible:outline-none focus-visible:ring-0 ${
+        isDragging ? 'bg-zinc-900/60 text-zinc-100' : ''
       }`}
     >
       <Plus className="h-3 w-3" strokeWidth={1.5} />
-      {isDragging ? 'Release to add' : 'Drop more or click'}
+      {isDragging ? '— release —' : 'drop or click to add'}
     </button>
   );
 }
@@ -138,13 +160,13 @@ function FileRow({
       : null;
 
   return (
-    <li className="group flex items-center gap-3 px-2 py-2 text-xs">
-      <span className="flex-1 truncate text-zinc-200 font-mono text-[12px]">
+    <li className="group flex items-center gap-3 px-3 py-2 text-xs hover:bg-zinc-900/30 transition-colors">
+      <span className="flex-1 truncate text-zinc-100 font-mono text-[12px]">
         {file.name}
       </span>
 
       {file.status === 'pending' && (
-        <span className="text-[10px] uppercase tracking-wider text-zinc-600">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-600">
           queued
         </span>
       )}
@@ -153,9 +175,9 @@ function FileRow({
         <div className="flex items-center gap-2 text-zinc-400 tabular-nums">
           <Loader2 className="h-3 w-3 animate-spin" strokeWidth={1.5} />
           {file.progress > 0 && (
-            <span className="text-[11px]">{file.progress}%</span>
+            <span className="font-mono text-[11px]">{file.progress}%</span>
           )}
-          <span className="text-[11px] text-zinc-600">
+          <span className="font-mono text-[11px] text-zinc-600">
             {formatTime(elapsed)}
           </span>
         </div>
@@ -164,9 +186,11 @@ function FileRow({
       {file.status === 'complete' && (
         <div className="flex items-center gap-2 tabular-nums">
           {savedPercent !== null && (
-            <span className="text-[11px] text-zinc-300">−{savedPercent}%</span>
+            <span className="font-mono text-[11px] text-zinc-200">
+              −{savedPercent}%
+            </span>
           )}
-          <Check className="h-3 w-3 text-zinc-400" strokeWidth={2} />
+          <Check className="h-3 w-3 text-zinc-500" strokeWidth={2} />
           {file.outputPath && (
             <button
               type="button"
@@ -177,7 +201,7 @@ function FileRow({
                 e.stopPropagation();
                 onReveal(file.outputPath!);
               }}
-              className="text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-zinc-200 transition-opacity"
+              className="text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-zinc-100 transition-opacity"
             >
               <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
             </button>
@@ -191,7 +215,9 @@ function FileRow({
           title={file.error}
         >
           <AlertTriangle className="h-3 w-3" strokeWidth={1.5} />
-          <span className="text-[10px] uppercase tracking-wider">failed</span>
+          <span className="font-mono text-[10px] uppercase tracking-wider">
+            failed
+          </span>
         </div>
       )}
     </li>
