@@ -41,16 +41,6 @@ export default function DropArea({
 
   return (
     <div className="relative flex-1 min-h-0 flex flex-col">
-      {/* Decisive drag state — the entire content area gets a hairline white
-          inset frame plus a slight backdrop tint. There is zero ambiguity
-          about whether the drop is registered. */}
-      {isDragging && (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-2 z-30 border border-foreground/80 transition-opacity"
-        />
-      )}
-
       {hasFiles ? (
         <DropStrip isDragging={isDragging} onClick={onFileDialog} />
       ) : (
