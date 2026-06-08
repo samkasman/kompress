@@ -18,9 +18,7 @@
         "resizable": false,
         "fullscreen": false,
         "backgroundColor": "#000000",
-        "visible": true,
-        "titleBarStyle": "Overlay",
-        "hiddenTitle": true
+        "visible": true
       }
     ],
     "security": {
