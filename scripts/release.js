@@ -58,20 +58,23 @@ function preflightChecks() {
   }
 
   if (!process.env.SKIP_NOTARY_PROFILE_CHECK) {
-    // Lightweight check that the keychain item exists — avoids the multi-second
-    // network round-trip of `xcrun notarytool history`. Set the env var to
-    // skip when iterating offline.
+    // Ask notarytool itself whether the profile is usable. This is a single
+    // Apple round-trip (~1-2s) but it's authoritative — newer Xcode/notarytool
+    // versions don't expose the saved credentials via `security
+    // find-generic-password`, so a keychain-only check gives false negatives.
+    // Set SKIP_NOTARY_PROFILE_CHECK=1 to skip when iterating offline.
     try {
       execSync(
-        'security find-generic-password -s "com.apple.gke.notary.tool" -l kompress-notary',
+        'xcrun notarytool history --keychain-profile kompress-notary --output-format json',
         { cwd: rootDir, stdio: 'ignore' }
       );
-      console.log('  ✓ notarytool keychain profile "kompress-notary" present');
+      console.log('  ✓ notarytool keychain profile "kompress-notary" usable');
     } catch {
       console.error(
-        '  ✗ notarytool keychain profile "kompress-notary" not found.\n' +
-          '    Create it with: xcrun notarytool store-credentials kompress-notary \\\n' +
-          '      --apple-id <email> --team-id <team> --password <app-specific-password>'
+        '  ✗ notarytool can\'t use keychain profile "kompress-notary".\n' +
+          '    Create or refresh it with:\n' +
+          '      xcrun notarytool store-credentials kompress-notary \\\n' +
+          '        --apple-id <email> --team-id <team> --password <app-specific-password>'
       );
       process.exit(1);
     }
