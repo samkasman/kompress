@@ -7,11 +7,13 @@ import { ProcessingFile } from '@/App';
 import { useSettings } from '@/hooks/useSettings';
 import { useDragAndDrop } from '@/hooks/useDragAndDrop';
 import { useFileProcessor } from '@/hooks/useFileProcessor';
+import { useUpdater } from '@/hooks/useUpdater';
 import { ALL_INPUT_EXTS } from '@/constants/formats';
 import Header from '@/components/Header';
 import SettingsDrawer from '@/components/SettingsDrawer';
 import ConsoleDrawer from '@/components/ConsoleDrawer';
 import DropArea from '@/components/DropArea';
+import UpdateBadge from '@/components/UpdateBadge';
 
 interface DropZoneProps {
   files: ProcessingFile[];
@@ -81,6 +83,8 @@ export default function DropZone({
     onFileUpdate,
     addLog,
   });
+
+  const { status: updateStatus, installUpdate } = useUpdater({ addLog });
 
   const processFilePaths = useCallback(
     async (filePaths: string[]) => {
@@ -273,6 +277,9 @@ export default function DropZone({
             showSK={showSK}
             onSettingsClick={handleSettingsClick}
             onConsoleClick={handleConsoleClick}
+            toolbarSlot={
+              <UpdateBadge status={updateStatus} onInstall={installUpdate} />
+            }
           />
           <DropArea
             isDragging={isDragging}
