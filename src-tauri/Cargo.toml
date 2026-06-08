@@ -7,14 +7,16 @@ license = "MIT"
 repository = "https://github.com/samkasman/kompress"
 edition = "2021"
 
+# Rust crate versions must match the @tauri-apps/* npm package minors
+# (see CLAUDE.md). Tauri's build refuses to compile on minor-level drift.
 [build-dependencies]
-tauri-build = { version = "2.0", features = [] }
+tauri-build = { version = "2.5", features = [] }
 
 [dependencies]
-tauri = { version = "2.0", features = [] }
-tauri-plugin-dialog = "2.0"
-tauri-plugin-fs = "2.0"
-tauri-plugin-shell = "2.0"
+tauri = { version = "2.11", features = [] }
+tauri-plugin-dialog = "2.7"
+tauri-plugin-fs = "2.5"
+tauri-plugin-shell = "2.3"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
