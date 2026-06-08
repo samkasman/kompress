@@ -207,6 +207,27 @@ try {
   process.exit(1);
 }
 
+// Updater artifacts are optional — sign-and-copy-release.js skips them when
+// TAURI_SIGNING_PRIVATE_KEY isn't set, so we mirror that here. When present,
+// attach them to the release so the in-app updater can find them.
+const updaterTarPath = join(
+  rootDir,
+  'releases',
+  `kompress-v${version}-aarch64.app.tar.gz`
+);
+const updaterSigPath = `${updaterTarPath}.sig`;
+const updaterManifestPath = join(rootDir, 'releases', 'latest.json');
+let updaterAssets = [];
+try {
+  await access(updaterTarPath);
+  await access(updaterSigPath);
+  await access(updaterManifestPath);
+  updaterAssets = [updaterTarPath, updaterSigPath, updaterManifestPath];
+  console.log('✓ Updater artifacts present (tar + sig + latest.json)');
+} catch {
+  console.log('• Updater artifacts not produced — skipping');
+}
+
 if (local) {
   console.log('\n✓ Local build complete. Run without --local to publish.\n');
   process.exit(0);
@@ -231,8 +252,11 @@ if (staged) run(`git commit -m "chore(release): v${version}"`);
 run(`git tag v${version}`);
 run(`git push origin HEAD`);
 run(`git push origin v${version}`);
+const releaseAssets = [dmgPath, ...updaterAssets]
+  .map((p) => `"${p}"`)
+  .join(' ');
 run(
-  `gh release create v${version} "${dmgPath}" --title "v${version}" ${notesArg}`
+  `gh release create v${version} ${releaseAssets} --title "v${version}" ${notesArg}`
 );
 
 console.log(`\n✓ Released kompress v${version}\n`);

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { Settings, Terminal } from 'lucide-react';
 import { IconButton } from '@/components/ui/icon-button';
 
@@ -6,12 +6,15 @@ interface HeaderProps {
   showSK: boolean;
   onSettingsClick: () => void;
   onConsoleClick: () => void;
+  /** Optional slot rendered to the left of the toolbar icons (e.g. update badge). */
+  toolbarSlot?: ReactNode;
 }
 
 function Header({
   showSK,
   onSettingsClick,
   onConsoleClick,
+  toolbarSlot,
 }: HeaderProps) {
   return (
     <div className="relative flex-shrink-0 pointer-events-none z-20">
@@ -33,7 +36,8 @@ function Header({
           </p>
         </div>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
+          {toolbarSlot}
           <IconButton
             aria-label="Toggle console"
             onClick={(e) => {

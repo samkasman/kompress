@@ -43,6 +43,15 @@ mismatched Tauri packages` otherwise. When bumping the npm side
   the matching Rust crate versions in `src-tauri/Cargo.toml` in the
   same commit and run `cargo update` to refresh `Cargo.lock`. Patch
   drift is fine; minor drift is not.
+- \*\*The auto-updater downloads `.app.tar.gz` of the fully Apple-signed
+  - notarized + stapled `.app`\*\* — not the raw `tauri build` output.
+    `scripts/sign-and-copy-release.js` re-notarizes the standalone `.app`
+    (separately from the DMG), staples it, tars it, then minisigns the
+    tar. Don't enable `createUpdaterArtifacts: true` in `tauri.conf.json`
+    — that would tar the unsigned build-time `.app`, defeating the point.
+    Updater env vars: `TAURI_SIGNING_PRIVATE_KEY` (key content, not path)
+    and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. If unset, the release
+    skips updater artifacts and still produces a fully-signed DMG.
 - **HEIC conversion needs `-update 1 -frames:v 1`** in the image2 muxer args.
   Without them, ffmpeg 8.x decodes the HEIC fine and then refuses to write the
   output as a single JPG ("does not contain an image sequence pattern"). The

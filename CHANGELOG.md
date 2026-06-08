@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Auto-updater.** kompress now checks for new signed releases on
+  launch and shows an _Update to v…_ button in the header when one is
+  available. One click downloads the update, verifies a minisign
+  signature against a pinned public key, replaces the app in place,
+  and relaunches. Powered by Tauri's Updater + Process plugins.
+
 ## [1.2.0] — 2026-06-08
 
 ### Added

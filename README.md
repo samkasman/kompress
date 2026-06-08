@@ -7,11 +7,11 @@ A simple multimedia file compressor for macOS.
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
 ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
 
 <img src="demo.gif" alt="kompress demo GIF" width="400">
 
@@ -185,6 +185,31 @@ bash bin/cut-release.sh minor --local --yes
 ```
 
 If the version is already bumped, `npm run release` (publish) or `npm run release:local` (dry-run) skips the bump step and runs the rest.
+
+### Auto-updater setup (one-time, per maintainer)
+
+kompress ships with an in-app updater (Tauri's Updater + Process plugins). On launch the app silently checks `https://github.com/samkasman/kompress/releases/latest/download/latest.json` and shows an **Update to v…** button in the header if there's a newer signed release.
+
+The updater verifies a [minisign](https://jedisct1.github.io/minisign/) signature on every update payload, separate from Apple's Developer ID. You need to generate a keypair once and pass the private key as an environment variable during releases.
+
+**Generate the keypair** (one time, ever):
+
+```bash
+npx @tauri-apps/cli signer generate -w ~/.tauri/kompress-updater.key
+```
+
+You'll be prompted for a passphrase. Keep the `.key` file **outside the repo**; save the passphrase in your password manager.
+
+The command prints a public key. Paste it into `src-tauri/tauri.conf.json` → `plugins.updater.pubkey`, replacing `REPLACE_WITH_GENERATED_PUBLIC_KEY`. The public key is safe to commit and check into git.
+
+**Per-release env vars** — `release.js` only attaches updater artifacts when these are set in the shell before running `npm run release:*`:
+
+```bash
+export TAURI_SIGNING_PRIVATE_KEY="$(cat ~/.tauri/kompress-updater.key)"
+export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="<your passphrase>"
+```
+
+You can put these in a `.env.release` file that's gitignored, and `source` it before releasing — or stash them in your password manager and paste before running. Without them, the release still ships a fully-signed DMG (existing users can still download from GitHub Releases), but no `latest.json` is published, so in-app update prompts won't appear for that version.
 
 ### Signing & notarization prerequisites
 
