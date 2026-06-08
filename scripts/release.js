@@ -24,24 +24,47 @@ const version = config.version;
 
 console.log(`\nkompress v${version}${local ? ' (local build)' : ''}\n`);
 
+// Resolve signing config the same way sign-and-copy-release.js does (env
+// vars → auto-detect) so the preflight and the build agree.
+const notaryProfile =
+  process.env.MACOS_NOTARY_PROFILE ??
+  `${config.productName || 'kompress'}-notary`;
+
 // Preflight — fail fast before the multi-minute build/sign/notarize cycle.
 preflightChecks();
 
 function preflightChecks() {
   console.log('• Preflight checks');
 
+  let signIdentity;
   try {
-    const identities = execSync('security find-identity -v -p codesigning', {
-      cwd: rootDir,
-    }).toString();
-    if (!identities.includes('WC8RY44BN7')) {
-      console.error(
-        '  ✗ Developer ID Application certificate (team WC8RY44BN7) not found in keychain.'
-      );
-      console.error('    Available identities:\n' + identities);
-      process.exit(1);
+    if (process.env.MACOS_SIGN_IDENTITY) {
+      signIdentity = process.env.MACOS_SIGN_IDENTITY;
+    } else {
+      const out = execSync('security find-identity -v -p codesigning', {
+        cwd: rootDir,
+        encoding: 'utf-8',
+      });
+      const matches = [
+        ...out.matchAll(/"(Developer ID Application: [^"]+)"/g),
+      ].map((m) => m[1]);
+      if (matches.length === 1) {
+        signIdentity = matches[0];
+      } else if (matches.length === 0) {
+        console.error(
+          '  ✗ No Developer ID Application cert in keychain.\n' +
+            '    Add one via Xcode → Settings → Accounts, or set MACOS_SIGN_IDENTITY.'
+        );
+        process.exit(1);
+      } else {
+        console.error(
+          '  ✗ Multiple Developer ID Application certs — set MACOS_SIGN_IDENTITY to disambiguate:\n' +
+            matches.map((m) => `      ${m}`).join('\n')
+        );
+        process.exit(1);
+      }
     }
-    console.log('  ✓ Developer ID Application cert present');
+    console.log(`  ✓ Sign identity: ${signIdentity}`);
   } catch (err) {
     console.error('  ✗ `security find-identity` failed: ' + err.message);
     process.exit(1);
@@ -65,16 +88,17 @@ function preflightChecks() {
     // Set SKIP_NOTARY_PROFILE_CHECK=1 to skip when iterating offline.
     try {
       execSync(
-        'xcrun notarytool history --keychain-profile kompress-notary --output-format json',
+        `xcrun notarytool history --keychain-profile ${notaryProfile} --output-format json`,
         { cwd: rootDir, stdio: 'ignore' }
       );
-      console.log('  ✓ notarytool keychain profile "kompress-notary" usable');
+      console.log(`  ✓ notarytool keychain profile "${notaryProfile}" usable`);
     } catch {
       console.error(
-        '  ✗ notarytool can\'t use keychain profile "kompress-notary".\n' +
+        `  ✗ notarytool can't use keychain profile "${notaryProfile}".\n` +
           '    Create or refresh it with:\n' +
-          '      xcrun notarytool store-credentials kompress-notary \\\n' +
-          '        --apple-id <email> --team-id <team> --password <app-specific-password>'
+          `      xcrun notarytool store-credentials ${notaryProfile} \\\n` +
+          '        --apple-id <email> --team-id <team> --password <app-specific-password>\n' +
+          '    Override the profile name with MACOS_NOTARY_PROFILE.'
       );
       process.exit(1);
     }

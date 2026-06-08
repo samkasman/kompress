@@ -3,6 +3,16 @@
   "version": "1.2.0",
   "description": "A simple multimedia file compressor for macOS",
   "type": "module",
+  "license": "MIT",
+  "author": "Sam Kasman",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samkasman/kompress.git"
+  },
+  "homepage": "https://github.com/samkasman/kompress",
+  "bugs": {
+    "url": "https://github.com/samkasman/kompress/issues"
+  },
   "engines": {
     "node": ">=18.0.0"
   },
