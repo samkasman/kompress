@@ -36,6 +36,13 @@ files get compressed in-place with a `-compressed` suffix.
 
 ## Quirks worth remembering
 
+- **Tauri Rust crates and `@tauri-apps/*` npm packages must match on
+  major.minor.** Tauri's build script bails with `Found version
+mismatched Tauri packages` otherwise. When bumping the npm side
+  (`@tauri-apps/api`, `plugin-dialog`, `plugin-fs`, `cli`, etc.), bump
+  the matching Rust crate versions in `src-tauri/Cargo.toml` in the
+  same commit and run `cargo update` to refresh `Cargo.lock`. Patch
+  drift is fine; minor drift is not.
 - **HEIC conversion needs `-update 1 -frames:v 1`** in the image2 muxer args.
   Without them, ffmpeg 8.x decodes the HEIC fine and then refuses to write the
   output as a single JPG ("does not contain an image sequence pattern"). The
