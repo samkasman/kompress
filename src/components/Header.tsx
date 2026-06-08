@@ -17,24 +17,15 @@ function Header({
   toolbarSlot,
 }: HeaderProps) {
   return (
-    <div className="relative flex-shrink-0 pointer-events-none z-20">
-      <div className="flex items-start justify-between p-4">
-        <div>
-          <h1
-            className={`text-2xl font-bold text-slate-100 leading-none transition-opacity duration-500 ${
-              showSK ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            kompress
-          </h1>
-          <p
-            className={`text-xs text-slate-400 mt-1 transition-opacity duration-500 ${
-              showSK ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            A simple multimedia file compressor for macOS.
-          </p>
-        </div>
+    <div className="relative flex-shrink-0 pointer-events-none z-20 border-b border-zinc-900">
+      <div className="flex items-center justify-between px-4 py-3">
+        <h1
+          className={`text-sm font-medium tracking-tight text-zinc-100 leading-none transition-opacity duration-500 ${
+            showSK ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          kompress
+        </h1>
 
         <div className="flex items-center gap-1.5">
           {toolbarSlot}
@@ -45,7 +36,7 @@ function Header({
               onConsoleClick();
             }}
           >
-            <Terminal className="h-5 w-5" />
+            <Terminal className="h-4 w-4" strokeWidth={1.5} />
           </IconButton>
           <IconButton
             aria-label="Toggle settings"
@@ -54,7 +45,7 @@ function Header({
               onSettingsClick();
             }}
           >
-            <Settings className="h-5 w-5" />
+            <Settings className="h-4 w-4" strokeWidth={1.5} />
           </IconButton>
         </div>
       </div>

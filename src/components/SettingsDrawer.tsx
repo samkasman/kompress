@@ -43,7 +43,7 @@ function SettingsDrawer({
         </IconButton>
       }
     >
-      <div className="bg-slate-950/50 rounded-lg p-3 space-y-6">
+      <div className="space-y-7">
         <Group name="Image" subtitle={formatConversionLabel('image')}>
           <Slider
             id="image-quality"
@@ -51,12 +51,12 @@ function SettingsDrawer({
             value={imageQuality}
             min={1}
             max={8}
-            minLabel="1 (Best)"
-            maxLabel="8 (Smallest)"
+            minLabel="Best"
+            maxLabel="Smallest"
             onChange={onImageQualityChange}
           />
         </Group>
-        <hr className="border-slate-700" />
+        <hr className="border-zinc-900" />
         <Group name="Video" subtitle={formatConversionLabel('video')}>
           <Slider
             id="video-crf"
@@ -64,12 +64,12 @@ function SettingsDrawer({
             value={videoCRF}
             min={18}
             max={28}
-            minLabel="18 (Best)"
-            maxLabel="28 (Smallest)"
+            minLabel="Best"
+            maxLabel="Smallest"
             onChange={onVideoCRFChange}
           />
         </Group>
-        <hr className="border-slate-700" />
+        <hr className="border-zinc-900" />
         <Group name="Audio" subtitle={formatConversionLabel('audio')}>
           <Slider
             id="audio-bitrate"
@@ -79,8 +79,8 @@ function SettingsDrawer({
             max={320}
             step={64}
             valueLabel={`${audioBitrate} kbps`}
-            minLabel="128 kbps (Smallest)"
-            maxLabel="320 kbps (Best)"
+            minLabel="128 kbps"
+            maxLabel="320 kbps"
             onChange={onAudioBitrateChange}
           />
         </Group>
@@ -100,9 +100,13 @@ function Group({
 }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <p className="text-sm font-semibold text-slate-200">{name}</p>
-        <p className="text-xs text-slate-400">{subtitle}</p>
+      <div className="flex items-baseline justify-between mb-3">
+        <p className="text-[11px] uppercase tracking-[0.18em] font-medium text-zinc-200">
+          {name}
+        </p>
+        <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+          {subtitle}
+        </p>
       </div>
       {children}
     </div>

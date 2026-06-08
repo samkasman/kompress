@@ -26,15 +26,17 @@ function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
     <Drawer icon={Terminal} title="Console" onClose={onClose}>
       <div
         ref={logsRef}
-        className="flex-1 overflow-y-auto bg-slate-950/50 rounded-lg p-3"
+        className="flex-1 overflow-y-auto border border-zinc-900 rounded p-3 bg-black/40"
       >
         {logs.length === 0 ? (
-          <div className="text-xs text-slate-500 font-mono">No logs yet...</div>
+          <div className="text-[11px] text-zinc-600 font-mono">
+            No logs yet.
+          </div>
         ) : (
           logs.map((log, idx) => (
             <div
               key={idx}
-              className="text-xs text-slate-400 font-mono leading-5"
+              className="text-[11px] text-zinc-400 font-mono leading-5"
             >
               {log}
             </div>
