@@ -24,10 +24,7 @@ function ConsoleDrawer({ logs, onClose }: ConsoleDrawerProps) {
 
   return (
     <Drawer icon={Terminal} title="Console" onClose={onClose}>
-      <div
-        ref={logsRef}
-        className="flex-1 overflow-y-auto border border-border rounded p-3 bg-surface-1"
-      >
+      <div ref={logsRef} className="flex-1 overflow-y-auto">
         {logs.length === 0 ? (
           <div className="font-mono text-[11px] text-foreground-faint">
             No logs yet.

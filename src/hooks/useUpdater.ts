@@ -28,12 +28,16 @@ export function useUpdater({
   const updateRef = useRef<Update | null>(null);
 
   const checkForUpdate = useCallback(async () => {
+    // Belt-and-suspenders dev guard. The useEffect below also skips in dev,
+    // but if a stale HMR effect ever slips through, this stops the noise at
+    // the source.
+    if (import.meta.env.DEV) return;
+
     setStatus({ phase: 'checking' });
     try {
       const update = await check();
       if (!update) {
         setStatus({ phase: 'idle' });
-        addLog?.('Updater: already on the latest version');
         return;
       }
       updateRef.current = update;
@@ -47,15 +51,14 @@ export function useUpdater({
       const message = error instanceof Error ? error.message : String(error);
       // Releases that predate the updater plugin don't ship a `latest.json`
       // asset, so a 404 / parse failure on the manifest just means "nothing
-      // to install yet." Treat that quietly. Real errors (network down,
-      // signature mismatch) still surface.
+      // to install yet." Silent — no log, no error UI. Real errors
+      // (network down, signature mismatch) still surface loudly.
       const isMissingManifest =
         /could not fetch a valid release json|404|not found|no release/i.test(
           message
         );
       if (isMissingManifest) {
         setStatus({ phase: 'idle' });
-        addLog?.('Updater: no release manifest yet (skipped)');
         return;
       }
       addLog?.(`❌ Updater check failed: ${message}`);
