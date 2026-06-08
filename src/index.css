@@ -4,55 +4,56 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 217.2 91.2% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 217.2 91.2% 60%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 217.2 91.2% 60%;
-    --radius: 0.5rem;
+    /* Surfaces */
+    --background: 0 0% 4%;
+    --surface-1: 0 0% 7%;
+    --surface-2: 0 0% 10%;
+
+    /* Foreground hierarchy — ramp from primary to vanishing */
+    --foreground: 0 0% 96%;
+    --foreground-muted: 0 0% 70%;
+    --foreground-subtle: 0 0% 50%;
+    --foreground-faint: 0 0% 32%;
+
+    /* Borders */
+    --border: 0 0% 14%;
+    --border-strong: 0 0% 22%;
+
+    /* Focus ring */
+    --ring: 0 0% 80%;
+
+    /* Status — muted to fit the instrument aesthetic. Not slack-green,
+       not error-red. Phosphor-adjacent for success, terra for error,
+       sand for warning. Use sparingly: a single icon, never a fill. */
+    --success: 150 38% 52%;
+    --warning: 36 70% 58%;
+    --danger: 0 55% 58%;
+
+    --radius: 0.375rem;
   }
 
+  /* Inverted/light theme intentionally unused — the app forces dark via main.tsx.
+     Kept only so anything reaching for `:root.dark` still resolves. */
   .dark {
-    --background: 222.2 47.4% 2%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 47.4% 3%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 47.4% 3%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 60%;
-    --primary-foreground: 222.2 47.4% 2%;
-    --secondary: 217.2 32.6% 10%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 10%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 91.2% 60%;
-    --accent-foreground: 222.2 47.4% 2%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 12%;
-    --input: 217.2 32.6% 12%;
-    --ring: 217.2 91.2% 60%;
+    --background: 0 0% 4%;
+    --surface-1: 0 0% 7%;
+    --surface-2: 0 0% 10%;
+    --foreground: 0 0% 96%;
+    --foreground-muted: 0 0% 70%;
+    --foreground-subtle: 0 0% 50%;
+    --foreground-faint: 0 0% 32%;
+    --border: 0 0% 14%;
+    --border-strong: 0 0% 22%;
+    --ring: 0 0% 80%;
+    --success: 150 38% 52%;
+    --warning: 36 70% 58%;
+    --danger: 0 55% 58%;
   }
-}
 
-@layer base {
   * {
     border-color: hsl(var(--border));
   }
+
   html,
   body,
   #root {
@@ -62,316 +63,52 @@
     padding: 0;
     overflow: hidden;
   }
-  html {
-    position: relative;
-    background: linear-gradient(135deg, #0a0e27 0%, #0f1a2e 50%, #0a1628 100%);
+
+  html,
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
-  html::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      135deg,
-      #0a0e27 0%,
-      #1a1f3a 5%,
-      #2d1b4e 10%,
-      #1e3a5f 15%,
-      #0f4c75 20%,
-      #1a5f7a 25%,
-      #2d7a8a 30%,
-      #1e5f7a 35%,
-      #0f4c75 40%,
-      #1e3a5f 45%,
-      #2d1b4e 50%,
-      #1a1f3a 55%,
-      #0f2a3a 60%,
-      #0a0e27 65%,
-      transparent 100%
-    );
-    background-size: 400% 400%;
-    background-attachment: fixed;
-    animation: aurora 20s ease infinite;
-    opacity: 0.4;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  html::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    background-image:
-      radial-gradient(
-        1.5px 1.5px at 12% 18%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 23% 34%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 35% 12%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 47% 56%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 58% 78%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 69% 23%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 81% 45%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 92% 67%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 8% 89%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 19% 5%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 31% 27%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 42% 49%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 54% 71%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 65% 16%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 76% 38%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 88% 60%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 4% 82%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 15% 14%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 27% 36%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 38% 58%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 50% 80%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 61% 25%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 73% 47%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 84% 69%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 96% 11%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 7% 33%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 18% 55%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 29% 77%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 41% 22%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 52% 44%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 64% 66%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 75% 88%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 87% 30%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 98% 52%, rgba(255, 255, 255, 1), transparent);
-    background-size: 120% 120%;
-    background-repeat: no-repeat;
-    opacity: 1;
-    animation:
-      twinkle 5s ease-in-out infinite alternate,
-      driftFast 100s linear infinite;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  @keyframes twinkle {
-    0% {
-      opacity: 0.8;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes driftSlow {
-    0% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: 30% 25%;
-    }
-    100% {
-      background-position: 0% 0%;
-    }
-  }
-
-  @keyframes driftMedium {
-    0% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: -25% 18%;
-    }
-    100% {
-      background-position: 0% 0%;
-    }
-  }
-
-  @keyframes driftFast {
-    0% {
-      background-position: 0% 0%;
-    }
-    50% {
-      background-position: 20% -15%;
-    }
-    100% {
-      background-position: 0% 0%;
-    }
-  }
-
+  /* Subtle film-grain overlay. SVG inline-encoded so it loads without a
+     network round-trip and stays consistent in dev + bundled builds. The
+     fractal noise is rendered once by the browser; opacity is intentionally
+     low (~3%) — present, never noticed. Mix-blend-overlay keeps the grain
+     dark on dark instead of brightening the underlying surface. */
   body::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    background-image:
-      radial-gradient(1px 1px at 15% 25%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1.5px 1.5px at 45% 65%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 75% 35%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 25% 75%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 55% 15%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 85% 85%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 35% 45%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(2px 2px at 65% 55%, rgba(255, 255, 255, 1), transparent);
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    opacity: 1;
-    animation:
-      driftSlow 150s linear infinite,
-      twinkle 6s ease-in-out infinite alternate;
+    inset: 0;
     pointer-events: none;
-    z-index: 0;
-  }
-
-  body::after {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent;
-    background-image:
-      radial-gradient(1px 1px at 20% 40%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1.5px 1.5px at 50% 20%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(2px 2px at 80% 60%, rgba(255, 255, 255, 1), transparent),
-      radial-gradient(
-        1px 1px at 30% 80%,
-        rgba(255, 255, 255, 0.95),
-        transparent
-      ),
-      radial-gradient(
-        1.5px 1.5px at 60% 50%,
-        rgba(255, 255, 255, 1),
-        transparent
-      ),
-      radial-gradient(1px 1px at 90% 30%, rgba(255, 255, 255, 1), transparent);
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    opacity: 0.9;
-    animation:
-      driftMedium 125s linear infinite,
-      twinkle 8s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  @keyframes aurora {
-    0% {
-      background-position: 0% 50%;
-    }
-    25% {
-      background-position: 50% 100%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    75% {
-      background-position: 50% 0%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
+    z-index: 1;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 180px 180px;
   }
 
   body {
     @apply text-foreground;
     font-family:
-      -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Helvetica,
+      Arial,
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: transparent;
+    font-feature-settings: 'cv11', 'ss01';
   }
 
-  /* Range slider styles */
+  /* Tabular nums make right-aligned percentages and timers line up in the list. */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Range slider — hairline track + flat thumb, no shadow or color. */
   input[type='range'] {
     -webkit-appearance: none;
     appearance: none;
@@ -380,36 +117,36 @@
 
   input[type='range']::-webkit-slider-runnable-track {
     width: 100%;
-    height: 8px;
-    background: rgb(51, 65, 85);
-    border-radius: 4px;
+    height: 2px;
+    background: hsl(0 0% 22%);
+    border-radius: 1px;
   }
 
   input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: rgb(148, 163, 184);
+    background: hsl(0 0% 90%);
+    border: 1px solid hsl(0 0% 22%);
     cursor: pointer;
-    border: 2px solid rgb(51, 65, 85);
-    margin-top: -4px;
+    margin-top: -6px;
   }
 
   input[type='range']::-moz-range-track {
     width: 100%;
-    height: 8px;
-    background: rgb(51, 65, 85);
-    border-radius: 4px;
+    height: 2px;
+    background: hsl(0 0% 22%);
+    border-radius: 1px;
   }
 
   input[type='range']::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: rgb(148, 163, 184);
+    background: hsl(0 0% 90%);
+    border: 1px solid hsl(0 0% 22%);
     cursor: pointer;
-    border: 2px solid rgb(51, 65, 85);
   }
 }

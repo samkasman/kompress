@@ -25,20 +25,20 @@ function UpdateBadge({ status, onInstall }: UpdateBadgeProps) {
           e.stopPropagation();
           onInstall();
         }}
-        title={`Install kompress v${status.version}`}
+        title={`Install v${status.version}`}
         data-no-drag
-        className="pointer-events-auto inline-flex items-center gap-1 rounded-md border border-blue-400/40 bg-blue-500/15 px-2 py-1 text-[11px] font-medium text-blue-200 transition-colors hover:bg-blue-500/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+        className="pointer-events-auto inline-flex items-center gap-1.5 rounded border border-border-strong bg-surface-1 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-foreground-muted transition-colors hover:bg-surface-2 hover:border-foreground-faint hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       >
-        <ArrowDownToLine className="h-3 w-3" />
-        Update to v{status.version}
+        <ArrowDownToLine className="h-3 w-3" strokeWidth={1.5} />
+        Update v{status.version}
       </button>
     );
   }
 
   if (status.phase === 'downloading') {
     return (
-      <div className="pointer-events-none inline-flex items-center gap-1 rounded-md border border-blue-400/30 bg-blue-500/10 px-2 py-1 text-[11px] font-medium text-blue-200">
-        <Loader2 className="h-3 w-3 animate-spin" />
+      <div className="pointer-events-none inline-flex items-center gap-1.5 rounded border border-border bg-surface-1 px-2 py-1 font-mono text-[10px] uppercase tracking-wider tabular-nums text-foreground-muted">
+        <Loader2 className="h-3 w-3 animate-spin" strokeWidth={1.5} />
         {status.progress}%
       </div>
     );
@@ -46,9 +46,9 @@ function UpdateBadge({ status, onInstall }: UpdateBadgeProps) {
 
   if (status.phase === 'installing') {
     return (
-      <div className="pointer-events-none inline-flex items-center gap-1 rounded-md border border-blue-400/30 bg-blue-500/10 px-2 py-1 text-[11px] font-medium text-blue-200">
-        <Loader2 className="h-3 w-3 animate-spin" />
-        Installing…
+      <div className="pointer-events-none inline-flex items-center gap-1.5 rounded border border-border bg-surface-1 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-foreground-muted">
+        <Loader2 className="h-3 w-3 animate-spin" strokeWidth={1.5} />
+        Installing
       </div>
     );
   }
