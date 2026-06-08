@@ -29,10 +29,15 @@ export function Slider({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <label htmlFor={id} className="text-xs text-slate-400">
+        <label
+          htmlFor={id}
+          className="font-mono text-[10px] uppercase tracking-wider text-foreground-subtle"
+        >
           {label}
         </label>
-        <span className="text-xs text-slate-300">{valueLabel ?? value}</span>
+        <span className="font-mono text-xs tabular-nums text-foreground-muted">
+          {valueLabel ?? value}
+        </span>
       </div>
       <input
         type="range"
@@ -45,7 +50,7 @@ export function Slider({
         onClick={(e) => e.stopPropagation()}
         className="w-full appearance-none cursor-pointer"
       />
-      <div className="flex justify-between text-xs text-slate-500">
+      <div className="flex justify-between font-mono text-[10px] uppercase tracking-wider text-foreground-faint">
         <span>{minLabel}</span>
         <span>{maxLabel}</span>
       </div>

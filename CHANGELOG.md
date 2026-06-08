@@ -15,6 +15,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   signature against a pinned public key, replaces the app in place,
   and relaunches. Powered by Tauri's Updater + Process plugins.
 
+### Changed
+
+- **Complete UI redesign.** Flat monochrome palette built on semantic
+  design tokens (`foreground`, `foreground-muted`, `foreground-subtle`,
+  `foreground-faint`, `background`, `surface-1`, `surface-2`, `border`,
+  `border-strong`, plus `success` / `warning` / `danger` status colors).
+  Defined as HSL CSS variables and exposed through `tailwind.config.js`,
+  so theming and high-contrast modes are now a one-block change.
+- **Spec-sheet empty state.** The three colorful format chips are
+  replaced by a hairline-bordered, monospace format table that reads as
+  equipment documentation: `I  PNG JPG JPEG HEIC WEBP  → JPG` and
+  similar for video and audio.
+- **Conversion list fills the window when files are present.** The
+  drop area collapses to a slim `+ drop or click to add` strip and the
+  list takes everything below. Previously capped at ~4 visible rows;
+  now ~12.
+- **Status indicators are status-LED green / red.** Complete state uses
+  a desaturated phosphor green check; failure uses a muted red warning
+  glyph. Used as glyph color only, never as fill, so they punctuate the
+  otherwise quiet UI rather than dominate it.
+- **Drawer chrome cleaned up.** Settings drawer scrolls properly so the
+  audio bitrate row no longer truncates against the window edge.
+  Console drawer drops the bordered/tinted box — the drawer's own
+  padding handles inset and the monospace lines are identity enough.
+- **Typography commits to monospace** for the data plane: filenames,
+  status numbers, captions, format strings, slider labels. Sans-serif
+  is reserved for the few section titles. Tabular numerals keep
+  percentages and timers aligned.
+
+### Fixed
+
+- Updater hook is silent in dev (an unsigned dev binary has nothing to
+  poll for), and treats "no release manifest yet" responses as quiet
+  idle in production instead of logging a scary error to the console
+  drawer. Real failures (network, signature mismatch) still surface.
+
 ## [1.2.0] — 2026-06-08
 
 ### Added

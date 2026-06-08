@@ -255,7 +255,7 @@ export default function DropZone({
   return (
     <div
       className={`fixed inset-0 z-10 overflow-hidden ${
-        isDragging ? 'bg-slate-800/50' : ''
+        isDragging ? 'bg-surface-1/80' : ''
       }`}
     >
       <div

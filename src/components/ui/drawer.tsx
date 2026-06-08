@@ -23,20 +23,29 @@ export function Drawer({
   className,
 }: DrawerProps) {
   return (
-    <div className={cn('p-4 flex flex-col h-full', className)}>
-      <div className="flex items-center justify-between mb-4">
+    <div className={cn('flex flex-col h-full bg-background', className)}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-2">
-          <Icon className="h-5 w-5 text-slate-100" />
-          <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
+          <Icon className="h-4 w-4 text-foreground-subtle" strokeWidth={1.5} />
+          <h2 className="text-xs uppercase tracking-[0.18em] text-foreground-muted">
+            {title}
+          </h2>
         </div>
         <div className="flex items-center gap-1">
           {headerAction}
-          <IconButton variant="ghost" size="sm" onClick={onClose} aria-label="Close">
-            <X className="h-5 w-5" />
+          <IconButton
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <X className="h-4 w-4" strokeWidth={1.5} />
           </IconButton>
         </div>
       </div>
-      {children}
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-4 pb-6">
+        {children}
+      </div>
     </div>
   );
 }
