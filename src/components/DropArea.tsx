@@ -86,25 +86,28 @@ function EmptyState({
     <button
       type="button"
       onClick={onClick}
-      className="flex-1 flex flex-col items-center justify-center w-full px-6 text-center cursor-pointer focus-visible:outline-none focus-visible:ring-0 group"
+      className="flex-1 flex flex-col items-center justify-center w-full px-5 text-center cursor-pointer focus-visible:outline-none focus-visible:ring-0 group"
     >
-      {/* Spec-sheet style format table — reads like equipment documentation,
-          not a marketing badge. Single hairline frame, monospace contents. */}
-      <div className="w-full max-w-[240px] border-y border-zinc-800">
+      {/* Spec-sheet style format table — the empty state's signature element.
+          Sized to fit the audio row on one line; markers brighter than the
+          input list so the row reads "type | inputs → output" at a glance. */}
+      <div className="w-full max-w-[320px] border-y border-zinc-800">
         {FORMAT_CATEGORIES.map(({ type, mark }, idx) => (
           <div
             key={type}
-            className={`flex items-baseline gap-3 px-1 py-2 ${
+            className={`flex items-baseline gap-4 px-2 py-2.5 ${
               idx < FORMAT_CATEGORIES.length - 1
                 ? 'border-b border-zinc-900'
                 : ''
             }`}
           >
-            <span className="font-mono text-[10px] text-zinc-600">{mark}</span>
-            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-400 text-left flex-1">
-              {FORMATS[type].inputExts.join('  ')}
+            <span className="font-mono text-[11px] text-zinc-500 w-2 flex-shrink-0">
+              {mark}
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+            <span className="font-mono text-[11px] uppercase text-zinc-300 text-left flex-1 whitespace-nowrap">
+              {FORMATS[type].inputExts.join(' ')}
+            </span>
+            <span className="font-mono text-[11px] uppercase text-zinc-500 flex-shrink-0">
               → {FORMATS[type].outputExt}
             </span>
           </div>
@@ -112,10 +115,10 @@ function EmptyState({
       </div>
 
       <p
-        className={`mt-6 font-mono text-[10px] uppercase tracking-[0.28em] transition-colors ${
+        className={`mt-8 font-mono text-[9px] uppercase tracking-[0.32em] transition-colors ${
           isDragging
             ? 'text-zinc-100'
-            : 'text-zinc-500 group-hover:text-zinc-300'
+            : 'text-zinc-600 group-hover:text-zinc-400'
         }`}
       >
         {isDragging ? '— release —' : 'drop or click'}
