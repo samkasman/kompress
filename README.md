@@ -167,7 +167,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, quality gates, commit conv
 
 `src-tauri/tauri.conf.json` is the single source of truth for the app version; the release flow syncs it into `package.json` and `package-lock.json` automatically.
 
-Day-to-day work happens on `develop`. The release flow advances `master` to the released commit, so `master` is always "latest shipped" and `develop` is "in progress."
+This repo follows [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow): one long-lived `main` branch with short-lived feature branches. Releases tag `main` directly — there's no separate "release" or "develop" branch.
 
 **Cut a release** — one command, no prompts:
 

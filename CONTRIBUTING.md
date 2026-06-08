@@ -47,9 +47,17 @@ docs(readme): clarify macOS-only distribution
 
 git-cliff drafts CHANGELOG entries from these commits when `[Unreleased]` is empty at release time, so a clear `type(scope): subject` pays off twice.
 
+## Branching
+
+kompress follows [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow): a single long-lived branch (`main`) plus short-lived feature branches. There is no `develop` or per-environment branch.
+
+```
+main ─── feat/my-change ──► PR ──► merge to main ──► (next release tags main)
+```
+
 ## Pull requests
 
-- Fork → feature branch → PR against `develop`. Releases are cut from `develop`.
+- Fork → feature branch off `main` → PR against `main`. Releases are cut from `main`.
 - Fill out the PR template; pictures help for any UI change.
 - Keep PRs focused. A fix and an unrelated refactor in the same PR get pushed back.
 - If you're updating shipped behavior, add or update a fixture and an entry in `CHANGELOG.md` `[Unreleased]`.

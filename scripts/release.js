@@ -228,13 +228,6 @@ if (staged) run(`git commit -m "chore(release): v${version}"`);
 run(`git tag v${version}`);
 run(`git push origin HEAD`);
 run(`git push origin v${version}`);
-// Fast-forward master to the just-released commit so it always reflects the
-// latest shipped version. Develop is the integration branch; master is the
-// "stable" pointer that downstream consumers (or `git clone` defaults) hit.
-// If develop has diverged from master in a non-FF way, this fails loudly —
-// fix the branch state and re-run, don't force.
-run(`git push origin HEAD:master`);
-
 run(
   `gh release create v${version} "${dmgPath}" --title "v${version}" ${notesArg}`
 );

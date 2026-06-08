@@ -21,14 +21,16 @@ files get compressed in-place with a `-compressed` suffix.
 3. **`src-tauri/tauri.conf.json` is the version source of truth.**
    `release.js` syncs `package.json` and `package-lock.json` from it. Never
    hand-edit the latter two to bump the version.
-4. **Releases go through `npm run release:patch|minor|major`** (or
+4. **GitHub Flow. Single long-lived branch (`main`).** All work — features,
+   fixes, docs — happens on short-lived feature branches off `main` and
+   lands via PR. No `develop`, no `release/*`, no per-environment branches.
+   Releases tag the `main` branch. Don't reintroduce a develop branch.
+5. **Releases go through `npm run release:patch|minor|major`** (or
    `bin/cut-release.sh ...` for the explicit form). Never tag/push/release
    manually — the script handles version sync, build, sign, notarize,
-   staple, commit, tag, push to develop, fast-forward push to master,
-   GitHub release, and CHANGELOG promotion in one shot. Work happens on
-   `develop`; `master` is the "latest released" pointer the release flow
-   advances automatically.
-5. **Conventional Commits are required.** Enforced by `.husky/commit-msg`
+   staple, commit, tag, push, GitHub release, and CHANGELOG promotion in
+   one shot.
+6. **Conventional Commits are required.** Enforced by `.husky/commit-msg`
    via commitlint. Use `feat:`, `fix:`, `refactor:`, `perf:`, `docs:`, `test:`,
    `build:`, `ci:`, `chore:`, `revert:`. Scope is optional.
 
