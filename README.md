@@ -5,14 +5,13 @@ A simple multimedia file compressor for macOS.
 ![Version](https://img.shields.io/github/package-json/v/samkasman/kompress)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
-
-![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
-![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
 ![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
 ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
 
 <img src="demo.gif" alt="kompress demo GIF" width="400">
 
