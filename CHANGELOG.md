@@ -61,6 +61,11 @@ These don't change app behavior but matter for contributors.
   bundled ffmpeg with the production args and validates output codecs
   via `ffprobe`. Vitest + happy-dom + Testing Library with 16 unit tests
   covering formats / fileUtils / useSettings.
+- **Branching model:** adopted [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow).
+  Single long-lived `main` branch, short-lived feature branches off it,
+  PRs merge to `main`, releases tag `main`. The old `develop`/`master`
+  split is gone. CLAUDE.md hard rule #4 makes this explicit so future
+  contributors don't reintroduce a develop branch.
 - **Release pipeline:** `bin/cut-release.sh patch|minor|major` wraps
   bump-build-sign-notarize-tag-push-publish in one command, with
   preflight checks for the Developer ID cert and notary keychain
@@ -68,9 +73,7 @@ These don't change app behavior but matter for contributors.
   `[Unreleased]` to a versioned section and draft entries from
   conventional commits when empty. `npm run release:patch|minor|major`
   shortcuts wrap the bin script with `--yes` so you only type the bump
-  level. `release.js` also fast-forwards `master` to the released commit
-  so the branch always reflects the latest shipped version (`develop`
-  remains the integration branch).
+  level.
 - **Quality gates:** Husky hooks for `commit-msg` (commitlint /
   Conventional Commits), `pre-commit` (lint-staged), and `pre-push`
   (tsc + lint + test + verify).
