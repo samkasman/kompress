@@ -47,7 +47,7 @@ export default function DropArea({
       {isDragging && (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-2 z-30 border border-zinc-100/80 transition-opacity"
+          className="pointer-events-none absolute inset-2 z-30 border border-foreground/80 transition-opacity"
         />
       )}
 
@@ -59,7 +59,7 @@ export default function DropArea({
 
       {hasFiles && (
         <div ref={fileListRef} className="flex-1 min-h-0 overflow-y-auto">
-          <ul className="divide-y divide-zinc-900/80">
+          <ul className="divide-y divide-border">
             {files.map((file) => (
               <FileRow
                 key={file.id}
@@ -91,23 +91,21 @@ function EmptyState({
       {/* Spec-sheet style format table — the empty state's signature element.
           Sized to fit the audio row on one line; markers brighter than the
           input list so the row reads "type | inputs → output" at a glance. */}
-      <div className="w-full max-w-[320px] border-y border-zinc-800">
+      <div className="w-full max-w-[320px] border-y border-border-strong">
         {FORMAT_CATEGORIES.map(({ type, mark }, idx) => (
           <div
             key={type}
             className={`flex items-baseline gap-4 px-2 py-2.5 ${
-              idx < FORMAT_CATEGORIES.length - 1
-                ? 'border-b border-zinc-900'
-                : ''
+              idx < FORMAT_CATEGORIES.length - 1 ? 'border-b border-border' : ''
             }`}
           >
-            <span className="font-mono text-[11px] text-zinc-500 w-2 flex-shrink-0">
+            <span className="font-mono text-[11px] text-foreground-subtle w-2 flex-shrink-0">
               {mark}
             </span>
-            <span className="font-mono text-[11px] uppercase text-zinc-300 text-left flex-1 whitespace-nowrap">
+            <span className="font-mono text-[11px] uppercase text-foreground-muted text-left flex-1 whitespace-nowrap">
               {FORMATS[type].inputExts.join(' ')}
             </span>
-            <span className="font-mono text-[11px] uppercase text-zinc-500 flex-shrink-0">
+            <span className="font-mono text-[11px] uppercase text-foreground-subtle flex-shrink-0">
               → {FORMATS[type].outputExt}
             </span>
           </div>
@@ -117,8 +115,8 @@ function EmptyState({
       <p
         className={`mt-8 font-mono text-[9px] uppercase tracking-[0.32em] transition-colors ${
           isDragging
-            ? 'text-zinc-100'
-            : 'text-zinc-600 group-hover:text-zinc-400'
+            ? 'text-foreground'
+            : 'text-foreground-faint group-hover:text-foreground-subtle'
         }`}
       >
         {isDragging ? '— release —' : 'drop or click'}
@@ -138,8 +136,8 @@ function DropStrip({
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center justify-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-zinc-500 border-b border-zinc-900 transition-colors hover:text-zinc-200 hover:bg-zinc-900/40 focus-visible:outline-none focus-visible:ring-0 ${
-        isDragging ? 'bg-zinc-900/60 text-zinc-100' : ''
+      className={`flex items-center justify-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-foreground-subtle border-b border-border transition-colors hover:text-foreground-muted hover:bg-surface-1 focus-visible:outline-none focus-visible:ring-0 ${
+        isDragging ? 'bg-surface-1 text-foreground' : ''
       }`}
     >
       <Plus className="h-3 w-3" strokeWidth={1.5} />
@@ -163,24 +161,24 @@ function FileRow({
       : null;
 
   return (
-    <li className="group flex items-center gap-3 px-3 py-2 text-xs hover:bg-zinc-900/30 transition-colors">
-      <span className="flex-1 truncate text-zinc-100 font-mono text-[12px]">
+    <li className="group flex items-center gap-3 px-3 py-2 text-xs hover:bg-surface-1 transition-colors">
+      <span className="flex-1 truncate font-mono text-[12px] text-foreground">
         {file.name}
       </span>
 
       {file.status === 'pending' && (
-        <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-600">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-foreground-faint">
           queued
         </span>
       )}
 
       {file.status === 'processing' && (
-        <div className="flex items-center gap-2 text-zinc-400 tabular-nums">
+        <div className="flex items-center gap-2 text-foreground-subtle tabular-nums">
           <Loader2 className="h-3 w-3 animate-spin" strokeWidth={1.5} />
           {file.progress > 0 && (
             <span className="font-mono text-[11px]">{file.progress}%</span>
           )}
-          <span className="font-mono text-[11px] text-zinc-600">
+          <span className="font-mono text-[11px] text-foreground-faint">
             {formatTime(elapsed)}
           </span>
         </div>
@@ -189,11 +187,11 @@ function FileRow({
       {file.status === 'complete' && (
         <div className="flex items-center gap-2 tabular-nums">
           {savedPercent !== null && (
-            <span className="font-mono text-[11px] text-zinc-200">
+            <span className="font-mono text-[11px] text-foreground-muted">
               −{savedPercent}%
             </span>
           )}
-          <Check className="h-3 w-3 text-zinc-500" strokeWidth={2} />
+          <Check className="h-3 w-3 text-success" strokeWidth={2.25} />
           {file.outputPath && (
             <button
               type="button"
@@ -204,7 +202,7 @@ function FileRow({
                 e.stopPropagation();
                 onReveal(file.outputPath!);
               }}
-              className="text-zinc-600 opacity-0 group-hover:opacity-100 hover:text-zinc-100 transition-opacity"
+              className="text-foreground-faint opacity-0 group-hover:opacity-100 hover:text-foreground transition-opacity"
             >
               <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} />
             </button>
@@ -213,10 +211,7 @@ function FileRow({
       )}
 
       {file.status === 'error' && (
-        <div
-          className="flex items-center gap-1 text-zinc-400"
-          title={file.error}
-        >
+        <div className="flex items-center gap-1 text-danger" title={file.error}>
           <AlertTriangle className="h-3 w-3" strokeWidth={1.5} />
           <span className="font-mono text-[10px] uppercase tracking-wider">
             failed

@@ -56,7 +56,7 @@ function SettingsDrawer({
             onChange={onImageQualityChange}
           />
         </Group>
-        <hr className="border-zinc-900" />
+        <hr className="border-border" />
         <Group name="Video" subtitle={formatConversionLabel('video')}>
           <Slider
             id="video-crf"
@@ -69,7 +69,7 @@ function SettingsDrawer({
             onChange={onVideoCRFChange}
           />
         </Group>
-        <hr className="border-zinc-900" />
+        <hr className="border-border" />
         <Group name="Audio" subtitle={formatConversionLabel('audio')}>
           <Slider
             id="audio-bitrate"
@@ -101,10 +101,10 @@ function Group({
   return (
     <div>
       <div className="flex items-baseline justify-between mb-3">
-        <p className="text-[11px] uppercase tracking-[0.18em] font-medium text-zinc-200">
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-foreground">
           {name}
         </p>
-        <p className="text-[10px] uppercase tracking-wider text-zinc-500">
+        <p className="font-mono text-[10px] uppercase tracking-wider text-foreground-subtle">
           {subtitle}
         </p>
       </div>

@@ -10,39 +10,26 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
+        // Semantic surfaces
         background: 'hsl(var(--background))',
+        'surface-1': 'hsl(var(--surface-1))',
+        'surface-2': 'hsl(var(--surface-2))',
+
+        // Foreground hierarchy
         foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
+        'foreground-muted': 'hsl(var(--foreground-muted))',
+        'foreground-subtle': 'hsl(var(--foreground-subtle))',
+        'foreground-faint': 'hsl(var(--foreground-faint))',
+
+        // Lines + focus
+        border: 'hsl(var(--border))',
+        'border-strong': 'hsl(var(--border-strong))',
+        ring: 'hsl(var(--ring))',
+
+        // Status. Use sparingly — one icon, never a fill.
+        success: 'hsl(var(--success))',
+        warning: 'hsl(var(--warning))',
+        danger: 'hsl(var(--danger))',
       },
     },
   },

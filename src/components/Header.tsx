@@ -19,18 +19,18 @@ function Header({
   toolbarSlot,
 }: HeaderProps) {
   return (
-    <div className="relative flex-shrink-0 pointer-events-none z-20 border-b border-zinc-900">
+    <div className="relative flex-shrink-0 pointer-events-none z-20 border-b border-border">
       <div className="flex items-baseline justify-between px-4 py-2.5">
         <div
           className={`flex items-baseline gap-1.5 transition-opacity duration-500 ${
             showSK ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <h1 className="font-mono text-[13px] text-zinc-100 leading-none tracking-tight">
+          <h1 className="font-mono text-[13px] text-foreground leading-none tracking-tight">
             kompress
           </h1>
           {APP_VERSION && (
-            <span className="font-mono text-[10px] uppercase tracking-wider text-zinc-600 leading-none">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-foreground-faint leading-none">
               v{APP_VERSION}
             </span>
           )}

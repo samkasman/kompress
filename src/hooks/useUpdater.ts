@@ -45,6 +45,19 @@ export function useUpdater({
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
+      // Releases that predate the updater plugin don't ship a `latest.json`
+      // asset, so a 404 / parse failure on the manifest just means "nothing
+      // to install yet." Treat that quietly. Real errors (network down,
+      // signature mismatch) still surface.
+      const isMissingManifest =
+        /could not fetch a valid release json|404|not found|no release/i.test(
+          message
+        );
+      if (isMissingManifest) {
+        setStatus({ phase: 'idle' });
+        addLog?.('Updater: no release manifest yet (skipped)');
+        return;
+      }
       addLog?.(`❌ Updater check failed: ${message}`);
       setStatus({ phase: 'error', message });
     }
@@ -91,8 +104,10 @@ export function useUpdater({
     }
   }, [addLog]);
 
-  // Background check shortly after mount.
+  // Background check shortly after mount. Skipped in dev — the dev binary
+  // isn't a signed release, so polling for new versions is just noise.
   useEffect(() => {
+    if (import.meta.env.DEV) return;
     const timer = setTimeout(() => {
       void checkForUpdate();
     }, initialCheckDelayMs);

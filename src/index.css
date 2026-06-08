@@ -4,12 +4,31 @@
 
 @layer base {
   :root {
+    /* Surfaces */
     --background: 0 0% 4%;
+    --surface-1: 0 0% 7%;
+    --surface-2: 0 0% 10%;
+
+    /* Foreground hierarchy — ramp from primary to vanishing */
     --foreground: 0 0% 96%;
-    --muted: 0 0% 13%;
-    --muted-foreground: 0 0% 55%;
-    --border: 0 0% 16%;
+    --foreground-muted: 0 0% 70%;
+    --foreground-subtle: 0 0% 50%;
+    --foreground-faint: 0 0% 32%;
+
+    /* Borders */
+    --border: 0 0% 14%;
+    --border-strong: 0 0% 22%;
+
+    /* Focus ring */
     --ring: 0 0% 80%;
+
+    /* Status — muted to fit the instrument aesthetic. Not slack-green,
+       not error-red. Phosphor-adjacent for success, terra for error,
+       sand for warning. Use sparingly: a single icon, never a fill. */
+    --success: 150 38% 52%;
+    --warning: 36 70% 58%;
+    --danger: 0 55% 58%;
+
     --radius: 0.375rem;
   }
 
@@ -17,11 +36,18 @@
      Kept only so anything reaching for `:root.dark` still resolves. */
   .dark {
     --background: 0 0% 4%;
+    --surface-1: 0 0% 7%;
+    --surface-2: 0 0% 10%;
     --foreground: 0 0% 96%;
-    --muted: 0 0% 13%;
-    --muted-foreground: 0 0% 55%;
-    --border: 0 0% 16%;
+    --foreground-muted: 0 0% 70%;
+    --foreground-subtle: 0 0% 50%;
+    --foreground-faint: 0 0% 32%;
+    --border: 0 0% 14%;
+    --border-strong: 0 0% 22%;
     --ring: 0 0% 80%;
+    --success: 150 38% 52%;
+    --warning: 36 70% 58%;
+    --danger: 0 55% 58%;
   }
 
   * {

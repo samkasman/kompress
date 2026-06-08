@@ -23,11 +23,11 @@ export function Drawer({
   className,
 }: DrawerProps) {
   return (
-    <div className={cn('flex flex-col h-full bg-zinc-950', className)}>
-      <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-900 flex-shrink-0">
+    <div className={cn('flex flex-col h-full bg-background', className)}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border flex-shrink-0">
         <div className="flex items-center gap-2">
-          <Icon className="h-4 w-4 text-zinc-400" strokeWidth={1.5} />
-          <h2 className="text-xs uppercase tracking-[0.18em] text-zinc-300">
+          <Icon className="h-4 w-4 text-foreground-subtle" strokeWidth={1.5} />
+          <h2 className="text-xs uppercase tracking-[0.18em] text-foreground-muted">
             {title}
           </h2>
         </div>

@@ -31,11 +31,11 @@ export function Slider({
       <div className="flex items-center justify-between">
         <label
           htmlFor={id}
-          className="text-[11px] uppercase tracking-wider text-zinc-500"
+          className="font-mono text-[10px] uppercase tracking-wider text-foreground-subtle"
         >
           {label}
         </label>
-        <span className="text-xs tabular-nums text-zinc-200">
+        <span className="font-mono text-xs tabular-nums text-foreground-muted">
           {valueLabel ?? value}
         </span>
       </div>
@@ -50,7 +50,7 @@ export function Slider({
         onClick={(e) => e.stopPropagation()}
         className="w-full appearance-none cursor-pointer"
       />
-      <div className="flex justify-between text-[10px] uppercase tracking-wider text-zinc-600">
+      <div className="flex justify-between font-mono text-[10px] uppercase tracking-wider text-foreground-faint">
         <span>{minLabel}</span>
         <span>{maxLabel}</span>
       </div>
