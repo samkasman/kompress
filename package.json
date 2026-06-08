@@ -1,6 +1,6 @@
 {
   "name": "kompress",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "A simple multimedia file compressor for macOS",
   "type": "module",
   "engines": {
