@@ -213,18 +213,38 @@ You can put these in a `.env.release` file that's gitignored, and `source` it be
 
 ### Signing & notarization prerequisites
 
-The release pipeline (`scripts/sign-and-copy-release.js`) expects a macOS host with:
+The release pipeline expects a macOS host with the following.
 
-- **A Developer ID Application certificate** in the login keychain. The identity is currently hardcoded as `Developer ID Application: Sam Kasman (WC8RY44BN7)` — a fork would need to update `SIGN_IDENTITY` in `scripts/sign-and-copy-release.js`.
-- **A notarytool keychain profile named `kompress-notary`**, set up once with:
-  ```bash
-  xcrun notarytool store-credentials kompress-notary \
-    --apple-id <apple-id-email> \
-    --team-id <team-id> \
-    --password <app-specific-password>
-  ```
-  See Apple's [Customizing the notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow) for app-specific password creation.
-- Xcode Command Line Tools (`codesign`, `xcrun notarytool`, `xcrun stapler`, `hdiutil`).
+**1. A Developer ID Application certificate in the login keychain.** The signing identity is resolved in this order:
+
+1. `MACOS_SIGN_IDENTITY` env var, if set (e.g. `Developer ID Application: Your Name (XXXXXXXXXX)`).
+2. Otherwise auto-detected: the script uses the unique `Developer ID Application: …` cert it finds in your keychain.
+3. If zero or more than one cert is present, the script errors with the available choices and asks you to set `MACOS_SIGN_IDENTITY`.
+
+That means kompress just works for a maintainer with a single matching cert, and forks don't need to edit any source.
+
+**2. A notarytool keychain profile.** Resolved as `$MACOS_NOTARY_PROFILE` if set, otherwise `<productName>-notary` (so for kompress: `kompress-notary`). Set up once with:
+
+```bash
+xcrun notarytool store-credentials kompress-notary \
+  --apple-id <apple-id-email> \
+  --team-id <team-id> \
+  --password <app-specific-password>
+```
+
+See Apple's [Customizing the notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow) for app-specific password creation.
+
+**3. Xcode Command Line Tools** (`codesign`, `xcrun notarytool`, `xcrun stapler`, `hdiutil`).
+
+### Forking checklist
+
+If you're forking kompress for your own distribution, the only file you have to hand-edit is `src-tauri/tauri.conf.json` (it gets compiled into the bundle, so it can't read env vars at runtime):
+
+- `productName` and `identifier` — change to yours.
+- `plugins.updater.endpoints` — change the GitHub URL to your repo's `releases/latest/download/latest.json`.
+- `plugins.updater.pubkey` — generate your own minisign keypair via `npx @tauri-apps/cli signer generate` and paste the public key here.
+
+Then update `package.json`'s `repository` field to point at your fork. Everything else (sign identity, notary profile, updater download URL) is derived from your environment and `package.json` at release time — the scripts themselves stay generic.
 
 ## License
 

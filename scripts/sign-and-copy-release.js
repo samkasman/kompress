@@ -17,12 +17,59 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const rootDir = join(__dirname, '..');
 
-const SIGN_IDENTITY = 'Developer ID Application: Sam Kasman (WC8RY44BN7)';
-const NOTARY_PROFILE = 'kompress-notary';
-
 const configPath = join(rootDir, 'src-tauri/tauri.conf.json');
 const entitlementsPath = join(rootDir, 'src-tauri/entitlements.plist');
 const releasesDir = join(rootDir, 'releases');
+const pkgPath = join(rootDir, 'package.json');
+
+/**
+ * Resolve the codesigning identity:
+ *   1. MACOS_SIGN_IDENTITY env var wins.
+ *   2. Otherwise auto-detect the unique "Developer ID Application" cert in
+ *      the user's keychain. If zero or more than one are present, error.
+ * This lets the script work for any maintainer without hand-editing.
+ */
+function resolveSignIdentity() {
+  if (process.env.MACOS_SIGN_IDENTITY) return process.env.MACOS_SIGN_IDENTITY;
+  const out = execSync('security find-identity -v -p codesigning', {
+    encoding: 'utf-8',
+  });
+  const matches = [...out.matchAll(/"(Developer ID Application: [^"]+)"/g)].map(
+    (m) => m[1]
+  );
+  if (matches.length === 1) return matches[0];
+  if (matches.length === 0) {
+    throw new Error(
+      'No Developer ID Application certificate found in keychain. ' +
+        'Add one via Xcode → Settings → Accounts, or set MACOS_SIGN_IDENTITY.'
+    );
+  }
+  throw new Error(
+    `Multiple Developer ID Application certificates found — set MACOS_SIGN_IDENTITY to disambiguate:\n  ${matches.join('\n  ')}`
+  );
+}
+
+/**
+ * Default notary profile is `<productName>-notary` (e.g. `kompress-notary`)
+ * unless MACOS_NOTARY_PROFILE overrides. Maintainers create this once via
+ * `xcrun notarytool store-credentials <name> --apple-id … --team-id … --password …`.
+ */
+function resolveNotaryProfile(productName) {
+  return process.env.MACOS_NOTARY_PROFILE ?? `${productName}-notary`;
+}
+
+/**
+ * Parse `owner/repo` from package.json's `repository` field. Used to build
+ * the updater download URL without hardcoding the GitHub slug.
+ */
+function resolveGithubSlug(pkg) {
+  const repo = pkg?.repository?.url ?? pkg?.repository;
+  if (!repo) return null;
+  const match = String(repo).match(
+    /github\.com[:/]([^/]+\/[^/.]+?)(?:\.git)?$/
+  );
+  return match?.[1] ?? null;
+}
 
 const possiblePaths = [
   'src-tauri/target/aarch64-apple-darwin/release/bundle',
@@ -37,8 +84,13 @@ function run(cmd) {
 
 try {
   const config = JSON.parse(await readFile(configPath, 'utf-8'));
+  const pkg = JSON.parse(await readFile(pkgPath, 'utf-8'));
   const version = config.version;
   const productName = config.productName || 'kompress';
+
+  const SIGN_IDENTITY = resolveSignIdentity();
+  const NOTARY_PROFILE = resolveNotaryProfile(productName);
+  const githubSlug = resolveGithubSlug(pkg);
 
   await mkdir(releasesDir, { recursive: true });
 
@@ -173,8 +225,15 @@ try {
   // Build the latest.json manifest. Tauri updater reads this from
   // https://github.com/.../releases/latest/download/latest.json — GitHub
   // auto-redirects /latest to whichever tag is marked "latest", so no
-  // hosting setup needed.
-  const downloadUrl = `https://github.com/samkasman/kompress/releases/download/v${version}/${productName}-v${version}-${arch}.app.tar.gz`;
+  // hosting setup needed. GitHub slug comes from package.json's
+  // `repository` field, so forks don't need to hand-edit this script.
+  if (!githubSlug) {
+    throw new Error(
+      'Cannot build updater download URL — package.json needs a `repository` field ' +
+        'pointing at the GitHub repo (e.g. "git+https://github.com/owner/name.git").'
+    );
+  }
+  const downloadUrl = `https://github.com/${githubSlug}/releases/download/v${version}/${productName}-v${version}-${arch}.app.tar.gz`;
   const manifest = {
     version: `v${version}`,
     notes: `kompress v${version} — see CHANGELOG.md for details.`,
