@@ -1,6 +1,6 @@
 # kompress
 
-A simple multimedia file compressor for macOS.
+A simple multimedia file compressor with macOS releases and Linux local-build support.
 
 ![Version](https://img.shields.io/github/package-json/v/samkasman/kompress)
 ![License](https://img.shields.io/badge/license-MIT-green)
@@ -57,8 +57,7 @@ Download the latest release from the [Releases](https://github.com/samkasman/kom
 - [Rust](https://www.rust-lang.org/tools/install)
 - Platform-specific native build tools:
   - **macOS**: [Xcode Command Line Tools](https://developer.apple.com/xcode/) (`xcode-select --install`)
-  - **Linux**: [Tauri prerequisites](https://v1.tauri.app/v1/guides/getting-started/prerequisites/#setting-up-linux)
-  - **Windows**: [Microsoft Visual Studio C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) or [Visual Studio w/ C++ workload](https://visualstudio.microsoft.com/downloads/)
+  - **Linux**: the system packages Tauri/WebKitGTK needs for your distro before building locally
 
 ## Development Setup
 
@@ -90,14 +89,12 @@ cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-apple-darwin
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
 ```
 
-**Windows:**
-
-```bash
-# Download from https://www.gyan.dev/ffmpeg/builds/
-# Place ffmpeg.exe as src-tauri/binaries/ffmpeg-x86_64-pc-windows-msvc.exe
-```
-
-> In development mode, if no bundled binary is found, the app falls back to system ffmpeg.
+> kompress supports **macOS** and **Linux** builds.
+>
+> - **macOS** is the release path: builds can be signed, notarized, and published from a macOS host.
+> - **Linux** is supported for local development and local unsigned builds.
+>
+> In development mode, if no bundled binary is found, the app falls back to system ffmpeg at runtime. For packaged builds, place the target-specific ffmpeg binary in `src-tauri/binaries/` first so Tauri can bundle it.
 
 ## Project Structure
 
@@ -140,7 +137,12 @@ This will:
 
 ## Building
 
-> **Distribution is macOS-only.** The signing + notarization pipeline only ships macOS builds. The Rust/Tauri source itself builds on Linux and Windows too, so contributors on those platforms can clone, build, and run locally — they just won't get a signed release artifact out the other end.
+> **Build support:** kompress supports both **macOS** and **Linux** builds.
+>
+> - **macOS** is the public release path. `npm run tauri:build` / `npm run release:*` produce the signed, notarized app and DMG.
+> - **Linux** is supported for local development and local unsigned builds via `npx tauri build`.
+>
+> There is **no CI**. All quality gates and release steps run locally.
 
 For local development builds without code signing, invoke the Tauri CLI directly:
 
@@ -152,7 +154,6 @@ Outputs land in `src-tauri/target/release/bundle/`:
 
 - **macOS**: `.app` bundle and `.dmg` installer
 - **Linux**: `.AppImage` or `.deb` (when built on Linux, unsigned)
-- **Windows**: `.exe` installer (when built on Windows, unsigned)
 
 > The `npm run tauri:build` script chains `sign-and-copy-release.js`, which hard-fails without macOS code-signing credentials. Use it only when releasing — see the [Releasing](#releasing) section below.
 
@@ -178,7 +179,7 @@ npm run release:minor    # 1.1.2 → 1.2.0 (new behavior, backward-compatible)
 npm run release:major    # 1.1.2 → 2.0.0 (breaking change)
 ```
 
-The script: bumps the version in `tauri.conf.json` and syncs the package files; promotes `[Unreleased]` in `CHANGELOG.md` to a versioned section; builds `aarch64-apple-darwin`; signs the bundled FFmpeg + app + DMG with the Developer ID; notarizes via `notarytool --wait`; staples the ticket; commits the version + changelog; tags `v{version}`; pushes `develop` and the tag; fast-forwards `master` to the released commit; opens a GitHub release with the DMG attached and the promoted changelog as the body.
+The script: bumps the version in `tauri.conf.json` and syncs the package files; promotes `[Unreleased]` in `CHANGELOG.md` to a versioned section; builds `aarch64-apple-darwin`; signs the bundled FFmpeg + app + DMG with the Developer ID; notarizes via `notarytool --wait`; staples the ticket; commits the version + changelog; tags `v{version}`; pushes the current `main` commit and the tag to `origin`; then opens a GitHub release with the DMG attached and the promoted changelog as the body.
 
 **Dry-run** — build/sign/notarize without tagging or publishing:
 

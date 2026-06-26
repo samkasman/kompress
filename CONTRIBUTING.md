@@ -1,6 +1,6 @@
 # Contributing to kompress
 
-Thanks for thinking about contributing. kompress is a small, opinionated macOS app; this guide describes how to get a working setup and the standards every PR is held to.
+Thanks for thinking about contributing. kompress is a small, opinionated desktop app with a macOS release pipeline and Linux local-build support; this guide describes how to get a working setup and the standards every PR is held to.
 
 ## Before you start
 
@@ -9,7 +9,7 @@ Thanks for thinking about contributing. kompress is a small, opinionated macOS a
 
 ## Dev setup
 
-Prerequisites: Node `v18+`, Rust (stable), Xcode Command Line Tools on macOS. See the README for Linux/Windows dev prereqs.
+Prerequisites: Node `v18+`, Rust (stable), plus platform-native build dependencies. On macOS that means Xcode Command Line Tools; on Linux that means the system packages Tauri/WebKitGTK needs for local builds. See the README for the current platform notes.
 
 ```bash
 git clone git@github.com:samkasman/kompress.git
@@ -71,7 +71,7 @@ Single source of truth: `src/constants/formats.ts`. Add the extension to the rig
 
 ## Releases
 
-Maintainers only — see the README's "Releasing" section. The short version: `bin/cut-release.sh patch|minor|major` does everything (bump → build → sign → notarize → tag → push → publish + CHANGELOG promotion). Don't tag manually.
+Maintainers only — see the README's "Releasing" section. The short version: `bin/cut-release.sh patch|minor|major` does everything (bump → build → sign → notarize → tag → push → publish + CHANGELOG promotion) on macOS. Linux support is for local development and unsigned local builds, not release publishing. Don't tag manually.
 
 ## Questions
 

@@ -316,6 +316,7 @@ async fn compress_file(
     let stderr_lines = stderr_thread.join().unwrap_or_default();
 
     if !status.success() {
+        let _ = std::fs::remove_file(&output_path_clone);
         let detail = stderr_lines
             .iter()
             .rev()
