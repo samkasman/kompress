@@ -1,7 +1,10 @@
 # kompress
 
-A simple multimedia file compressor with macOS releases and Linux local-build support.
+A simple desktop app for compressing images, video, and audio files.
 
+![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
+![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 ![Version](https://img.shields.io/github/package-json/v/samkasman/kompress)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -12,10 +15,6 @@ A simple multimedia file compressor with macOS releases and Linux local-build su
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css&logoColor=white)
 ![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
 ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
-
-![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
-![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
-![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
 <img src="demo.gif" alt="kompress demo GIF" width="400">
 
