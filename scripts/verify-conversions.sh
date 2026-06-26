@@ -7,7 +7,19 @@ set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 FIXTURES="$ROOT/tests/fixtures"
-FFMPEG="$ROOT/src-tauri/binaries/ffmpeg-aarch64-apple-darwin"
+BINDIR="$ROOT/src-tauri/binaries"
+TARGET_TRIPLE="$(rustc -vV 2>/dev/null | awk '/host:/ {print $2; exit}')"
+FFMPEG=""
+
+if [[ -n "$TARGET_TRIPLE" && -x "$BINDIR/ffmpeg-$TARGET_TRIPLE" ]]; then
+    FFMPEG="$BINDIR/ffmpeg-$TARGET_TRIPLE"
+else
+    for candidate in "$BINDIR"/ffmpeg-*; do
+        [[ -x "$candidate" ]] || continue
+        FFMPEG="$candidate"
+        break
+    done
+fi
 OUT_DIR="$(mktemp -d -t kompress-verify-XXXXXX)"
 trap 'rm -rf "$OUT_DIR"' EXIT
 
@@ -15,8 +27,8 @@ if ! command -v ffprobe >/dev/null; then
     echo "ffprobe required for output verification (brew install ffmpeg)" >&2
     exit 2
 fi
-if [[ ! -x "$FFMPEG" ]]; then
-    echo "Bundled ffmpeg not found at $FFMPEG" >&2
+if [[ -z "$FFMPEG" || ! -x "$FFMPEG" ]]; then
+    echo "Bundled ffmpeg not found in $BINDIR (looked for ffmpeg-$TARGET_TRIPLE first)" >&2
     exit 2
 fi
 
@@ -27,11 +39,16 @@ AUD_BR=320
 
 PASS=0
 FAIL=0
+SKIP=0
 FAILED_FILES=()
 
 red()    { printf '\033[31m%s\033[0m' "$*"; }
 green()  { printf '\033[32m%s\033[0m' "$*"; }
 yellow() { printf '\033[33m%s\033[0m' "$*"; }
+
+supports_heic_decode() {
+    "$FFMPEG" -hide_banner -i "$FIXTURES/image/pillars.heic" -f null - >/dev/null 2>&1
+}
 
 # convert <input> <file_type> <expected_codec>
 convert() {
@@ -87,6 +104,11 @@ run_category() {
     echo
     echo "$(yellow "[$file_type]") -> $expected_codec"
     for ext in "${exts[@]}"; do
+        if [[ "$file_type" == "image" && "$ext" == "heic" ]] && ! supports_heic_decode; then
+            printf '  %s  %s\n' "$(yellow SKIP)" "*.heic (ffmpeg lacks HEIC decode support on this host build)"
+            SKIP=$((SKIP + 1))
+            continue
+        fi
         for f in "$dir"/*."$ext"; do
             [[ -e "$f" ]] || continue
             convert "$f" "$file_type" "$expected_codec"
@@ -104,6 +126,9 @@ run_category "$FIXTURES/audio" audio mp3 wav mp3 aac flac m4a ogg wma
 echo
 echo "----------------------------------------"
 printf 'Summary: %s passed, %s failed\n' "$(green "$PASS")" "$( ((FAIL == 0)) && green "$FAIL" || red "$FAIL")"
+if (( SKIP > 0 )); then
+    printf 'Skipped: %s\n' "$(yellow "$SKIP")"
+fi
 if (( FAIL > 0 )); then
     printf 'Failed inputs: %s\n' "${FAILED_FILES[*]}"
     exit 1
