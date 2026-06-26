@@ -162,12 +162,18 @@ export default function DropZone({
   });
 
   useEffect(() => {
-    for (const file of files) {
-      if (file.status === 'pending' && !startedFileIds.current.has(file.id)) {
-        startedFileIds.current.add(file.id);
-        processFile(file);
-      }
-    }
+    const hasActiveJob = files.some((file) => file.status === 'processing');
+    if (hasActiveJob) return;
+
+    const nextPending = files.find(
+      (file) =>
+        file.status === 'pending' && !startedFileIds.current.has(file.id)
+    );
+
+    if (!nextPending) return;
+
+    startedFileIds.current.add(nextPending.id);
+    processFile(nextPending);
   }, [files, processFile]);
 
   // Track currently-processing IDs in a ref so the 1s timer below doesn't
