@@ -14,6 +14,8 @@ A simple multimedia file compressor with macOS releases and Linux local-build su
 ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
 
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
+![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
 
 <img src="demo.gif" alt="kompress demo GIF" width="400">
 
