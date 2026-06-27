@@ -20,151 +20,92 @@ A simple desktop app for compressing images, video, and audio files.
 
 ## Features
 
-- 🖱️ **Drag & Drop**: Drag files directly onto the window or click to browse
-- ⚙️ **Configurable Settings**: Adjustable quality, CRF, and bitrate via settings drawer with persistent storage
-- 📝 **Console Logs**: Built-in console drawer for monitoring compression progress and debug logs
-- 📦 **Bundled Packages**: `FFmpeg` is bundled with the app - no external dependencies/requirements
-- 🗜️ **Compression**
-  - 🖼️ **Image**: Convert PNG/JPG/JPEG/HEIC/WEBP to compressed JPG (configurable quality 1-8)
-  - 📹 **Video**: Convert MOV/MP4/MKV to compressed MP4 (H.264, configurable CRF 18-28)
-  - 🎵 **Audio**: Convert WAV/MP3/AAC/FLAC/M4A/OGG/WMA to MP3 (configurable bitrate 128-320 kbps)
+- Drag-and-drop or click-to-browse workflow
+- Compress **images** (`png`, `jpg`, `jpeg`, `heic`, `webp`) to JPG
+- Compress **video** (`mov`, `mp4`, `mkv`) to MP4 / H.264
+- Compress **audio** (`wav`, `mp3`, `aac`, `flac`, `m4a`, `ogg`, `wma`) to MP3
+- Adjustable image quality, video CRF, and audio bitrate
+- Built-in console drawer for progress and debug logs
+- Bundled FFmpeg for packaged builds
 
-## Download / Install
+## Quick Start
 
-Download the latest release from the [Releases](https://github.com/samkasman/kompress/releases) page.
+### Download
 
-## Usage
+Download the latest release from [GitHub Releases](https://github.com/samkasman/kompress/releases).
 
-1. **Install** and **launch** the application
-1. Review **compression settings** via the settings icon in the top-right corner
-1. **Select files**: Click anywhere or drag and drop media files onto the window
-1. Files are **automatically compressed** in the background
-1. **Output** files appear in the same directory as the **source** file(s) with `-compressed` suffix
+### Use
 
-**Settings persist** between sessions - your quality/CRF/bitrate preferences are saved automatically.
+1. Launch the app
+2. Adjust compression settings if needed
+3. Drag files into the window or click to browse
+4. Find output files next to the originals with a `-compressed` suffix
 
-## Tech Stack
+Settings persist between sessions automatically.
 
-- 🟢 **Runtime**: [Node.js](https://nodejs.org/)
-- ⚛️ **Frontend**: [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vitejs.dev/)
-- 🎨 **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- 📦 **Native Builds**: [Tauri](https://tauri.app/)
-- 🦀 **Backend**: [Rust](https://www.rust-lang.org/) calls bundled [FFmpeg](https://ffmpeg.org/) directly
-- ✅ **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
+## Build Support
 
-## Development Prerequisites
+kompress supports **macOS** and **Linux** builds.
 
-- [Node.js](https://nodejs.org/) `v18`+ (includes `npm`)
+- **macOS** is the release path: signed, notarized, published builds
+- **Linux** is supported for local development and unsigned local builds
+- There is **no CI**; checks and releases run locally
+
+## From Source
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) `v18+`
 - [Rust](https://www.rust-lang.org/tools/install)
-- Platform-specific native build tools:
+- Platform-native build dependencies:
   - **macOS**: [Xcode Command Line Tools](https://developer.apple.com/xcode/) (`xcode-select --install`)
-  - **Linux**: the system packages Tauri/WebKitGTK needs for your distro before building locally
+  - **Linux**: the system packages Tauri/WebKitGTK needs for your distro
 
-## Development Setup
-
-1. Clone the repository
-2. Install dependencies:
+### Setup
 
 ```bash
+git clone https://github.com/samkasman/kompress.git
+cd kompress
 npm install
 ```
 
-3. Download `FFmpeg` binary for your platform and place it in `src-tauri/binaries/`:
-
-**macOS (Apple Silicon):**
+Place a target-specific FFmpeg binary in `src-tauri/binaries/` before packaged builds:
 
 ```bash
-# Download from https://evermeet.cx/ffmpeg/ or use Homebrew
+# macOS (Apple Silicon)
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-aarch64-apple-darwin
-```
 
-**macOS (Intel):**
-
-```bash
+# macOS (Intel)
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-apple-darwin
-```
 
-**Linux:**
-
-```bash
+# Linux
 cp $(which ffmpeg) src-tauri/binaries/ffmpeg-x86_64-unknown-linux-gnu
 ```
 
-> kompress supports **macOS** and **Linux** builds.
->
-> - **macOS** is the release path: builds can be signed, notarized, and published from a macOS host.
-> - **Linux** is supported for local development and local unsigned builds.
->
-> In development mode, if no bundled binary is found, the app falls back to system ffmpeg at runtime. For packaged builds, place the target-specific ffmpeg binary in `src-tauri/binaries/` first so Tauri can bundle it.
-
-## Project Structure
-
-```
-kompress/
-├── src/                 # React source (front-end)
-│   ├── components/      # React components
-│   ├── hooks/           # React hooks
-│   └── utils/           # TS utilities
-├── src-tauri/           # Tauri/Rust source (back-end)
-│   ├── binaries/        # FFmpeg binaries (per platform, gitignored)
-│   ├── icons/           # App icons
-│   └── src/             # Rust source
-├── scripts/             # Build, release, and verification scripts
-└── tests/
-    └── fixtures/        # Real PD/CC0 media samples for every supported format
-```
+In development mode, if no bundled binary is found, the app falls back to system ffmpeg at runtime.
 
 ## Development
 
-Run the development server:
-
 ```bash
-npm run tauri:dev
+npm run tauri:dev   # run the desktop app in dev mode
+npx tauri build     # local production build
+npm run lint        # eslint
+npm run test:run    # vitest
+npm run verify      # fixture-based ffmpeg verification
 ```
 
-This will:
+Build outputs land in `src-tauri/target/release/bundle/`:
 
-- Start the `Vite` dev server on `http://localhost:5173`
-- Launch the `Tauri` native app dev window
-- Enable hot reload (UI updates on file changes)
+- **macOS**: `.app` bundle and `.dmg`
+- **Linux**: `.AppImage`, `.deb`, or `.rpm` depending on host tooling
 
-### Other scripts
+## Documentation
 
-| Script           | Purpose                                                                                                                                                                            |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run lint`   | ESLint over `src/**/*.{ts,tsx}` (zero-warning gate)                                                                                                                                |
-| `npm run format` | Prettier auto-format on `src/**`                                                                                                                                                   |
-| `npm run verify` | Run the bundled ffmpeg against every fixture in `tests/fixtures/` and validate each output codec via `ffprobe`. Requires a system `ffprobe` and a populated `src-tauri/binaries/`. |
+- [Contributing Guide](./CONTRIBUTING.md)
+- [Security Policy](./SECURITY.md)
+- [Third-Party Notices](./NOTICE.md)
 
-## Building
-
-> **Build support:** kompress supports both **macOS** and **Linux** builds.
->
-> - **macOS** is the public release path. `npm run tauri:build` / `npm run release:*` produce the signed, notarized app and DMG.
-> - **Linux** is supported for local development and local unsigned builds via `npx tauri build`.
->
-> There is **no CI**. All quality gates and release steps run locally.
-
-For local development builds without code signing, invoke the Tauri CLI directly:
-
-```bash
-npx tauri build
-```
-
-Outputs land in `src-tauri/target/release/bundle/`:
-
-- **macOS**: `.app` bundle and `.dmg` installer
-- **Linux**: `.AppImage` or `.deb` (when built on Linux, unsigned)
-
-> The `npm run tauri:build` script chains `sign-and-copy-release.js`, which hard-fails without macOS code-signing credentials. Use it only when releasing — see the [Releasing](#releasing) section below.
-
-## Issues
-
-For bugs or feature requests, please [open an issue](https://github.com/samkasman/kompress/issues). For **security issues**, see [SECURITY.md](SECURITY.md) — please don't file public issues for vulnerabilities.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for dev setup, quality gates, commit conventions, and how to add a new supported format.
+For maintainers: releases are cut on macOS via `npm run release:patch|minor|major`. See [CONTRIBUTING.md](./CONTRIBUTING.md) and the release section below for workflow details.
 
 ## Releasing
 
@@ -175,14 +116,14 @@ This repo follows [GitHub Flow](https://docs.github.com/en/get-started/using-git
 **Cut a release** — one command, no prompts:
 
 ```bash
-npm run release:patch    # 1.1.2 → 1.1.3 (bug-fix only)
-npm run release:minor    # 1.1.2 → 1.2.0 (new behavior, backward-compatible)
-npm run release:major    # 1.1.2 → 2.0.0 (breaking change)
+npm run release:patch    # 1.1.2 → 1.1.3
+npm run release:minor    # 1.1.2 → 1.2.0
+npm run release:major    # 1.1.2 → 2.0.0
 ```
 
-The script: bumps the version in `tauri.conf.json` and syncs the package files; promotes `[Unreleased]` in `CHANGELOG.md` to a versioned section; builds `aarch64-apple-darwin`; signs the bundled FFmpeg + app + DMG with the Developer ID; notarizes via `notarytool --wait`; staples the ticket; commits the version + changelog; tags `v{version}`; pushes the current `main` commit and the tag to `origin`; then opens a GitHub release with the DMG attached and the promoted changelog as the body.
+The script bumps the version in `tauri.conf.json`, syncs package files, promotes `[Unreleased]` in `CHANGELOG.md`, builds `aarch64-apple-darwin`, signs and notarizes the app, tags `v{version}`, pushes `main` and the tag to `origin`, and creates the GitHub release.
 
-**Dry-run** — build/sign/notarize without tagging or publishing:
+**Dry-run**:
 
 ```bash
 bash bin/cut-release.sh minor --local --yes
@@ -190,68 +131,8 @@ bash bin/cut-release.sh minor --local --yes
 
 If the version is already bumped, `npm run release` (publish) or `npm run release:local` (dry-run) skips the bump step and runs the rest.
 
-### Auto-updater setup (one-time, per maintainer)
-
-kompress ships with an in-app updater (Tauri's Updater + Process plugins). On launch the app silently checks `https://github.com/samkasman/kompress/releases/latest/download/latest.json` and shows an **Update to v…** button in the header if there's a newer signed release.
-
-The updater verifies a [minisign](https://jedisct1.github.io/minisign/) signature on every update payload, separate from Apple's Developer ID. You need to generate a keypair once and pass the private key as an environment variable during releases.
-
-**Generate the keypair** (one time, ever):
-
-```bash
-npx @tauri-apps/cli signer generate -w ~/.tauri/kompress-updater.key
-```
-
-You'll be prompted for a passphrase. Keep the `.key` file **outside the repo**; save the passphrase in your password manager.
-
-The command prints a public key. Paste it into `src-tauri/tauri.conf.json` → `plugins.updater.pubkey`, replacing `REPLACE_WITH_GENERATED_PUBLIC_KEY`. The public key is safe to commit and check into git.
-
-**Per-release env vars** — `release.js` only attaches updater artifacts when these are set in the shell before running `npm run release:*`:
-
-```bash
-export TAURI_SIGNING_PRIVATE_KEY="$(cat ~/.tauri/kompress-updater.key)"
-export TAURI_SIGNING_PRIVATE_KEY_PASSWORD="<your passphrase>"
-```
-
-You can put these in a `.env.release` file that's gitignored, and `source` it before releasing — or stash them in your password manager and paste before running. Without them, the release still ships a fully-signed DMG (existing users can still download from GitHub Releases), but no `latest.json` is published, so in-app update prompts won't appear for that version.
-
-### Signing & notarization prerequisites
-
-The release pipeline expects a macOS host with the following.
-
-**1. A Developer ID Application certificate in the login keychain.** The signing identity is resolved in this order:
-
-1. `MACOS_SIGN_IDENTITY` env var, if set (e.g. `Developer ID Application: Your Name (XXXXXXXXXX)`).
-2. Otherwise auto-detected: the script uses the unique `Developer ID Application: …` cert it finds in your keychain.
-3. If zero or more than one cert is present, the script errors with the available choices and asks you to set `MACOS_SIGN_IDENTITY`.
-
-That means kompress just works for a maintainer with a single matching cert, and forks don't need to edit any source.
-
-**2. A notarytool keychain profile.** Resolved as `$MACOS_NOTARY_PROFILE` if set, otherwise `<productName>-notary` (so for kompress: `kompress-notary`). Set up once with:
-
-```bash
-xcrun notarytool store-credentials kompress-notary \
-  --apple-id <apple-id-email> \
-  --team-id <team-id> \
-  --password <app-specific-password>
-```
-
-See Apple's [Customizing the notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow) for app-specific password creation.
-
-**3. Xcode Command Line Tools** (`codesign`, `xcrun notarytool`, `xcrun stapler`, `hdiutil`).
-
-### Forking checklist
-
-If you're forking kompress for your own distribution, the only file you have to hand-edit is `src-tauri/tauri.conf.json` (it gets compiled into the bundle, so it can't read env vars at runtime):
-
-- `productName` and `identifier` — change to yours.
-- `plugins.updater.endpoints` — change the GitHub URL to your repo's `releases/latest/download/latest.json`.
-- `plugins.updater.pubkey` — generate your own minisign keypair via `npx @tauri-apps/cli signer generate` and paste the public key here.
-
-Then update `package.json`'s `repository` field to point at your fork. Everything else (sign identity, notary profile, updater download URL) is derived from your environment and `package.json` at release time — the scripts themselves stay generic.
-
 ## License
 
 kompress is released under the MIT License — see [LICENSE](LICENSE) for the full text.
 
-The app bundles FFmpeg (LGPL v2.1+) and other third-party software with their own licenses. See [NOTICE.md](NOTICE.md) for the full attribution list and your rights as a redistributor.
+The app bundles FFmpeg (LGPL v2.1+) and other third-party software with their own licenses. See [NOTICE.md](NOTICE.md) for attribution and redistribution details.
