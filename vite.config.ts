@@ -4,7 +4,7 @@ import path from 'path';
 import { readFileSync } from 'fs';
 
 const pkg = JSON.parse(
-  readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8')
+  readFileSync(path.resolve(import.meta.dirname, 'package.json'), 'utf-8')
 );
 
 // https://vitejs.dev/config/
@@ -25,12 +25,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
   build: {
     target: process.env.TAURI_PLATFORM === 'windows' ? 'chrome105' : 'safari13',
-    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+    minify: !process.env.TAURI_DEBUG ? 'oxc' : false,
     sourcemap: !!process.env.TAURI_DEBUG,
   },
 });

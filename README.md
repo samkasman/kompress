@@ -55,7 +55,7 @@ kompress supports **macOS** and **Linux** builds.
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) `v18+`
+- [Node.js](https://nodejs.org/) `v22.22.1+`
 - [Rust](https://www.rust-lang.org/tools/install)
 - Platform-native build dependencies:
   - **macOS**: [Xcode Command Line Tools](https://developer.apple.com/xcode/) (`xcode-select --install`)

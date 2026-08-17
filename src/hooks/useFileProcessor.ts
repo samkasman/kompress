@@ -23,8 +23,11 @@ export function useFileProcessor({
   // most recent callbacks without resubscribing on every render.
   const onFileUpdateRef = useRef(onFileUpdate);
   const addLogRef = useRef(addLog);
-  onFileUpdateRef.current = onFileUpdate;
-  addLogRef.current = addLog;
+
+  useEffect(() => {
+    onFileUpdateRef.current = onFileUpdate;
+    addLogRef.current = addLog;
+  }, [onFileUpdate, addLog]);
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;

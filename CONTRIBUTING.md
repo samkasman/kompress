@@ -9,7 +9,7 @@ Thanks for thinking about contributing. kompress is a small, opinionated desktop
 
 ## Dev setup
 
-Prerequisites: Node `v18+`, Rust (stable), plus platform-native build dependencies. On macOS that means Xcode Command Line Tools; on Linux that means the system packages Tauri/WebKitGTK needs for local builds. See the README for the current platform notes.
+Prerequisites: Node `v22.22.1+`, Rust (stable), plus platform-native build dependencies. On macOS that means Xcode Command Line Tools; on Linux that means the system packages Tauri/WebKitGTK needs for local builds. See the README for the current platform notes.
 
 ```bash
 git clone git@github.com:samkasman/kompress.git
