@@ -137,6 +137,7 @@ try {
   run(
     `codesign --force --options runtime --timestamp --entitlements "${entitlementsPath}" --sign "${SIGN_IDENTITY}" "${appPath}"`
   );
+  run(`codesign --verify --deep --strict --verbose=2 "${appPath}"`);
   console.log('✓ App signed');
 
   // 3. Create DMG with Applications symlink for drag-to-install
@@ -171,6 +172,7 @@ try {
   // 6. Staple ticket to DMG so it works offline
   console.log('Stapling DMG...');
   run(`xcrun stapler staple "${dmgPath}"`);
+  run(`xcrun stapler validate "${dmgPath}"`);
 
   // 7-10. Updater artifacts: notarize the standalone .app, staple it, tar it,
   //       minisign the tar, write latest.json. The updater downloads
@@ -198,6 +200,9 @@ try {
 
   console.log('Stapling .app...');
   run(`xcrun stapler staple "${appPath}"`);
+  run(`xcrun stapler validate "${appPath}"`);
+  run(`codesign --verify --deep --strict --verbose=2 "${appPath}"`);
+  run(`spctl --assess --type execute --verbose=2 "${appPath}"`);
   console.log('✓ .app stapled');
 
   // Tar the stapled .app exactly the way Tauri's updater expects it.
@@ -211,7 +216,25 @@ try {
     /* doesn't exist */
   }
   console.log('Tarring stapled .app...');
-  run(`tar -czf "${tarPath}" -C "${dirname(appPath)}" "${productName}.app"`);
+  run(
+    `COPYFILE_DISABLE=1 tar -czf "${tarPath}" -C "${dirname(appPath)}" "${productName}.app"`
+  );
+
+  // Verify the archive exactly as the updater will consume it. This catches
+  // signatures damaged by packaging or restored filesystem metadata before an
+  // invalid updater is uploaded.
+  const verifyDir = join(tmpdir(), `kompress-updater-verify-${Date.now()}`);
+  await mkdir(verifyDir, { recursive: true });
+  try {
+    run(`COPYFILE_DISABLE=1 tar -xzf "${tarPath}" -C "${verifyDir}"`);
+    const archivedAppPath = join(verifyDir, `${productName}.app`);
+    run(`codesign --verify --deep --strict --verbose=2 "${archivedAppPath}"`);
+    run(`xcrun stapler validate "${archivedAppPath}"`);
+    run(`spctl --assess --type execute --verbose=2 "${archivedAppPath}"`);
+  } finally {
+    await rm(verifyDir, { recursive: true, force: true });
+  }
+  console.log('✓ Updater archive verified');
 
   // Minisign the tar. Tauri's signer CLI reads TAURI_SIGNING_PRIVATE_KEY
   // (the key content) and TAURI_SIGNING_PRIVATE_KEY_PASSWORD (the passphrase).
