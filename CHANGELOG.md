@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] — 2026-08-17
+
+### Documentation
+
+- Regroup badges, surface macOS as its own row
+- Add linux and windows badges\n
+- Improve tagline\n
+- Simplify top-level guide\n
+- Use static screenshot, move media into assets/\n
+
+### Fixed
+
+- Clarify build support and serialize processing\n
+- Make conversion verification script adapt to host ffmpeg support\n
+- Unify app icon assets\n
+
+### Maintenance
+
+- Refresh application toolchain
+
 ## [1.3.0] — 2026-06-08
 
 ### Added
