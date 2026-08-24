@@ -79,7 +79,7 @@
     "eslint-plugin-react-refresh": "^0.5.4",
     "git-cliff": "^2.13.1",
     "globals": "^17.11.0",
-    "happy-dom": "^20.11.2",
+    "happy-dom": "^20.11.6",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
     "postcss": "^8.5.26",
