@@ -16,7 +16,7 @@ A simple desktop app for compressing images, video, and audio files.
 ![Tauri](https://img.shields.io/badge/Tauri-FFC131?logo=tauri&logoColor=black)
 ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)
 
-<img src="assets/screenshot.jpg" alt="kompress app screenshot" width="396">
+<img src="screenshot.jpg" alt="kompress app screenshot" width="396">
 
 ## Features
 
