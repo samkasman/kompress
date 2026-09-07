@@ -262,9 +262,9 @@ Initial release.
 - Animated splash screen.
 - MIT license.
 
-[Unreleased]: https://github.com/samkasman/kompress/compare/v1.1.2...HEAD
-[1.1.2]: https://github.com/samkasman/kompress/compare/v1.1.1...v1.1.2
-[1.1.1]: https://github.com/samkasman/kompress/compare/v1.1.0...v1.1.1
-[1.1.0]: https://github.com/samkasman/kompress/compare/v1.0.1...v1.1.0
-[1.0.1]: https://github.com/samkasman/kompress/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/samkasman/kompress/releases/tag/v1.0.0
+[Unreleased]: https://github.com/innernette-co/kompress/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/innernette-co/kompress/compare/v1.1.1...v1.1.2
+[1.1.1]: https://github.com/innernette-co/kompress/compare/v1.1.0...v1.1.1
+[1.1.0]: https://github.com/innernette-co/kompress/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/innernette-co/kompress/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/innernette-co/kompress/releases/tag/v1.0.0

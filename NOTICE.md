@@ -42,4 +42,4 @@ The `tests/fixtures/` directory contains public-domain and Creative Commons medi
 
 ---
 
-If you spot a missing attribution or incorrect license claim, please [open an issue](https://github.com/samkasman/kompress/issues).
+If you spot a missing attribution or incorrect license claim, please [open an issue](https://github.com/innernette-co/kompress/issues).

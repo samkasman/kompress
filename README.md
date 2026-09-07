@@ -5,7 +5,7 @@ A simple desktop app for compressing images, video, and audio files.
 ![macOS](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black)
 ![Windows](https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white)
-![Version](https://img.shields.io/github/package-json/v/samkasman/kompress)
+![Version](https://img.shields.io/github/package-json/v/innernette-co/kompress)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)
@@ -32,7 +32,7 @@ A simple desktop app for compressing images, video, and audio files.
 
 ### Download
 
-Download the latest release from [GitHub Releases](https://github.com/samkasman/kompress/releases).
+Download the latest release from [GitHub Releases](https://github.com/innernette-co/kompress/releases).
 
 ### Use
 
@@ -64,7 +64,7 @@ kompress supports **macOS** and **Linux** builds.
 ### Setup
 
 ```bash
-git clone https://github.com/samkasman/kompress.git
+git clone https://github.com/innernette-co/kompress.git
 cd kompress
 npm install
 ```

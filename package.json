@@ -7,11 +7,11 @@
   "author": "Sam Kasman",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/samkasman/kompress.git"
+    "url": "git+https://github.com/innernette-co/kompress.git"
   },
-  "homepage": "https://github.com/samkasman/kompress",
+  "homepage": "https://github.com/innernette-co/kompress",
   "bugs": {
-    "url": "https://github.com/samkasman/kompress/issues"
+    "url": "https://github.com/innernette-co/kompress/issues"
   },
   "engines": {
     "node": ">=22.22.1"
