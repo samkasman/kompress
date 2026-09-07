@@ -1,6 +1,6 @@
 {
   "name": "kompress",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A simple multimedia file compressor for macOS",
   "type": "module",
   "license": "MIT",
