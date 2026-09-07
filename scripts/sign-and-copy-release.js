@@ -140,7 +140,32 @@ try {
   run(`codesign --verify --deep --strict --verbose=2 "${appPath}"`);
   console.log('✓ App signed');
 
-  // 3. Create DMG with Applications symlink for drag-to-install
+  // 3. Notarize and staple the .app BEFORE the DMG is built.
+  //    Order matters: a ticket stapled to the DMG does NOT transfer to the
+  //    .app a user drags out of it. Building the DMG from an un-stapled .app
+  //    ships an app that Gatekeeper can only verify online, so a first launch
+  //    offline or behind a restrictive network shows the "cannot verify
+  //    developer" warning. Stapling here means both distribution paths — the
+  //    DMG payload and the updater tarball — carry their own ticket.
+  //    This runs unconditionally, even when updater artifacts are skipped.
+  console.log('Notarizing .app — this takes a minute...');
+  const appZip = join(tmpdir(), `kompress-app-${Date.now()}.zip`);
+  run(`ditto -c -k --keepParent "${appPath}" "${appZip}"`);
+  run(
+    `xcrun notarytool submit "${appZip}" --keychain-profile "${NOTARY_PROFILE}" --wait`
+  );
+  await unlink(appZip);
+  console.log('✓ .app notarized');
+
+  console.log('Stapling .app...');
+  run(`xcrun stapler staple "${appPath}"`);
+  run(`xcrun stapler validate "${appPath}"`);
+  run(`codesign --verify --deep --strict --verbose=2 "${appPath}"`);
+  run(`spctl --assess --type execute --verbose=2 "${appPath}"`);
+  console.log('✓ .app stapled');
+
+  // 4. Create DMG with Applications symlink for drag-to-install. The .app
+  //    staged here is already notarized and stapled.
   console.log('Creating DMG...');
   const stagingDir = join(tmpdir(), `kompress-dmg-${Date.now()}`);
   await mkdir(stagingDir, { recursive: true });
@@ -157,29 +182,30 @@ try {
   }
   console.log('✓ DMG created');
 
-  // 4. Sign DMG
+  // 5. Sign DMG
   console.log('Signing DMG...');
   run(`codesign --force --timestamp --sign "${SIGN_IDENTITY}" "${dmgPath}"`);
   console.log('✓ DMG signed');
 
-  // 5. Notarize (submits to Apple and waits for approval)
+  // 6. Notarize the DMG (a separate Apple submission from the .app)
   console.log('Notarizing — this takes a minute...');
   run(
     `xcrun notarytool submit "${dmgPath}" --keychain-profile "${NOTARY_PROFILE}" --wait`
   );
   console.log('✓ Notarized');
 
-  // 6. Staple ticket to DMG so it works offline
+  // 7. Staple ticket to the DMG so the download verifies offline too
   console.log('Stapling DMG...');
   run(`xcrun stapler staple "${dmgPath}"`);
   run(`xcrun stapler validate "${dmgPath}"`);
 
-  // 7-10. Updater artifacts: notarize the standalone .app, staple it, tar it,
-  //       minisign the tar, write latest.json. The updater downloads
-  //       .app.tar.gz — it MUST be the fully signed + notarized + stapled
-  //       .app, not the unsigned tauri-build output, or users will end up
-  //       launching a binary Gatekeeper trusts but with no notarization
-  //       ticket on the auto-updated files.
+  // 8-10. Updater artifacts: tar the already-stapled .app, minisign the tar,
+  //       write latest.json. The updater downloads .app.tar.gz — it MUST be
+  //       the fully signed + notarized + stapled .app, not the unsigned
+  //       tauri-build output, or users will end up launching a binary
+  //       Gatekeeper trusts but with no notarization ticket on the
+  //       auto-updated files. The .app was stapled in step 3, so this only
+  //       needs to package and sign it.
   if (!process.env.TAURI_SIGNING_PRIVATE_KEY) {
     console.warn(
       '\n⚠ TAURI_SIGNING_PRIVATE_KEY not set — skipping updater artifacts.\n' +
@@ -188,22 +214,6 @@ try {
     );
     process.exit(0);
   }
-
-  console.log('\nNotarizing standalone .app for updater...');
-  const appZip = join(tmpdir(), `kompress-app-${Date.now()}.zip`);
-  run(`ditto -c -k --keepParent "${appPath}" "${appZip}"`);
-  run(
-    `xcrun notarytool submit "${appZip}" --keychain-profile "${NOTARY_PROFILE}" --wait`
-  );
-  await unlink(appZip);
-  console.log('✓ .app notarized');
-
-  console.log('Stapling .app...');
-  run(`xcrun stapler staple "${appPath}"`);
-  run(`xcrun stapler validate "${appPath}"`);
-  run(`codesign --verify --deep --strict --verbose=2 "${appPath}"`);
-  run(`spctl --assess --type execute --verbose=2 "${appPath}"`);
-  console.log('✓ .app stapled');
 
   // Tar the stapled .app exactly the way Tauri's updater expects it.
   const tarPath = join(
