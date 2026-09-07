@@ -55,7 +55,7 @@ mismatched Tauri packages` otherwise. When bumping the npm side
   is a trap, not a convenience: the `latest.json` endpoint then 404s and
   every install silently stops finding updates. A release without
   `✓ Updater artifacts present` in its output is a failed release.
-  The key lives at `~/.tauri/kompress-updater.key` and has **no
+  The key lives at `~/.tauri/kompress.key` and has **no
   passphrase** (the previous key's passphrase was lost, forcing a
   rotation before v1.3.2 that permanently stranded v1.3.0/v1.3.1
   installs). Full detail — key IDs, rotation consequences, and how to

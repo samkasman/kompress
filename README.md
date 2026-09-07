@@ -144,7 +144,7 @@ what lets an installed copy trust an update.
 
 |             |                                                                   |
 | ----------- | ----------------------------------------------------------------- |
-| Private key | `~/.tauri/kompress-updater.key`                                   |
+| Private key | `~/.tauri/kompress.key`                                           |
 | Public key  | pinned as `plugins.updater.pubkey` in `src-tauri/tauri.conf.json` |
 | Key ID      | `F9792ECAA7E01400`                                                |
 | Passphrase  | **none** — see below                                              |
@@ -162,7 +162,7 @@ Both variables must be exported, and the private key is passed by **contents**,
 not by path:
 
 ```bash
-export TAURI_SIGNING_PRIVATE_KEY="$(cat ~/.tauri/kompress-updater.key)"
+export TAURI_SIGNING_PRIVATE_KEY="$(cat ~/.tauri/kompress.key)"
 export TAURI_SIGNING_PRIVATE_KEY_PASSWORD=''   # empty string, not unset
 npm run release:patch
 ```
