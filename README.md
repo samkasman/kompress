@@ -189,11 +189,15 @@ that anything is wrong.
 
 This has happened once: the original key (`1A94B578A21899F6`) was generated
 2026-06-08 with a passphrase that was later lost, and was replaced ahead of
-v1.3.2. **Installs on v1.3.0 and v1.3.1 are permanently stranded.** The old key
-file is retained at `~/.tauri/kompress-updater.key` in case the passphrase ever
-surfaces — it could still sign one bridge release those installs would accept.
+v1.3.2. **Installs on v1.3.0 and v1.3.1 are permanently stranded**, and that is
+now final — the old key file was deleted on 2026-09-07, so no bridge release
+signed with it is possible. Those installs will never auto-update; the v1.3.0
+and v1.3.1 releases were removed from GitHub, so recovery means downloading the
+current release by hand.
 
-If rotation is ever unavoidable again, ship a visible notice alongside it.
+If rotation is ever unavoidable again: ship a visible notice alongside it, and
+keep the retired key until you are certain the old cohort is gone. A retired key
+is the only thing that can sign an update the stranded installs would accept.
 
 ### Testing the update path
 
