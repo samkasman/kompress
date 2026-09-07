@@ -12,7 +12,7 @@ Thanks for thinking about contributing. kompress is a small, opinionated desktop
 Prerequisites: Node `v22.22.1+`, Rust (stable), plus platform-native build dependencies. On macOS that means Xcode Command Line Tools; on Linux that means the system packages Tauri/WebKitGTK needs for local builds. See the README for the current platform notes.
 
 ```bash
-git clone git@github.com:samkasman/kompress.git
+git clone git@github.com:innernette-co/kompress.git
 cd kompress
 npm install
 # Download an FFmpeg binary into src-tauri/binaries/ — see README "Development Setup"
@@ -75,4 +75,4 @@ Maintainers only — see the README's "Releasing" section. The short version: `b
 
 ## Questions
 
-[Open an issue](https://github.com/samkasman/kompress/issues) with the "question" label.
+[Open an issue](https://github.com/innernette-co/kompress/issues) with the "question" label.

@@ -2,7 +2,7 @@
 
 ## Reporting a vulnerability
 
-If you believe you've found a security issue in kompress, **please don't open a public GitHub issue.** Use GitHub's [private vulnerability reporting](https://github.com/samkasman/kompress/security/advisories/new) — the report stays private between you and the maintainer, and GitHub provides a structured workflow for disclosure and patching.
+If you believe you've found a security issue in kompress, **please don't open a public GitHub issue.** Use GitHub's [private vulnerability reporting](https://github.com/innernette-co/kompress/security/advisories/new) — the report stays private between you and the maintainer, and GitHub provides a structured workflow for disclosure and patching.
 
 Please include:
 
@@ -29,7 +29,7 @@ Out of scope:
 
 ## Verifying the integrity of a release
 
-Releases on the [Releases page](https://github.com/samkasman/kompress/releases) are:
+Releases on the [Releases page](https://github.com/innernette-co/kompress/releases) are:
 
 1. **Code-signed** with a Developer ID Application certificate (team `WC8RY44BN7`).
 2. **Notarized** by Apple via `notarytool`.
