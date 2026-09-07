@@ -51,7 +51,22 @@ mismatched Tauri packages` otherwise. When bumping the npm side
   — that would tar the unsigned build-time `.app`, defeating the point.
   Updater env vars: `TAURI_SIGNING_PRIVATE_KEY` (key content, not path)
   and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. If unset, the release
-  skips updater artifacts and still produces a fully-signed DMG.
+  skips updater artifacts and still produces a fully-signed DMG — which
+  is a trap, not a convenience: the `latest.json` endpoint then 404s and
+  every install silently stops finding updates. A release without
+  `✓ Updater artifacts present` in its output is a failed release.
+  The key lives at `~/.tauri/kompress-updater-v2.key` and has **no
+  passphrase** (the previous key's passphrase was lost, forcing a
+  rotation before v1.3.2 that permanently stranded v1.3.0/v1.3.1
+  installs). Full detail — key IDs, rotation consequences, and how to
+  test the update path — is in the README's **Auto-updater** section.
+- **The `.app` must be stapled before the DMG is built.** A notarization
+  ticket on the DMG does not transfer to the `.app` dragged out of it, so
+  building the DMG first ships an app that only verifies online — it shows
+  "cannot verify developer" on an offline first launch. `sign-and-copy-release.js`
+  notarizes and staples the `.app` (step 3) ahead of DMG creation (step 4).
+  Don't reorder those.
+
 - **HEIC conversion needs `-update 1 -frames:v 1`** in the image2 muxer args.
   Without them, ffmpeg 8.x decodes the HEIC fine and then refuses to write the
   output as a single JPG ("does not contain an image sequence pattern"). The
